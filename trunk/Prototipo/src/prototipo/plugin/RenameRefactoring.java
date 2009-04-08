@@ -38,12 +38,25 @@ public class RenameRefactoring extends Refactoring{
 
 	private RefactoringComponent selectedComponent;
 	private TextChangeManager manager = new TextChangeManager();
+	private String newName;
 	
+	public String getNewName() {
+		return newName;
+	}
+
+	public void setNewName(String newName) {
+		this.newName = newName;
+	}
+
 	public RenameRefactoring(RefactoringComponent selectedComponent){
 		this.selectedComponent = selectedComponent;
 	}
 	
 	@Override
+	/**
+	 * Método que cuida de toda a lógica da refatoração
+	 * Praticamente copiado de org.eclipse.wst.xsd.ui.internal.refactor.rename.RenameComponentProcessor
+	 */
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		
@@ -76,6 +89,8 @@ public class RenameRefactoring extends Refactoring{
 		    }
 		}
 		
+		String quotedNewName = quoteString(newName);
+		
 		for (Iterator iter = results.iterator(); iter.hasNext();) {
 			SearchMatch match = (SearchMatch) iter.next();
 			if (match != null) {
@@ -86,15 +101,19 @@ public class RenameRefactoring extends Refactoring{
 				}
 				if (addTextChange) {
 					TextChange textChange = manager.get(match.getFile());
-					String newName = "\"marcela\"";
-	
-					ReplaceEdit replaceEdit = new ReplaceEdit(match.getOffset(), match.getLength(), newName);
+					
+					ReplaceEdit replaceEdit = new ReplaceEdit(match.getOffset(), match.getLength(), quotedNewName);
 					String editName = RefactoringMessages.getString("RenameComponentProcessor.Component_Refactoring_update_declatation");
 					TextChangeCompatibility.addTextEdit(textChange, editName, replaceEdit);
 				}
+				createXSLTData(match);
 			}
 		}
 		return new RefactoringStatus();
+	}
+	
+	private void createXSLTData(SearchMatch match){
+	
 	}
 
 	@Override
@@ -114,6 +133,20 @@ public class RenameRefactoring extends Refactoring{
 		} finally{
 			pm.done();
 		}
+	}
+	
+	public static String quoteString(String value) {
+		value = value == null ? "" : value;
+
+		StringBuffer sb = new StringBuffer();
+		if (!value.startsWith("\"")) {
+			sb.append("\"");
+		}
+		sb.append(value);
+		if (!value.endsWith("\"")) {
+			sb.append("\"");
+		}
+		return sb.toString();
 	}
 	
 	@Override
