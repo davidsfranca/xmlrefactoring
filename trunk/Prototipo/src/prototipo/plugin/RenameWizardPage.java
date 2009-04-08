@@ -19,7 +19,10 @@ public class RenameWizardPage extends UserInputWizardPage {
 		GridLayout grid = new GridLayout();
 		composite.setLayout(grid);
 		grid.numColumns = 2;
-		new Label(composite, SWT.NONE).setText("Refatoracao:");		
+		new Label(composite, SWT.NONE).setText("Refatoracao:");
+		setPageComplete(true);
+		isLastUserInputPage();
+		
 	}
 
 }
