@@ -51,7 +51,14 @@ public class RenameAction implements IEditorActionDelegate {
 	public void selectionChanged(IAction action, ISelection selection) {
 		ISelectionMapper mapper = new XSDSelectionMapper();
 		StructuredSelection stselection = (StructuredSelection) mapper.mapSelection(selection);
-		selectedComponent = (XSDNamedComponent) stselection.getFirstElement();
+		if(stselection.getFirstElement() instanceof XSDNamedComponent){
+			selectedComponent = (XSDNamedComponent) stselection.getFirstElement();
+			action.setEnabled(true);
+		}
+		else
+			action.setEnabled(false);
 	}
+	
+	
 
 }
