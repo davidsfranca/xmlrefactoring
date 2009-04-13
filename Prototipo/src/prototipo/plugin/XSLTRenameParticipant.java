@@ -115,8 +115,17 @@ public class XSLTRenameParticipant extends RenameParticipant{
 						paths.add(sb.toString());
 					}
 					else{
-						Element ownerComplexType = (Element) element.getParentNode().getParentNode();						
-						searchReferences(ownerComplexType, sb.toString());
+						Element ownerComplexType = (Element) element.getParentNode().getParentNode();
+						if(ownerComplexType.getAttribute("name") == null){
+							//Tipo an™nimo
+							StringBuilder sb2 = new StringBuilder();
+							sb2.append("/");
+							sb2.append(((Element)ownerComplexType.getParentNode()).getAttribute("name"));
+							sb2.append(sb);	
+							paths.add(sb2.toString());
+						}
+						else
+							searchReferences(ownerComplexType, sb.toString());
 					}
 				}
 			}
