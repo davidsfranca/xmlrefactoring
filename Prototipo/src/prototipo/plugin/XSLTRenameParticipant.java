@@ -1,11 +1,15 @@
 package prototipo.plugin;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.Change;
@@ -14,9 +18,18 @@ import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
 import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.wst.common.core.search.SearchEngine;
 import org.eclipse.wst.common.core.search.SearchMatch;
+import org.eclipse.wst.common.core.search.pattern.QualifiedName;
+import org.eclipse.wst.common.core.search.pattern.SearchPattern;
+import org.eclipse.wst.common.core.search.scope.SearchScope;
+import org.eclipse.wst.common.core.search.scope.SelectionSearchScope;
+import org.eclipse.wst.common.core.search.scope.WorkspaceSearchScope;
+import org.eclipse.wst.common.core.search.util.CollectingSearchRequestor;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
+import org.eclipse.wst.xml.core.internal.search.XMLComponentReferencePattern;
 import org.eclipse.wst.xsd.ui.internal.refactor.RefactoringMessages;
 import org.eclipse.wst.xsd.ui.internal.refactor.TextChangeManager;
 import org.eclipse.wst.xsd.ui.internal.refactor.rename.ComponentRenameArguments;
@@ -24,13 +37,17 @@ import org.eclipse.wst.xsd.ui.internal.refactor.rename.RenameComponentProcessor;
 import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
 import org.eclipse.wst.xsd.ui.internal.search.IXSDSearchConstants;
 import org.eclipse.xsd.XSDNamedComponent;
+import org.eclipse.xsd.XSDSchema;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class XSLTRenameParticipant extends RenameParticipant{
 
 	private TextChangeManager manager;
 	private List<SearchMatch> matches;
-	private XSDNamedComponent element;
+	private XSDNamedComponent component;
+	private List<String> paths;
 
 	@Override
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
@@ -41,13 +58,80 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
-		//Renomeia elementos an™nimos
-		
-		
-		IDOMElement idomElement = (IDOMElement) element.getElement();
+		if(!(component.getContainer() instanceof XSDSchema)){
+			renameAnonymousElements();			
+		}
+		if(component.getElement().getNodeName().equals("element")){
+			paths = new ArrayList<String>();
+			StringBuilder sb = new StringBuilder();
+			sb.append("/");
+			sb.append(component.getName());
+			if(component.getContainer() instanceof XSDSchema){
+				//Elemento Ž global				
+				paths.add(sb.toString());
+			}
+			else{
+				//Elemento est‡ em um complex type
+				XSDNamedComponent complexType = (XSDNamedComponent) component.getContainer().getContainer().getContainer().getContainer();				
+				searchReferences(complexType.getElement(), sb.toString());
+			}
+		}
+		return null;
+	}
+
+	public void searchReferences(Element complexTypeNode, String suffix) throws CoreException{	
+
+		//Busca as referencias
+		String componentName = complexTypeNode.getAttribute("name");
+		String componentNamespace = complexTypeNode.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
+		QualifiedName elementQName = new QualifiedName(componentNamespace, componentName);
+		QualifiedName typeQName = new QualifiedName(complexTypeNode.getNamespaceURI(), complexTypeNode.getLocalName());
+
+		String fileStr = ((IDOMNode) complexTypeNode).getModel().getBaseLocation();
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
+
+		SearchScope scope = new WorkspaceSearchScope();
+		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+		SearchPattern pattern = new XMLComponentReferencePattern(file, elementQName, typeQName);
+		SearchEngine searchEngine = new SearchEngine();
+		HashMap map = new HashMap();
+		searchEngine.search(pattern, requestor, scope, map, new NullProgressMonitor());
+		List<SearchMatch> results = requestor.getResults();
+
+		//Cria os paths
+
+		for(SearchMatch match : results){
+			if(match.getObject() instanceof Node){
+				Node node = (Node)match.getObject();
+				if(node instanceof Attr){
+					Attr attr = (Attr) node;
+					Element element = attr.getOwnerElement();
+					StringBuilder sb = new StringBuilder();
+					sb.append("/");
+					sb.append(element.getAttribute("name"));					
+					sb.append(suffix);
+					//Declaracao global de elemento
+					if(element.getParentNode().getNodeName().equals("schema")){
+						paths.add(sb.toString());
+					}
+					else{
+						Element ownerComplexType = (Element) element.getParentNode().getParentNode();						
+						searchReferences(ownerComplexType, sb.toString());
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Corrige bug de renomear elementos declarados em tipos (n‹o globais)	
+	 */
+	public void renameAnonymousElements(){
+
+		IDOMElement idomElement = (IDOMElement) component.getElement();
 		String fileStr = idomElement.getModel().getBaseLocation();
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));		
-		
+
 		TextChange textChange = manager.get(file);
 		String newName = getRenameArguments().getNewName();
 		newName = RenameComponentProcessor.quoteString(newName);
@@ -56,14 +140,6 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		ReplaceEdit replaceEdit = new ReplaceEdit(attr.getValueRegionStartOffset(), length, newName);
 		String editName = RefactoringMessages.getString("RenameComponentProcessor.Component_Refactoring_update_declatation");
 		TextChangeCompatibility.addTextEdit(textChange, editName, replaceEdit);
-		
-		if(matches != null)
-			for(SearchMatch match : matches){
-				if(match.getObject() instanceof Node){
-					Node node = (Node) match;
-				}
-			}
-		return null;
 	}
 
 	@Override
@@ -74,7 +150,7 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	@Override
 	protected boolean initialize(Object element) {
 		if(element instanceof XSDNamedComponent){
-			this.element = (XSDNamedComponent) element;
+			this.component = (XSDNamedComponent) element;
 			if(getArguments() instanceof ComponentRenameArguments){
 				// changeManger is passed in from the RenameComponentProcessor to collect all the changes
 				manager = getRenameArguments().getChangeManager();
@@ -84,7 +160,7 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		}		
 		return false;
 	}
-	
+
 	private ComponentRenameArguments getRenameArguments(){
 		return (ComponentRenameArguments) getArguments();
 	}
