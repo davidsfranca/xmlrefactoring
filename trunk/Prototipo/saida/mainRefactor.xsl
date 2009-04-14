@@ -8,6 +8,7 @@
 <xsl:strip-space elements="*" />
 
 <xsl:include href="rename_books_booktobookref.xsl" />
+<xsl:include href="renameauthortoautor.xsl" />
 
 <!-- para os demais copia sem altera›es para a sa’da -->
 <xsl:template match="*">

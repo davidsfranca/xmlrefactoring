@@ -16,9 +16,11 @@ public class ClasseExecutavel {
 	public static void main(String[] args) throws ResourceNotFoundException, ParseErrorException, Exception {
 		
 		RenameRefactor refactor = new RenameRefactor("/books/book","bookref");
+		RenameRefactor refactor2 = new RenameRefactor("author","autor");
 		ArrayList listaRefat = new ArrayList<RenameRefactor>();
 		listaRefat.add(refactor);
-		XSLTWriter.createTransformation(listaRefat);
+		listaRefat.add(refactor2);
+		//XSLTWriter.createTransformation(listaRefat);
 
 	}
 

@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <books xmlns:edi2="http://ecommerce.org/schema">
    <bookref xmlns:edi="http://ecommerce.org/schema" category="reference">
-      <author>Nigel Rees</author>
+      <autor>Nigel Rees</autor>
       <title>Sayings of the Century</title>
       <price>8.95</price>
       <book category="fiction">
-         <author>Evelyn Waugh</author>
+         <autor>Evelyn Waugh</autor>
          <title>Sword of Honour</title>
          <price>12.99</price>
       </book>
    </bookref>
    <bookref category="fiction">
-      <author>Evelyn Waugh</author>
+      <autor>Evelyn Waugh</autor>
       <title>Sword of Honour</title>
       <price>12.99</price>
    </bookref>
    <bookref category="fiction">
-      <author>Herman Melville</author>
+      <autor>Herman Melville</autor>
       <title>Moby Dick</title>
       <price>8.99</price>
    </bookref>
    <bookref category="fiction">
-      <author>J. R. R. Tolkien</author>
+      <autor>J. R. R. Tolkien</autor>
       <title>The Lord of the Rings</title>
       <price>22.99</price>
    </bookref>

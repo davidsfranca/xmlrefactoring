@@ -10,6 +10,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 
 public class XSLTWriter {
 	
@@ -25,7 +27,7 @@ public class XSLTWriter {
 		
 		//Cria um nome para o arquivo
 		//Precisa de uma logica mais robusta de renomeacao
-		String fileName = "rename"+ rename.getPath().replace("/", "_")+"to"+rename.getNewName()+".xsl";
+		String fileName = "rename"+ rename.getPath().replace("/", "")+"to"+rename.getNewName()+".xsl";
 		
 		BufferedWriter writer =
 		      new BufferedWriter(new FileWriter("saida/"+fileName));
@@ -57,6 +59,10 @@ public class XSLTWriter {
 		    template.merge(context, writer);
 		    writer.flush();
 		    writer.close();
+	}
+	
+	public static void printSuccess(){
+		System.out.println("sucesso!!");
 	}
 	
 }
