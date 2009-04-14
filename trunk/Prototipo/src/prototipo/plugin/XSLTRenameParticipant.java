@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.velocity.exception.ParseErrorException;
+import org.apache.velocity.exception.ResourceNotFoundException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -41,6 +43,9 @@ import org.eclipse.xsd.XSDSchema;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import prototipo.xsltLogic.RenameRefactor;
+import prototipo.xsltLogic.XSLTWriter;
 
 public class XSLTRenameParticipant extends RenameParticipant{
 
@@ -82,21 +87,21 @@ public class XSLTRenameParticipant extends RenameParticipant{
 			}
 		}
 		
-//		RenameRefactor refactor = new RenameRefactor(paths, getRenameArguments().getNewName());
-//		ArrayList<RenameRefactor> list = new ArrayList<RenameRefactor>();
-//		list.add(refactor);
-//		try {
-//			XSLTWriter.createTransformation(list);
-//		} catch (ResourceNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ParseErrorException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		RenameRefactor refactor = new RenameRefactor(paths, getRenameArguments().getNewName());
+		ArrayList<RenameRefactor> list = new ArrayList<RenameRefactor>();
+		list.add(refactor);
+		try {
+			XSLTWriter.createTransformation(list);
+		} catch (ResourceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return null;
 	}
