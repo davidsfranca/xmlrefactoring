@@ -6,9 +6,12 @@ import java.util.List;
 
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -64,7 +67,7 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
 		if(!(component.getContainer() instanceof XSDSchema)){
-			renameAnonymousElements();			
+			renameAnonymousElements();
 		}
 		if(component.getElement().getNodeName().equals("element")){
 			paths = new ArrayList<String>();
@@ -88,10 +91,16 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		}
 		
 		RenameRefactor refactor = new RenameRefactor(paths, getRenameArguments().getNewName());
+		
+		IContainer folder = null;
+		//Busca caminho do projeto
+		if(manager.getAllCompilationUnits().length>0)
+			folder = manager.getAllCompilationUnits()[0].getParent();
+		
 		ArrayList<RenameRefactor> list = new ArrayList<RenameRefactor>();
 		list.add(refactor);
 		try {
-			XSLTWriter.createTransformation(list);
+			XSLTWriter.createTransformation(list,folder);
 		} catch (ResourceNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
