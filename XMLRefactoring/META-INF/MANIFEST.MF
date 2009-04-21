@@ -1,23 +1,21 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Prototipo Plug-in
-Bundle-SymbolicName: Prototipo;singleton:=true
+Bundle-Name: XMLRefactoring Plug-in
+Bundle-SymbolicName: XMLRefactoring;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: prototipo.plugin.Activator
+Bundle-Activator: xmlrefactoring.plugin.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ltk.ui.refactoring;bundle-version="3.4.1",
  org.eclipse.ltk.core.refactoring;bundle-version="3.4.2",
- org.eclipse.wst.common.core;bundle-version="1.1.201",
- org.eclipse.core.resources;bundle-version="3.4.2",
+ org.eclipse.wst.xsd.ui;bundle-version="1.2.105",
+ org.eclipse.xsd;bundle-version="2.4.2",
  org.eclipse.wst.xml.core;bundle-version="1.1.307",
  org.eclipse.wst.sse.core;bundle-version="1.1.303",
- org.eclipse.xsd;bundle-version="2.4.2",
- org.eclipse.wst.xsd.ui;bundle-version="1.2.105"
+ org.eclipse.core.resources;bundle-version="3.4.2",
+ org.eclipse.wst.common.core;bundle-version="1.1.201"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-ClassPath: lib/velocity-1.6.2-dep.jar,
  lib/velocity-1.6.2.jar,
- .,
- src/
-Export-Package: prototipo.plugin
+ .

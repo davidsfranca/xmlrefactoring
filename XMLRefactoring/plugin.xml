@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="XMLRefactoringParticipant" name="XML Refactoring Participant" schema="schema/XMLRefactoringParticipant.exsd"/>
+   <extension
+         id="XMLRefactoringMenu"
+         name="XML Refactoring Menu"
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="XMLRefactoring.XSDEditor"
+            targetID="org.eclipse.wst.xsd.ui.popup.graph">
+         <menu
+               id="XMLRefactoring.RefactoringMenu"
+               label="XML Refactor"
+               path="refactoring-slot">
+            <groupMarker
+                  name="XMLRefactoring.group1">
+            </groupMarker>
+         </menu>
+         <action
+               class="xmlrefactoring.plugin.ui.rename.RenameAction"
+               id="XMLRefactoring.RenameAction"
+               label="Rename"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+      </viewerContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.renameParticipants">
+      <renameParticipant
+            class="xmlrefactoring.plugin.logic.rename.XSLTRenameParticipant"
+            id="XMLRefactoring.XSLTRenameParticipant"
+            name="XSLT Rename Participant">
+         <enablement></enablement>
+      </renameParticipant>
+   </extension>
+
+</plugin>
