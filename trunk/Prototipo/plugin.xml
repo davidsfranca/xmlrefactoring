@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="XMLRefactoringParticipant" name="XML Refactoring Participant" schema="schema/XMLRefactoringParticipant.exsd"/>
    <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution
@@ -9,7 +10,7 @@
          <menu
                id="Prototipo.refactoringMenu"
                label="XSD Refactor"
-               path="additions">
+               path="org.eclipse.wst.xsd.ui.refactoring.menu.refactorGroup.object">
             <separator
                   name="Prototipo.separator1">
             </separator>
@@ -18,7 +19,7 @@
                class="prototipo.plugin.RenameAction"
                id="Prototipo.rename"
                label="Rename"
-               menubarPath="Prototipo.refactoringMenu/separator1">
+               menubarPath="org.eclipse.wst.xsd.ui.refactoring.menu.refactorGroup.object">
          </action>
       </viewerContribution>
    </extension>
@@ -28,7 +29,6 @@
             class="prototipo.plugin.XSLTRenameParticipant"
             id="prototipo.plugin.XSLTRenameParticipant"
             name="XSLTRenameParticipant">
-         <enablement></enablement>
       </renameParticipant>
    </extension>
 
