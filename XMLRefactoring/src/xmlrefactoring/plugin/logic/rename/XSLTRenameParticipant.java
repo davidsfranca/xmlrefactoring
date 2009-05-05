@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -44,6 +45,11 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+//Este participant é uma exceção na arquitetura, pois se integra à estrutura do editor,
+//sem extender as classes base da aplicação
+/**
+ * Class responsible for creating the XSLT files related to the rename refactoring
+ */
 public class XSLTRenameParticipant extends RenameParticipant{
 
 //TODO Organizar para seguir alguma arquitetura	
@@ -51,6 +57,10 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	private TextChangeManager manager;
 	private List<SearchMatch> matches;
 	private XSDNamedComponent component;
+	
+	/**
+	 * The list of Xpaths to the element being renamed
+	 */
 	private List<String> paths;
 
 	@Override
@@ -62,21 +72,15 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
-		if(!(component.getContainer() instanceof XSDSchema)){
-			renameAnonymousElements();			
-		}
-		if(component.getElement().getNodeName().equals("element")){
+		
+		if(isElement(component)){
 			paths = new ArrayList<String>();
 			StringBuilder sb = new StringBuilder();
 			sb.append("/");
 			sb.append(component.getName());
-			if(component.getContainer() instanceof XSDSchema){
-				//Elemento é global				
-				paths.add(sb.toString());
-			}
-			else{
-				//Elemento está em um complex type
-				
+			
+			if(isLocalElement(component)){
+				renameLocalElements();
 				XSDConcreteComponent container = component;
 				while(!(container instanceof XSDComplexTypeDefinition)){
 					container = container.getContainer();
@@ -84,27 +88,37 @@ public class XSLTRenameParticipant extends RenameParticipant{
 				XSDConcreteComponent complexType = container;
 				searchReferences(complexType.getElement(), sb.toString());
 			}
-		}
-		
-		RenameRefactor refactor = new RenameRefactor(paths, getRenameArguments().getNewName());
-		ArrayList<RenameRefactor> list = new ArrayList<RenameRefactor>();
-		list.add(refactor);
-		try {
-			XSLTWriter.createTransformation(list);
-		} catch (ResourceNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseErrorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			else{
+				paths.add(sb.toString());
+			}
 		}
 		
 		return null;
 	}
 
+	private boolean isElement(XSDNamedComponent component) {
+		return component.getElement().getNodeName().equals("element");
+	}
+
+	/**
+	 * Return true if the component is a local element (isn`t a global one)
+	 * @param component
+	 * @return
+	 */
+	private boolean isLocalElement(XSDNamedComponent component) {
+		if(component.getContainer() instanceof XSDSchema)
+			return false;
+		else
+			return true;
+	}
+
+	/**
+	 * Search references to the especified complexType and create the XPaths corresponding to
+	 * the references.
+	 * @param complexTypeNode - the complexType which the references will be searched
+	 * @param suffix - the suffix of the XPath that takes to the element
+	 * @throws CoreException
+	 */
 	public void searchReferences(Element complexTypeNode, String suffix) throws CoreException{	
 
 		//Busca as referencias
@@ -165,7 +179,7 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	/**
 	 * Corrige bug de renomear elementos declarados em tipos (não globais)	
 	 */
-	public void renameAnonymousElements(){
+	public void renameLocalElements(){
 
 		IDOMElement idomElement = (IDOMElement) component.getElement();
 		String fileStr = idomElement.getModel().getBaseLocation();
