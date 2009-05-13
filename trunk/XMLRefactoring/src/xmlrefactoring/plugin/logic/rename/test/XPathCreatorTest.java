@@ -6,6 +6,8 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -37,18 +39,21 @@ public class XPathCreatorTest {
 			"/globalElement2/moreComplexElement/internalElement",
 			"/globalElement3/anonymousType/internalElement",
 			"/globalElement4/contentElement/internalElement",
-			"/globalElement4/internalElement"};/* ,
-			"/globalElement5/globalElement/internalElement"}; */
+			"/globalElement4/internalElement",
+			"/globalElement5/globalElement/internalElement"};
 	
 	
 	@Test
 	public void testCreateElementPaths() throws CoreException {
+				
 		QualifiedName elementQName = new QualifiedName(TEST_NAMESPACE, TEST_TYPE);
 		QualifiedName typeQName = new QualifiedName(SCHEMA_NAMESPACE, SCHEMA_COMPLEX_TYPE);
 
 		String fileStr = CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH;
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
-
+	
+		file.refreshLocal(0, null);
+		
 		SearchScope scope = new WorkspaceSearchScope();
 		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
 		SearchPattern pattern = new XMLComponentDeclarationPattern(file, elementQName, typeQName);

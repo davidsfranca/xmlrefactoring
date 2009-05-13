@@ -25,16 +25,18 @@ public class XPathCreator {
 
 	private static List<String> createElementPaths(Element element, String suffix, List<String> paths) throws CoreException{
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("/");
-		sb.append(element.getAttribute("name"));					
-		sb.append(suffix);
+		StringBuilder namedElementPrefix = new StringBuilder();
+		namedElementPrefix.append("/");
+		namedElementPrefix.append(element.getAttribute("name"));					
+		namedElementPrefix.append(suffix);
 
 		Element referenceToBeSearched = null;
 		String newSuffix = null;
 
 		if(isGlobal(element)){
-			paths.add(sb.toString());
+			paths.add(namedElementPrefix.toString());
+			referenceToBeSearched = element;
+			newSuffix = namedElementPrefix.toString();
 		}
 		else{
 			//If it`s not a global element, then the reference is inside a complexType
@@ -60,17 +62,24 @@ public class XPathCreator {
 							sb2.insert(0,namedContainer.getAttribute("name"));
 							sb2.insert(0,"/");
 						}						
-					}while(!isGlobal(namedContainer));
-					sb2.append(sb);
+					}while(!isGlobal(namedContainer));					
+					if(isAnonymous(element)){
+						sb2.append(suffix);
+					}else{
+						sb2.append(namedElementPrefix);
+					}
 					paths.add(sb2.toString());
 					referenceToBeSearched = namedContainer;
 					newSuffix = sb2.toString();
 				}
 				else{
 					referenceToBeSearched = ownerComplexType;
-					newSuffix = sb.toString();
+					if(isAnonymous(element)){
+						newSuffix = suffix;
+					}else{
+						newSuffix = namedElementPrefix.toString();
+					}
 				}
-
 			}
 		}		
 
