@@ -33,7 +33,7 @@ public class XPathCreator {
 		Element referenceToBeSearched = null;
 		String newSuffix = null;
 
-		if(isGlobalElement(element)){
+		if(isGlobal(element)){
 			paths.add(sb.toString());
 		}
 		else{
@@ -48,10 +48,23 @@ public class XPathCreator {
 				newSuffix = suffix;
 			}else{
 				//If it`s not an extension, then the reference is an element inside a complexType
-				if(isAnonymous(ownerComplexType)){					
-					sb.insert(0,((Element)ownerComplexType.getParentNode()).getAttribute("name"));
-					sb.insert(0,("/"));
-					paths.add(sb.toString());
+				if(isAnonymous(ownerComplexType)){
+					Element namedContainer;
+					StringBuilder sb2 = new StringBuilder();
+					do{
+						Element anonymousContainer = ownerComplexType;
+						while(isAnonymous(anonymousContainer))
+							anonymousContainer = (Element)anonymousContainer.getParentNode();
+						namedContainer = anonymousContainer;
+						if(!isComplexType(namedContainer)){								
+							sb2.insert(0,namedContainer.getAttribute("name"));
+							sb2.insert(0,"/");
+						}						
+					}while(!isGlobal(namedContainer));
+					sb2.append(sb);
+					paths.add(sb2.toString());
+					referenceToBeSearched = namedContainer;
+					newSuffix = sb2.toString();
 				}
 				else{
 					referenceToBeSearched = ownerComplexType;
@@ -91,7 +104,7 @@ public class XPathCreator {
 		return element.getNodeName().equals("complexType");
 	}
 
-	private static boolean isGlobalElement(Element element) {
+	private static boolean isGlobal(Element element) {
 		return element.getParentNode().getNodeName().equals("schema");
 	}
 }

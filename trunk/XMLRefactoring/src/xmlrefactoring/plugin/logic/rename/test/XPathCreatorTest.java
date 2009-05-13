@@ -64,8 +64,10 @@ public class XPathCreatorTest {
 		Element internalElement = (Element) complexType.getElementsByTagName("element").item(0);
 		List<String> paths = XPathCreator.createElementPaths(internalElement);
 
+		Assert.assertEquals("Expected " + EXPECTED_PATHS.length + " paths, actual: "
+				+ paths.size(),EXPECTED_PATHS.length, paths.size());
 		for(String path : EXPECTED_PATHS)
-			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));		
+			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));	
 	}
 
 }
