@@ -1,49 +1,33 @@
 package xmlrefactoring.plugin.logic.rename;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
+import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
+import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.wst.common.core.search.SearchEngine;
-import org.eclipse.wst.common.core.search.SearchMatch;
-import org.eclipse.wst.common.core.search.pattern.QualifiedName;
-import org.eclipse.wst.common.core.search.pattern.SearchPattern;
-import org.eclipse.wst.common.core.search.scope.SearchScope;
-import org.eclipse.wst.common.core.search.scope.WorkspaceSearchScope;
-import org.eclipse.wst.common.core.search.util.CollectingSearchRequestor;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
-import org.eclipse.wst.xml.core.internal.search.XMLComponentReferencePattern;
 import org.eclipse.wst.xsd.ui.internal.refactor.RefactoringMessages;
 import org.eclipse.wst.xsd.ui.internal.refactor.TextChangeManager;
 import org.eclipse.wst.xsd.ui.internal.refactor.rename.ComponentRenameArguments;
 import org.eclipse.wst.xsd.ui.internal.refactor.rename.RenameComponentProcessor;
 import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
-import org.eclipse.wst.xsd.ui.internal.search.IXSDSearchConstants;
 import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDConcreteComponent;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 //Este participant é uma exceção na arquitetura, pois se integra à estrutura do editor,
 //sem extender as classes base da aplicação
