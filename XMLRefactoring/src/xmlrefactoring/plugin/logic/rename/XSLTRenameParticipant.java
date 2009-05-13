@@ -36,11 +36,11 @@ import org.eclipse.xsd.XSDSchema;
  */
 public class XSLTRenameParticipant extends RenameParticipant{
 
-//TODO Organizar para seguir alguma arquitetura	
-	
+	//TODO Organizar para seguir alguma arquitetura	
+
 	private TextChangeManager manager;
 	private XSDNamedComponent component;
-	
+
 	/**
 	 * The list of Xpaths to the element being renamed
 	 */
@@ -55,26 +55,13 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
-		
-		if(isElement(component)){
-			paths = new ArrayList<String>();
-			StringBuilder sb = new StringBuilder();
-			sb.append("/");
-			sb.append(component.getName());
-			
-			if(isGlobalElement(component))
-				paths.add(sb.toString());
-			else{
-				renameLocalElements();
-				XSDConcreteComponent container = component;
-				while(!(container instanceof XSDComplexTypeDefinition)){
-					container = container.getContainer();
-				}
-				XSDConcreteComponent complexType = container;
-				paths = XPathCreator.createElementPaths(complexType.getElement(), sb.toString());
-			}
-		}
-		
+
+		if(isGlobalElement(component))
+			renameLocalElements();
+
+		if(isElement(component))
+			paths = XPathCreator.createElementPaths(component.getElement());
+
 		return null;
 	}
 
