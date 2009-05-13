@@ -32,6 +32,14 @@ public class XPathCreatorTest {
 	private final String SCHEMA_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 	private final String SCHEMA_COMPLEX_TYPE = "complexType";
 	private final String CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH = "/PluginTest/src/xPathCreator/createElementPathsTest.xsd";
+	private final String[] EXPECTED_PATHS = {
+			"/globalElement/internalElement",
+			"/globalElement2/moreComplexElement/internalElement",
+			"/globalElement3/anonymousType/internalElement",
+			"/globalElement4/contentElement/internalElement",
+			"/globalElement4/internalElement"};/* ,
+			"/globalElement5/globalElement/internalElement"}; */
+	
 	
 	@Test
 	public void testCreateElementPaths() throws CoreException {
@@ -55,8 +63,8 @@ public class XPathCreatorTest {
 		Element element = attr.getOwnerElement();
 		List<String> paths = XPathCreator.createElementPaths(element, "/internalElement");
 
-		Assert.assertTrue(paths.contains("/globalElement/internalElement"));
-		
+		for(String path : EXPECTED_PATHS)
+			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));		
 	}
 
 }
