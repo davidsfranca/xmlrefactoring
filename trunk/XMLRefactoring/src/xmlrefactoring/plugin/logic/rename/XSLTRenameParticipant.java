@@ -55,7 +55,6 @@ public class XSLTRenameParticipant extends RenameParticipant{
 //TODO Organizar para seguir alguma arquitetura	
 	
 	private TextChangeManager manager;
-	private List<SearchMatch> matches;
 	private XSDNamedComponent component;
 	
 	/**
@@ -79,17 +78,16 @@ public class XSLTRenameParticipant extends RenameParticipant{
 			sb.append("/");
 			sb.append(component.getName());
 			
-			if(isLocalElement(component)){
+			if(isGlobalElement(component))
+				paths.add(sb.toString());
+			else{
 				renameLocalElements();
 				XSDConcreteComponent container = component;
 				while(!(container instanceof XSDComplexTypeDefinition)){
 					container = container.getContainer();
 				}
 				XSDConcreteComponent complexType = container;
-				searchReferences(complexType.getElement(), sb.toString());
-			}
-			else{
-				paths.add(sb.toString());
+				paths = XPathCreator.createElementPaths(complexType.getElement(), sb.toString());
 			}
 		}
 		
@@ -101,85 +99,21 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	}
 
 	/**
-	 * Return true if the component is a local element (isn`t a global one)
+	 * Return true if the component is a global element
 	 * @param component
 	 * @return
 	 */
-	private boolean isLocalElement(XSDNamedComponent component) {
+	private boolean isGlobalElement(XSDNamedComponent component) {
 		if(component.getContainer() instanceof XSDSchema)
-			return false;
-		else
 			return true;
-	}
-
-	/**
-	 * Search references to the especified complexType and create the XPaths corresponding to
-	 * the references.
-	 * @param complexTypeNode - the complexType which the references will be searched
-	 * @param suffix - the suffix of the XPath that takes to the element
-	 * @throws CoreException
-	 */
-	public void searchReferences(Element complexTypeNode, String suffix) throws CoreException{	
-
-		//Busca as referencias
-		String componentName = complexTypeNode.getAttribute("name");
-		String componentNamespace = complexTypeNode.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
-		QualifiedName elementQName = new QualifiedName(componentNamespace, componentName);
-		QualifiedName typeQName = new QualifiedName(complexTypeNode.getNamespaceURI(), complexTypeNode.getLocalName());
-
-		String fileStr = ((IDOMNode) complexTypeNode).getModel().getBaseLocation();
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
-
-		SearchScope scope = new WorkspaceSearchScope();
-		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
-		SearchPattern pattern = new XMLComponentReferencePattern(file, elementQName, typeQName);
-		SearchEngine searchEngine = new SearchEngine();
-		HashMap map = new HashMap();
-		searchEngine.search(pattern, requestor, scope, map, new NullProgressMonitor());
-		List<SearchMatch> results = requestor.getResults();
-
-		//Cria os paths
-
-		for(SearchMatch match : results){
-			if(match.getObject() instanceof Node){
-				Node node = (Node)match.getObject();
-				if(node instanceof Attr){
-					Attr attr = (Attr) node;
-					Element element = attr.getOwnerElement();
-					StringBuilder sb = new StringBuilder();
-					sb.append("/");
-					sb.append(element.getAttribute("name"));					
-					sb.append(suffix);
-					//Declaracao global de elemento
-					if(element.getParentNode().getNodeName().equals("schema")){
-						paths.add(sb.toString());
-					}
-					else{
-						Element containerElement = element;
-						while(!containerElement.getNodeName().equals("complexType")){
-							containerElement = (Element) containerElement.getParentNode();
-						}
-						Element ownerComplexType = containerElement;
-						if(ownerComplexType.getAttribute("name") == null){
-							//Tipo an™nimo
-							StringBuilder sb2 = new StringBuilder();
-							sb2.append("/");
-							sb2.append(((Element)ownerComplexType.getParentNode()).getAttribute("name"));
-							sb2.append(sb);	
-							paths.add(sb2.toString());
-						}
-						else
-							searchReferences(ownerComplexType, sb.toString());
-					}
-				}
-			}
-		}
-	}
+		else
+			return false;
+	}	
 
 	/**
 	 * Corrige bug de renomear elementos declarados em tipos (n‹o globais)	
 	 */
-	public void renameLocalElements(){
+	private void renameLocalElements(){
 
 		IDOMElement idomElement = (IDOMElement) component.getElement();
 		String fileStr = idomElement.getModel().getBaseLocation();
@@ -207,7 +141,6 @@ public class XSLTRenameParticipant extends RenameParticipant{
 			if(getArguments() instanceof ComponentRenameArguments){
 				// changeManger is passed in from the RenameComponentProcessor to collect all the changes
 				manager = getRenameArguments().getChangeManager();
-				matches = (List<SearchMatch>)((ComponentRenameArguments)getArguments()).getMatches().get(IXSDSearchConstants.XMLSCHEMA_NAMESPACE);
 			}
 			return true;
 		}		
