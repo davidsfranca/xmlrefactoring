@@ -56,7 +56,7 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
 
-		if(isGlobalElement(component))
+		if(!isGlobalElement(component))
 			renameLocalElements();
 
 		if(isElement(component))
