@@ -18,54 +18,71 @@ public class XPathCreator {
 	 * @param suffix - the suffix of the XPath that takes to the element
 	 * @throws CoreException 
 	 */
-	public static List<String> createElementPaths(Element element, String suffix) throws CoreException{
+	public static List<String> createElementPaths(Element element) throws CoreException{
 		List<String> complexTypeReferencePaths = new ArrayList<String>();
-		return createElementPaths(element, suffix, complexTypeReferencePaths);
+		return createElementPaths(element, "", complexTypeReferencePaths);
 	}
 
-	private static List<String> createElementPaths(Element elementNode, String suffix, List<String> paths) throws CoreException{
+	private static List<String> createElementPaths(Element element, String suffix, List<String> paths) throws CoreException{
 
-		List<SearchMatch> results = SearchUtil.searchReferences(elementNode);
+		StringBuilder sb = new StringBuilder();
+		sb.append("/");
+		sb.append(element.getAttribute("name"));					
+		sb.append(suffix);
 
-		for(SearchMatch match : results){
-			if(match.getObject() instanceof Node){
-				Node node = (Node)match.getObject();
-				if(node instanceof Attr){
-					Attr attr = (Attr) node;
-					Element element = attr.getOwnerElement();
-					StringBuilder sb = new StringBuilder();
-					sb.append("/");
-					sb.append(element.getAttribute("name"));					
-					sb.append(suffix);
+		Element referenceToBeSearched = null;
+		String newSuffix = null;
 
-					if(isGlobalElement(element)){
-						paths.add(sb.toString());
-					}
-					else{
-						Element containerElement = element;
-						while(!isComplexType(containerElement)){
-							containerElement = (Element) containerElement.getParentNode();
-						}
-						Element ownerComplexType = containerElement;
-						if(isExtension(element)){
-							createElementPaths(ownerComplexType, suffix, paths);
-						}else{							
-							if(ownerComplexType.getAttribute("name") == null){
-								//Anonymous type								
-								sb.insert(0,((Element)ownerComplexType.getParentNode()).getAttribute("name"));
-								sb.insert(0,("/"));
-								paths.add(sb.toString());
-							}
-							else
-								createElementPaths(ownerComplexType, sb.toString(), paths);
-						}
+		if(isGlobalElement(element)){
+			paths.add(sb.toString());
+		}
+		else{
+			//If it`s not a global element, then the reference is inside a complexType
+			Element containerElement = element;
+			while(!isComplexType(containerElement)){
+				containerElement = (Element) containerElement.getParentNode();
+			}
+			Element ownerComplexType = containerElement;
+			if(isExtension(element)){
+				referenceToBeSearched = ownerComplexType;
+				newSuffix = suffix;
+			}else{
+				//If it`s not an extension, then the reference is an element inside a complexType
+				if(isAnonymous(ownerComplexType)){					
+					sb.insert(0,((Element)ownerComplexType.getParentNode()).getAttribute("name"));
+					sb.insert(0,("/"));
+					paths.add(sb.toString());
+				}
+				else{
+					referenceToBeSearched = ownerComplexType;
+					newSuffix = sb.toString();
+				}
+
+			}
+		}		
+
+		//TODO Deve ser retirado quando método estiver completo
+		if(referenceToBeSearched != null){
+
+			List<SearchMatch> results = SearchUtil.searchReferences(referenceToBeSearched);
+
+			for(SearchMatch match : results){
+				if(match.getObject() instanceof Node){
+					Node node = (Node)match.getObject();
+					if(node instanceof Attr){
+						Attr attr = (Attr) node;
+						createElementPaths(attr.getOwnerElement(), newSuffix, paths);
 					}
 				}
 			}
 		}
 		return paths;
 	}
-	
+
+	private static boolean isAnonymous(Element element) {
+		return element.getAttribute("name") == null;
+	}
+
 	private static boolean isExtension(Element element) {
 		return element.getNodeName().equals("extension");
 	}
