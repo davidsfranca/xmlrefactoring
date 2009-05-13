@@ -3,6 +3,8 @@ package xmlrefactoring.plugin.logic.rename.test;
 import java.util.HashMap;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -25,14 +27,18 @@ import xmlrefactoring.plugin.logic.rename.XPathCreator;
 
 public class XPathCreatorTest {
 
+	private final String TEST_TYPE = "baseType";
+	private final String TEST_NAMESPACE = "http://www.example.org/createElementPathsTest";
+	private final String SCHEMA_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
+	private final String SCHEMA_COMPLEX_TYPE = "complexType";
+	private final String CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH = "/PluginTest/src/xPathCreator/createElementPathsTest.xsd";
+	
 	@Test
-	public void testCreateComplexTypeReferencePaths() throws CoreException {
-		String componentName = "zetype";
-		String componentNamespace = "http://www.example.org/NewXMLSchema";
-		QualifiedName elementQName = new QualifiedName(componentNamespace, componentName);
-		QualifiedName typeQName = new QualifiedName("http://www.w3.org/2001/XMLSchema", "complexType");
+	public void testCreateElementPaths() throws CoreException {
+		QualifiedName elementQName = new QualifiedName(TEST_NAMESPACE, TEST_TYPE);
+		QualifiedName typeQName = new QualifiedName(SCHEMA_NAMESPACE, SCHEMA_COMPLEX_TYPE);
 
-		String fileStr = "/PluginTest/src/NewXMLSchema.xsd";
+		String fileStr = CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH;
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
 
 		SearchScope scope = new WorkspaceSearchScope();
@@ -47,8 +53,9 @@ public class XPathCreatorTest {
 		Node node = (Node)match.getObject();
 		Attr attr = (Attr) node;
 		Element element = attr.getOwnerElement();
-		List<String> paths = XPathCreator.createElementPaths(element, "/internalzeelement");
-		
+		List<String> paths = XPathCreator.createElementPaths(element, "/internalElement");
+
+		Assert.assertTrue(paths.contains("/globalElement/internalElement"));
 		
 	}
 
