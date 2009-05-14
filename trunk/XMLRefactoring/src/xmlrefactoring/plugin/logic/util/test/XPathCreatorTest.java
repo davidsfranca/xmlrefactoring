@@ -1,4 +1,4 @@
-package xmlrefactoring.plugin.logic.rename.test;
+package xmlrefactoring.plugin.logic.util.test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import xmlrefactoring.plugin.logic.rename.XPathCreator;
+import xmlrefactoring.plugin.logic.util.XPathCreator;
 
 public class XPathCreatorTest {
 
@@ -35,13 +35,12 @@ public class XPathCreatorTest {
 	private final String SCHEMA_COMPLEX_TYPE = "complexType";
 	private final String CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH = "/PluginTest/src/xPathCreator/createElementPathsTest.xsd";
 	private final String[] EXPECTED_PATHS = {
-			"/globalElement/internalElement",
-			"/globalElement2/moreComplexElement/internalElement",
-			"/globalElement3/anonymousType/internalElement",
-			"/globalElement4/contentElement/internalElement",
-			"/globalElement4/internalElement",
-			"/globalElement5/globalElement/internalElement"};
-	
+			"/" + TEST_NAMESPACE + ":" + "globalElement/internalElement",
+			"/" + TEST_NAMESPACE + ":" + "globalElement2/moreComplexElement/internalElement",
+			"/" + TEST_NAMESPACE + ":" + "globalElement3/anonymousType/internalElement",
+			"/" + TEST_NAMESPACE + ":" + "globalElement4/contentElement/internalElement",
+			"/" + TEST_NAMESPACE + ":" + "globalElement4/internalElement",
+			"/" + TEST_NAMESPACE + ":" + "globalElement5/" + TEST_NAMESPACE + ":" + "globalElement/internalElement"};
 	
 	@Test
 	public void testCreateElementPaths() throws CoreException {

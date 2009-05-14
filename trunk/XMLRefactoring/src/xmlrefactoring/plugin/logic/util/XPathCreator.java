@@ -1,4 +1,4 @@
-package xmlrefactoring.plugin.logic.rename;
+package xmlrefactoring.plugin.logic.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,18 +25,13 @@ public class XPathCreator {
 
 	private static List<String> createElementPaths(Element element, String suffix, List<String> paths) throws CoreException{
 
-		StringBuilder namedElementPrefix = new StringBuilder();
-		namedElementPrefix.append("/");
-		namedElementPrefix.append(element.getAttribute("name"));					
-		namedElementPrefix.append(suffix);
+		Element referenceToBeSearched;
+		String newSuffix;
 
-		Element referenceToBeSearched = null;
-		String newSuffix = null;
-
-		if(isGlobal(element)){
-			paths.add(namedElementPrefix.toString());
+		if(isGlobal(element)){			
 			referenceToBeSearched = element;
-			newSuffix = namedElementPrefix.toString();
+			newSuffix = insertGlobalElement(element,suffix);
+			paths.add(newSuffix);
 		}
 		else{
 			//If it`s not a global element, then the reference is inside a complexType
@@ -51,54 +46,73 @@ public class XPathCreator {
 			}else{
 				//If it`s not an extension, then the reference is an element inside a complexType
 				if(isAnonymous(ownerComplexType)){
+					//Reference is inside an anonymous complexType					
 					Element namedContainer;
-					StringBuilder sb2 = new StringBuilder();
-					do{
-						Element anonymousContainer = ownerComplexType;
+					Element anonymousContainer = element;
+					newSuffix = suffix;
+					do{						
 						while(isAnonymous(anonymousContainer))
 							anonymousContainer = (Element)anonymousContainer.getParentNode();
 						namedContainer = anonymousContainer;
-						if(!isComplexType(namedContainer)){								
-							sb2.insert(0,namedContainer.getAttribute("name"));
-							sb2.insert(0,"/");
-						}						
-					}while(!isGlobal(namedContainer));					
-					if(isAnonymous(element)){
-						sb2.append(suffix);
-					}else{
-						sb2.append(namedElementPrefix);
-					}
-					paths.add(sb2.toString());
+						if(!isComplexType(namedContainer)){
+							if(isGlobal(namedContainer)){
+								newSuffix = insertGlobalElement(namedContainer, newSuffix);
+							}else{
+								newSuffix = insertLocalElement(namedContainer, newSuffix);							
+							}							
+						}	
+						anonymousContainer = (Element) namedContainer.getParentNode();
+					}while(!isGlobal(namedContainer));
+					paths.add(newSuffix);
 					referenceToBeSearched = namedContainer;
-					newSuffix = sb2.toString();
 				}
 				else{
+					//Reference is inside a named complexType
 					referenceToBeSearched = ownerComplexType;
-					if(isAnonymous(element)){
-						newSuffix = suffix;
-					}else{
-						newSuffix = namedElementPrefix.toString();
-					}
+					newSuffix = insertLocalElement(element, suffix);
 				}
 			}
 		}		
 
-		//TODO Deve ser retirado quando método estiver completo
-		if(referenceToBeSearched != null){
+		List<SearchMatch> results = SearchUtil.searchReferences(referenceToBeSearched);
 
-			List<SearchMatch> results = SearchUtil.searchReferences(referenceToBeSearched);
-
-			for(SearchMatch match : results){
-				if(match.getObject() instanceof Node){
-					Node node = (Node)match.getObject();
-					if(node instanceof Attr){
-						Attr attr = (Attr) node;
-						createElementPaths(attr.getOwnerElement(), newSuffix, paths);
-					}
+		for(SearchMatch match : results){
+			if(match.getObject() instanceof Node){
+				Node node = (Node)match.getObject();
+				if(node instanceof Attr){
+					Attr attr = (Attr) node;
+					createElementPaths(attr.getOwnerElement(), newSuffix, paths);
 				}
 			}
 		}
 		return paths;
+	}
+
+	private static String insertLocalElement(Element element, String suffix) {
+		if(isAnonymous(element))
+			return suffix;
+		StringBuilder namedElement = new StringBuilder();
+		namedElement.append("/");
+		namedElement.append(element.getAttribute("name"));					
+		namedElement.append(suffix);
+		return namedElement.toString();		
+	}
+
+	private static String insertGlobalElement(Element element, String suffix) {
+		if(isAnonymous(element))
+			return suffix;
+		StringBuilder namedElement = new StringBuilder();
+		namedElement.append("/");
+		namedElement.append(getTargetNamespace(element));
+		namedElement.append(":");
+		namedElement.append(element.getAttribute("name"));					
+		namedElement.append(suffix);
+		return namedElement.toString();
+	}
+
+	private static String getTargetNamespace(Element element) {
+		Element schemaElement = (Element) element.getOwnerDocument().getElementsByTagName("schema").item(0);		
+		return schemaElement.getAttribute("targetNamespace");
 	}
 
 	private static boolean isAnonymous(Element element) {

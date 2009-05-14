@@ -1,4 +1,4 @@
-package xmlrefactoring.plugin.logic.rename;
+package xmlrefactoring.plugin.logic.util;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +21,13 @@ import org.w3c.dom.Element;
 
 public class SearchUtil {
 	
-	public static List<SearchMatch> searchReferences(Element complexTypeNode) throws CoreException {
-		String componentName = complexTypeNode.getAttribute("name");
-		String componentNamespace = complexTypeNode.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
+	public static List<SearchMatch> searchReferences(Element element) throws CoreException {
+		String componentName = element.getAttribute("name");
+		String componentNamespace = element.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
 		QualifiedName elementQName = new QualifiedName(componentNamespace, componentName);
-		QualifiedName typeQName = new QualifiedName(complexTypeNode.getNamespaceURI(), complexTypeNode.getLocalName());
+		QualifiedName typeQName = new QualifiedName(element.getNamespaceURI(), element.getLocalName());
 
-		String fileStr = ((IDOMNode) complexTypeNode).getModel().getBaseLocation();
+		String fileStr = ((IDOMNode) element).getModel().getBaseLocation();
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
 
 		SearchScope scope = new WorkspaceSearchScope();
