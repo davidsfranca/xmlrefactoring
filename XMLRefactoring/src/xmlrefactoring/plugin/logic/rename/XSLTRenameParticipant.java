@@ -29,6 +29,8 @@ import org.eclipse.xsd.XSDConcreteComponent;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
 
+import xmlrefactoring.plugin.logic.util.XPathCreator;
+
 //Este participant é uma exceção na arquitetura, pois se integra à estrutura do editor,
 //sem extender as classes base da aplicação
 /**
