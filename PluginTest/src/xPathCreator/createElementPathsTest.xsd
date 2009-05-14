@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/createElementPathsTest" xmlns:tns="http://www.example.org/createElementPathsTest">
+
+    <element name="globalElement" type="tns:baseType"></element>
+    
+    <complexType name="baseType">
+    	<sequence>
+            <element name="internalElement" type="string"></element>
+        </sequence>
+    </complexType>
+    
+    <complexType name="moreComplexType">
+    <all>
+    	<element name="moreComplexElement" type="tns:baseType"/>
+    </all>
+    </complexType>
+
+    <element name="globalElement2" type="tns:moreComplexType"></element>
+
+    <element name="globalElement3">
+    	<complexType>
+    		<sequence>
+    			<element name="anonymousType" type="tns:baseType"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+
+    <element name="globalElement4" type="tns:complexContent"></element>
+    
+    <complexType name="complexContent">
+    <complexContent>
+    <extension base="tns:baseType">
+    	<sequence>
+    		<element name="contentElement" type="tns:baseType"></element>
+    	</sequence>
+    	</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="referenceType">
+    	<sequence>
+    		<element ref="tns:globalElement"></element>
+    	</sequence>
+    </complexType>
+    
+    <element name="globalElement5" type="tns:referenceType"></element>
+    
+</schema>
