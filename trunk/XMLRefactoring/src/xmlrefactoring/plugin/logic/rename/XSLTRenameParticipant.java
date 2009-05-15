@@ -29,6 +29,7 @@ import org.eclipse.xsd.XSDConcreteComponent;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
 
+import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
 
 //Este participant é uma exceção na arquitetura, pois se integra à estrutura do editor,
@@ -61,14 +62,10 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		if(!isGlobalElement(component))
 			renameLocalElements();
 
-		if(isElement(component))
-			paths = XPathCreator.createElementPaths(component.getElement());
+		if(SchemaElementVerifier.isElementOrAttribute(component.getElement()))
+			paths = XPathCreator.createPaths(component.getElement());
 
 		return null;
-	}
-
-	private boolean isElement(XSDNamedComponent component) {
-		return component.getElement().getNodeName().equals("element");
 	}
 
 	/**
