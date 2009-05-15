@@ -30,29 +30,43 @@ import xmlrefactoring.plugin.logic.util.XPathCreator;
 public class XPathCreatorTest {
 
 	private final String TEST_TYPE = "baseType";
+	private final String TEST_ATTRIBUTE_GROUP = "baseGroup";
 	private final String TEST_NAMESPACE = "http://www.example.org/createElementPathsTest";
 	private final String SCHEMA_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 	private final String SCHEMA_COMPLEX_TYPE = "complexType";
+	private final String SCHEMA_ATTRIBUTE_GROUP = "attributeGroup";
 	private final String CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH = "/PluginTest/src/xPathCreator/createElementPathsTest.xsd";
-	private final String[] EXPECTED_PATHS = {
+	private final String[] EXPECTED_ELEMENT_PATHS = {
 			"/" + TEST_NAMESPACE + ":" + "globalElement/internalElement",
 			"/" + TEST_NAMESPACE + ":" + "globalElement2/moreComplexElement/internalElement",
 			"/" + TEST_NAMESPACE + ":" + "globalElement3/anonymousType/internalElement",
 			"/" + TEST_NAMESPACE + ":" + "globalElement4/contentElement/internalElement",
 			"/" + TEST_NAMESPACE + ":" + "globalElement4/internalElement",
-			"/" + TEST_NAMESPACE + ":" + "globalElement5/" + TEST_NAMESPACE + ":" + "globalElement/internalElement"};
-	
+			"/" + TEST_NAMESPACE + ":" + "globalElement6/groupElement/internalElement"
+	};
+	private final String[] EXPECTED_ATTRIBUTE_PATHS = {
+			"/" + TEST_NAMESPACE + ":" + "globalElement/internalAttribute",
+			"/" + TEST_NAMESPACE + ":" + "globalElement2/moreComplexElement/internalAttribute",
+			"/" + TEST_NAMESPACE + ":" + "globalElement3/anonymousType/internalAttribute",
+			"/" + TEST_NAMESPACE + ":" + "globalElement4/contentElement/internalAttribute",
+			"/" + TEST_NAMESPACE + ":" + "globalElement4/internalAttribute",
+			"/" + TEST_NAMESPACE + ":" + "globalElement6/groupElement/internalAttribute"
+	};
+	private final String[] EXPECTED_ATTRIBUTE_GROUP_PATHS={
+			"/" + TEST_NAMESPACE + ":" + "globalElement7/internalAttribute"
+	};
+
 	@Test
 	public void testCreateElementPaths() throws CoreException {
-				
+
 		QualifiedName elementQName = new QualifiedName(TEST_NAMESPACE, TEST_TYPE);
 		QualifiedName typeQName = new QualifiedName(SCHEMA_NAMESPACE, SCHEMA_COMPLEX_TYPE);
 
 		String fileStr = CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH;
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
-	
+
 		file.refreshLocal(0, null);
-		
+
 		SearchScope scope = new WorkspaceSearchScope();
 		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
 		SearchPattern pattern = new XMLComponentDeclarationPattern(file, elementQName, typeQName);
@@ -61,17 +75,80 @@ public class XPathCreatorTest {
 		searchEngine.search(pattern, requestor, scope, map, new NullProgressMonitor());
 		List<SearchMatch> matches = requestor.getResults();
 		SearchMatch match = matches.get(0);
-		
+
 		Node node = (Node)match.getObject();
 		Attr attr = (Attr) node;
 		Element complexType = attr.getOwnerElement();
 		Element internalElement = (Element) complexType.getElementsByTagName("element").item(0);
-		List<String> paths = XPathCreator.createElementPaths(internalElement);
+		List<String> paths = XPathCreator.createPaths(internalElement);
 
-		Assert.assertEquals("Expected " + EXPECTED_PATHS.length + " paths, actual: "
-				+ paths.size(),EXPECTED_PATHS.length, paths.size());
-		for(String path : EXPECTED_PATHS)
+		Assert.assertEquals("Expected " + EXPECTED_ELEMENT_PATHS.length + " paths, actual: "
+				+ paths.size(),EXPECTED_ELEMENT_PATHS.length, paths.size());
+		for(String path : EXPECTED_ELEMENT_PATHS)
 			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));	
 	}
 
+	@Test
+	public void testCreateAttributePaths() throws CoreException{
+		QualifiedName elementQName = new QualifiedName(TEST_NAMESPACE, TEST_TYPE);
+		QualifiedName typeQName = new QualifiedName(SCHEMA_NAMESPACE, SCHEMA_COMPLEX_TYPE);
+
+		String fileStr = CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH;
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
+
+		file.refreshLocal(0, null);
+
+		SearchScope scope = new WorkspaceSearchScope();
+		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+		SearchPattern pattern = new XMLComponentDeclarationPattern(file, elementQName, typeQName);
+		SearchEngine searchEngine = new SearchEngine();
+		HashMap map = new HashMap();
+		searchEngine.search(pattern, requestor, scope, map, new NullProgressMonitor());
+		List<SearchMatch> matches = requestor.getResults();
+		SearchMatch match = matches.get(0);
+
+		Node node = (Node)match.getObject();
+		Attr attr = (Attr) node;
+		Element complexType = attr.getOwnerElement();
+		Element internalAttribute = (Element) complexType.getElementsByTagName("attribute").item(0);
+		List<String> paths = XPathCreator.createPaths(internalAttribute);
+
+		Assert.assertEquals("Expected " + EXPECTED_ATTRIBUTE_PATHS.length + " paths, actual: "
+				+ paths.size(),EXPECTED_ATTRIBUTE_PATHS.length, paths.size());
+		for(String path : EXPECTED_ATTRIBUTE_PATHS)
+			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));
+
+	}
+
+
+	@Test
+	public void testCreateAttributeGroupPaths() throws CoreException{
+		QualifiedName attributeGroupQName = new QualifiedName(TEST_NAMESPACE, TEST_ATTRIBUTE_GROUP);
+		QualifiedName attributeTypeQName = new QualifiedName(SCHEMA_NAMESPACE, SCHEMA_ATTRIBUTE_GROUP);
+
+		String fileStr = CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH;
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
+
+		file.refreshLocal(0, null);
+
+		SearchScope scope = new WorkspaceSearchScope();
+		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+		SearchPattern pattern = new XMLComponentDeclarationPattern(file, attributeGroupQName, attributeTypeQName);
+		SearchEngine searchEngine = new SearchEngine();
+		HashMap map = new HashMap();
+		searchEngine.search(pattern, requestor, scope, map, new NullProgressMonitor());
+		List<SearchMatch> matches = requestor.getResults();
+		SearchMatch match = matches.get(0);
+
+		Node node = (Node)match.getObject();
+		Attr attr = (Attr) node;
+		Element attributeGroup = attr.getOwnerElement();
+		Element internalAttribute = (Element) attributeGroup.getElementsByTagName("attribute").item(0);
+		List<String> paths = XPathCreator.createPaths(internalAttribute);
+
+		Assert.assertEquals("Expected " + EXPECTED_ATTRIBUTE_GROUP_PATHS.length + " paths, actual: "
+				+ paths.size(),EXPECTED_ATTRIBUTE_GROUP_PATHS.length, paths.size());
+		for(String path : EXPECTED_ATTRIBUTE_GROUP_PATHS)
+			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));
+	}
 }

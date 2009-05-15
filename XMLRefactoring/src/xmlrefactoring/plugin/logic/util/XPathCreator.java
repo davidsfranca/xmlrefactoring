@@ -5,12 +5,13 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.core.search.SearchMatch;
+import org.eclipse.wst.xsd.ui.internal.adt.design.editparts.ComplexTypeEditPart;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class XPathCreator {
-
+	
 	/**
 	 * Search references to the specified element and create the XPaths corresponding to
 	 * the references.
@@ -18,70 +19,60 @@ public class XPathCreator {
 	 * @param suffix - the suffix of the XPath that takes to the element
 	 * @throws CoreException 
 	 */
-	public static List<String> createElementPaths(Element element) throws CoreException{
+	public static List<String> createPaths(Element element) throws CoreException{
 		List<String> complexTypeReferencePaths = new ArrayList<String>();
-		return createElementPaths(element, "", complexTypeReferencePaths);
+		return createPaths(element, "", complexTypeReferencePaths);
 	}
 
-	private static List<String> createElementPaths(Element element, String suffix, List<String> paths) throws CoreException{
+	private static List<String> createPaths(Element element, String suffix, List<String> paths) throws CoreException{
 
-		Element referenceToBeSearched;
+		Element referenceToBeSearched = null;
 		String newSuffix;
 
-		if(isGlobal(element)){			
-			referenceToBeSearched = element;
+		if(SchemaElementVerifier.isGlobal(element)){
 			newSuffix = insertGlobalElement(element,suffix);
 			paths.add(newSuffix);
 		}
 		else{
-			//If it`s not a global element, then the reference is inside a complexType
-			Element containerElement = element;
-			while(!isComplexType(containerElement)){
-				containerElement = (Element) containerElement.getParentNode();
-			}
-			Element ownerComplexType = containerElement;
-			if(isExtension(element)){
-				referenceToBeSearched = ownerComplexType;
-				newSuffix = suffix;
-			}else{
-				//If it`s not an extension, then the reference is an element inside a complexType
-				if(isAnonymous(ownerComplexType)){
-					//Reference is inside an anonymous complexType					
-					Element namedContainer;
-					Element anonymousContainer = element;
-					newSuffix = suffix;
-					do{						
-						while(isAnonymous(anonymousContainer))
-							anonymousContainer = (Element)anonymousContainer.getParentNode();
-						namedContainer = anonymousContainer;
-						if(!isComplexType(namedContainer)){
-							if(isGlobal(namedContainer)){
-								newSuffix = insertGlobalElement(namedContainer, newSuffix);
-							}else{
-								newSuffix = insertLocalElement(namedContainer, newSuffix);							
-							}							
-						}	
-						anonymousContainer = (Element) namedContainer.getParentNode();
-					}while(!isGlobal(namedContainer));
-					paths.add(newSuffix);
-					referenceToBeSearched = namedContainer;
-				}
-				else{
-					//Reference is inside a named complexType
-					referenceToBeSearched = ownerComplexType;
-					newSuffix = insertLocalElement(element, suffix);
-				}
-			}
+			//If it`s not a global element, then the reference is inside a complexType or a group
+
+			//Search through the namedContainers of the element (complexType or elements)
+			//Adds the elements names to the path, stops when the container is a global element
+			Element namedContainer;
+			Element anonymousContainer = element;
+			newSuffix = suffix;
+			do{						
+				while(isAnonymous(anonymousContainer))
+					anonymousContainer = (Element)anonymousContainer.getParentNode();
+				namedContainer = anonymousContainer;
+				if(SchemaElementVerifier.isElementOrAttribute(namedContainer)){
+					//The container is an element
+					if(SchemaElementVerifier.isGlobal(namedContainer)){
+						//If the global container is an element,  adds the path
+						newSuffix = insertGlobalElement(namedContainer, newSuffix);
+						paths.add(newSuffix);
+					}else{
+						newSuffix = insertLocalElement(namedContainer, newSuffix);							
+					}							
+				}	
+				anonymousContainer = (Element) namedContainer.getParentNode();
+			}while(!SchemaElementVerifier.isGlobal(namedContainer));
+			//If the global container isn`t an element, should search for references
+			if(!SchemaElementVerifier.isElementOrAttribute(namedContainer))
+				referenceToBeSearched = namedContainer;
+
 		}		
 
-		List<SearchMatch> results = SearchUtil.searchReferences(referenceToBeSearched);
+		if(referenceToBeSearched != null){
+			List<SearchMatch> results = SearchUtil.searchReferences(referenceToBeSearched);
 
-		for(SearchMatch match : results){
-			if(match.getObject() instanceof Node){
-				Node node = (Node)match.getObject();
-				if(node instanceof Attr){
-					Attr attr = (Attr) node;
-					createElementPaths(attr.getOwnerElement(), newSuffix, paths);
+			for(SearchMatch match : results){
+				if(match.getObject() instanceof Node){
+					Node node = (Node)match.getObject();
+					if(node instanceof Attr){
+						Attr attr = (Attr) node;
+						createPaths(attr.getOwnerElement(), newSuffix, paths);
+					}
 				}
 			}
 		}
@@ -89,8 +80,6 @@ public class XPathCreator {
 	}
 
 	private static String insertLocalElement(Element element, String suffix) {
-		if(isAnonymous(element))
-			return suffix;
 		StringBuilder namedElement = new StringBuilder();
 		namedElement.append("/");
 		namedElement.append(element.getAttribute("name"));					
@@ -99,8 +88,6 @@ public class XPathCreator {
 	}
 
 	private static String insertGlobalElement(Element element, String suffix) {
-		if(isAnonymous(element))
-			return suffix;
 		StringBuilder namedElement = new StringBuilder();
 		namedElement.append("/");
 		namedElement.append(getTargetNamespace(element));
@@ -118,16 +105,6 @@ public class XPathCreator {
 	private static boolean isAnonymous(Element element) {
 		return element.getAttribute("name") == null;
 	}
+	
 
-	private static boolean isExtension(Element element) {
-		return element.getNodeName().equals("extension");
-	}
-
-	private static boolean isComplexType(Element element) {
-		return element.getNodeName().equals("complexType");
-	}
-
-	private static boolean isGlobal(Element element) {
-		return element.getParentNode().getNodeName().equals("schema");
-	}
 }
