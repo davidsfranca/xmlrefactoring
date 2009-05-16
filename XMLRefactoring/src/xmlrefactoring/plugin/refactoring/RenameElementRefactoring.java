@@ -11,7 +11,7 @@ public class RenameElementRefactoring extends Refactoring{
 	 */
 	private String newName;
 	
-	private static String RENAMEELEMTEMPLATE = "/templates/renameTag.vm";
+	private static String RENAMEELEMTEMPLATE = "/template/renameTag.vm";
 	
 
 	public RenameElementRefactoring(List<String> paths) {
