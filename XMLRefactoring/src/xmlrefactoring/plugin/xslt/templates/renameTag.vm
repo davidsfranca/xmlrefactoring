@@ -4,13 +4,6 @@
 		version="2.0"
 >
 
-<xsl:output method="xml" encoding="iso-8859-1" indent="yes"/>
-<xsl:strip-space elements="*" />
-
-#foreach($refactor in $refactors)	
-<xsl:include href="$refactor" />
-#end
-
 <!-- para os demais copia sem alterações para a saída -->
 <xsl:template match="*">
     <xsl:copy>
@@ -19,4 +12,17 @@
     </xsl:copy>
 </xsl:template>
 
+<!-- substitui uma tag por outra copiando os valores de 
+	atributo namesapce e descendentes-->
+<xsl:template match="$path">
+	<$newName>
+	    <xsl:copy-of select="@*"/>
+	    <xsl:for-each select="namespace::*">
+			<xsl:copy />
+		</xsl:for-each>
+		<xsl:apply-templates/>
+	</$newName>
+</xsl:template>
+
 </xsl:stylesheet>
+
