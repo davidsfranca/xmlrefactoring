@@ -10,7 +10,7 @@
 		</sequence>
 		<attribute name="internalAttribute" type="string"></attribute>
 	</complexType>
-
+	
 	<complexType name="moreComplexType">
 		<all>
 			<element name="moreComplexElement" type="tns:baseType" />

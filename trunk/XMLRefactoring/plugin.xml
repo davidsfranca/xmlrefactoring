@@ -23,6 +23,12 @@
                label="Rename"
                menubarPath="XMLRefactoring.RefactoringMenu/group1">
          </action>
+         <action
+               class="xmlrefactoring.plugin.ui.attr2elem.Attr2ElemAction"
+               id="XMLRefactoring.Attr2ElemAction"
+               label="Transform into element"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
       </viewerContribution>
    </extension>
    <extension
@@ -33,6 +39,18 @@
             name="XSLT Rename Participant">
          <enablement></enablement>
       </renameParticipant>
+   </extension>
+   <extension
+         point="XMLRefactoring.XMLRefactoringParticipant">
+      <Participant
+            Class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
+            class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
+            id="XSDAttr2ElemParticipant"
+            name="Attribute transformation into element refactoring schema participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
    </extension>
 
 </plugin>

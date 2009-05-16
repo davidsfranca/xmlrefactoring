@@ -49,14 +49,37 @@
 
    <element name="Participant">
       <complexType>
-         <attribute name="Class" type="string" use="required">
+         <sequence>
+            <element ref="enablement"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn="xmlrefactoring.plugin.logic.BaseParticipant:"/>
+               </appinfo>
+            </annotation>
+         </attribute>
       </complexType>
+   </element>
+
+   <element name="enablement" type="string">
    </element>
 
    <annotation>

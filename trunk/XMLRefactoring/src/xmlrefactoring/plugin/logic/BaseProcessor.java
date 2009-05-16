@@ -7,7 +7,6 @@ import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 
-import xmlrefactoring.plugin.Activator;
 import xmlrefactoring.plugin.PluginNamingConstants;
 
 public abstract class BaseProcessor extends RefactoringProcessor{
@@ -16,16 +15,39 @@ public abstract class BaseProcessor extends RefactoringProcessor{
 	
 	protected abstract BaseRefactoringArguments getRefactoringArguments();
 	
+	/**
+	 * The subclasses will have only one element that is targe of the refactoring
+	 * @return
+	 */
+	protected abstract Object getElement();
+	
 	@Override
 	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,
 			SharableParticipants sharedParticipants) throws CoreException {
 		ParticipantExtensionPoint pep = new ParticipantExtensionPoint(PluginNamingConstants.pluginID,
 				PluginNamingConstants.participantExtensionPointID, getParticipantType());
 		//TODO Verificar argumentos
-		String[] affectedNatures = null;
-		SharableParticipants shared = null;
+		
 		return pep.getParticipants(new RefactoringStatus(), this, 
-				getElements(), getRefactoringArguments(), null, affectedNatures, shared);
+				getElement(), getRefactoringArguments(), null, getAffectedNatures(), sharedParticipants);
 	}
+
+	/**
+	 * The processors will deal with only one element. This implementation forces the subclasses to implement
+	 * a method that returns this element.
+	 */
+	@Override
+	public Object[] getElements(){
+		return new Object[]{getElement()};
+	}
+	
+	
+
+	private String[] getAffectedNatures() {
+		//TODO Verificar natureza dos projetos que ser‹o afetados
+		return new String[] {"org.eclipse.jdt.core.javanature"};
+	}
+	
+	
 	
 }

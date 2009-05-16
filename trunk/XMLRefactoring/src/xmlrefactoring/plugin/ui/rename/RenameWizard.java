@@ -8,7 +8,7 @@ import xmlrefactoring.plugin.ui.BaseWizard;
 public class RenameWizard extends BaseWizard{
 
 	public RenameWizard(RenameRefactoring refactoring){
-		super(refactoring, RenameWizard.DIALOG_BASED_USER_INTERFACE);
+		super(refactoring, DIALOG_BASED_USER_INTERFACE);
 	}
 
 	@Override
