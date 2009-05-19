@@ -8,9 +8,10 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.wst.xsd.ui.internal.editor.ISelectionMapper;
-import org.eclipse.wst.xsd.ui.internal.editor.XSDEditorPlugin;
 import org.eclipse.wst.xsd.ui.internal.editor.XSDSelectionMapper;
 import org.eclipse.xsd.XSDNamedComponent;
+
+import xmlrefactoring.plugin.XMLRefactoringPlugin;
 
 public abstract class BaseAction implements IEditorActionDelegate {
 
@@ -26,7 +27,7 @@ public abstract class BaseAction implements IEditorActionDelegate {
 	public void run(IAction action) {
 		try{
 		RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(getWizard());
-		operation.run(XSDEditorPlugin.getShell(), "Refatoracao Teste Title");
+		operation.run(XMLRefactoringPlugin.getShell(), "Refatoracao Teste Title");
 		}
 		catch(InterruptedException e){
 			//TODO

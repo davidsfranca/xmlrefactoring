@@ -1,25 +1,46 @@
 package xmlrefactoring.plugin.ui.attr2elem;
 
-import org.eclipse.ltk.core.refactoring.participants.ProcessorBasedRefactoring;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.common.core.search.SearchMatch;
 import org.eclipse.xsd.XSDNamedComponent;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
+import xmlrefactoring.plugin.logic.attr2elem.Attr2ElemProcessor;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.SearchUtil;
 import xmlrefactoring.plugin.ui.BaseWizard;
 
-public class Attr2ElemWizard extends BaseWizard{
+public class Attr2ElemWizard extends BaseWizard<Attr2ElemProcessor>{
 
 	private XSDNamedComponent attribute;
 	
-	public Attr2ElemWizard(ProcessorBasedRefactoring refactoring, XSDNamedComponent namedComponent) {
-		super(refactoring, DIALOG_BASED_USER_INTERFACE | CHECK_INITIAL_CONDITIONS_ON_OPEN);
+	public Attr2ElemWizard(Attr2ElemProcessor processor, XSDNamedComponent namedComponent) {
+		super(processor, DIALOG_BASED_USER_INTERFACE | CHECK_INITIAL_CONDITIONS_ON_OPEN);
 		attribute = namedComponent;
 	}
 
 	@Override
 	protected void addUserInputPages() {
-		if(!SchemaElementVerifier.isGlobal(attribute.getElement())){
-			addPage(new ElementPositioningWizardPage());
-		}		
+		try {
+			for(SearchMatch match : SearchUtil.searchReferences(attribute.getElement())){
+				if(match.getObject() instanceof Node){
+					Node node = (Node)match.getObject();
+					if(node instanceof Attr){
+						Attr attr = (Attr) node;
+						Element reference = attr.getOwnerElement();
+						Element container = reference;
+						while(!SchemaElementVerifier.isComplexType(container))
+							container = (Element) container.getParentNode();
+						addPage(new ElementPositioningWizardPage(attribute, container));
+					}
+				}			
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

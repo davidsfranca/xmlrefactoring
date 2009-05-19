@@ -26,10 +26,10 @@ public abstract class BaseProcessor extends RefactoringProcessor{
 			SharableParticipants sharedParticipants) throws CoreException {
 		ParticipantExtensionPoint pep = new ParticipantExtensionPoint(PluginNamingConstants.pluginID,
 				PluginNamingConstants.participantExtensionPointID, getParticipantType());
-		//TODO Verificar argumentos
 		
 		return pep.getParticipants(new RefactoringStatus(), this, 
 				getElement(), getRefactoringArguments(), null, getAffectedNatures(), sharedParticipants);
+		
 	}
 
 	/**

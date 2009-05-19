@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: XMLRefactoring Plug-in
 Bundle-SymbolicName: XMLRefactoring;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: xmlrefactoring.plugin.Activator
+Bundle-Activator: xmlrefactoring.plugin.XMLRefactoringPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ltk.ui.refactoring;bundle-version="3.4.1",

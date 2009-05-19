@@ -68,5 +68,5 @@
 	<attributeGroup name="baseGroup">
 		<attribute name="internalAttribute"/>
 	</attributeGroup>
-
+	
 </schema>

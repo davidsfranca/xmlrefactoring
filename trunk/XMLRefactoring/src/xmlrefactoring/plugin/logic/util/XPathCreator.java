@@ -42,7 +42,7 @@ public class XPathCreator {
 			Element anonymousContainer = element;
 			newSuffix = suffix;
 			do{						
-				while(isAnonymous(anonymousContainer))
+				while(SchemaElementVerifier.isAnonymous(anonymousContainer))
 					anonymousContainer = (Element)anonymousContainer.getParentNode();
 				namedContainer = anonymousContainer;
 				if(SchemaElementVerifier.isElementOrAttribute(namedContainer)){
@@ -98,13 +98,12 @@ public class XPathCreator {
 	}
 
 	private static String getTargetNamespace(Element element) {
-		Element schemaElement = (Element) element.getOwnerDocument().getElementsByTagName("schema").item(0);		
+		Element schemaElement = (Element) element.getOwnerDocument().
+			getElementsByTagNameNS(element.getNamespaceURI(), "schema").item(0);		
 		return schemaElement.getAttribute("targetNamespace");
 	}
 
-	private static boolean isAnonymous(Element element) {
-		return element.getAttribute("name") == null;
-	}
+
 	
 
 }

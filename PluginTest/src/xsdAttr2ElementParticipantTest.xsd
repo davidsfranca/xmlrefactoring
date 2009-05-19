@@ -1,8 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://www.example.org/xsdAttr2ElementParticipantTest"
 	xmlns:tns="http://www.example.org/xsdAttr2ElementParticipantTest">
 
-	<attribute name="exemplo"></attribute>
-    <attribute name="exemplo2" type="string"/>
-</schema>
+	<xs:attribute name="exemplo"></xs:attribute>
+    <xs:attribute name="exemplo2" type="xs:string"/>
+
+    <xs:element name="element">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:choice>
+    				<xs:element name="option1"/>
+    				<xs:element name="option2"/>
+    			</xs:choice>
+    			<xs:choice>
+    				<xs:sequence>
+    					<xs:element name="first" />
+    					<xs:element name="second"/>
+    				</xs:sequence>
+    				<xs:sequence>
+    					<xs:element name="third"/>    				
+    				</xs:sequence>
+    			</xs:choice>
+    		</xs:sequence>
+    		<xs:attribute ref="tns:exemplo"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+
+    <xs:element name="element2">
+    	<xs:complexType>
+    		<xs:attribute ref="tns:exemplo"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+</xs:schema>
