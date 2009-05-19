@@ -14,9 +14,8 @@ public class Attr2ElemAction extends BaseAction{
 	@Override
 	protected RefactoringWizard getWizard() {
 		Attr2ElemProcessor processor = new Attr2ElemProcessor(getSelectedComponent());
-		ProcessorBasedRefactoring refactoring = new ProcessorBasedRefactoring(processor);
 		
-		return new Attr2ElemWizard(refactoring, getSelectedComponent());
+		return new Attr2ElemWizard(processor, getSelectedComponent());
 	}
 	
 	@Override

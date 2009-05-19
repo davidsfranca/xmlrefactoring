@@ -1,24 +1,25 @@
 package xmlrefactoring.plugin;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class XMLRefactoringPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "XMLRefactoring";
 
 	// The shared instance
-	private static Activator plugin;
+	private static XMLRefactoringPlugin plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public XMLRefactoringPlugin() {
 	}
 
 	/*
@@ -44,7 +45,7 @@ public class Activator extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static XMLRefactoringPlugin getDefault() {
 		return plugin;
 	}
 
@@ -57,5 +58,13 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+	
+	public static XMLRefactoringPlugin getPlugin(){
+		return plugin;
+	}
+	
+	public static Shell getShell(){
+		return getPlugin().getWorkbench().getActiveWorkbenchWindow().getShell();
 	}
 }

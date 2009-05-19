@@ -3,17 +3,20 @@ package xmlrefactoring.plugin.ui;
 import org.eclipse.ltk.core.refactoring.participants.ProcessorBasedRefactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
-public abstract class BaseWizard extends RefactoringWizard{
+import xmlrefactoring.plugin.logic.BaseProcessor;
 
-	private ProcessorBasedRefactoring refactoring;
+public abstract class BaseWizard<T extends BaseProcessor> extends RefactoringWizard{
+
+	private T processor;
 	
-	public BaseWizard(ProcessorBasedRefactoring refactoring, int flags) {
-		super(refactoring, flags);
-		this.refactoring = refactoring;
+	public BaseWizard(T processor, int flags) { 
+		super(new ProcessorBasedRefactoring(processor), flags);		
+		this.processor = processor;
 	}
 	
-	public ProcessorBasedRefactoring getProcessorBasedRefactoring(){
-		return refactoring;
+	protected T getProcessor(){
+		return processor;
 	}
+	
 
 }

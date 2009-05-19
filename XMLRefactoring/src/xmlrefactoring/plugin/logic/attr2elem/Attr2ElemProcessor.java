@@ -22,7 +22,7 @@ public class Attr2ElemProcessor extends BaseProcessor{
 	}
 	
 	@Override
-	protected BaseRefactoringArguments getRefactoringArguments() {
+	protected Attr2ElemRefactoringArguments getRefactoringArguments() {
 		return arguments;
 	}
 

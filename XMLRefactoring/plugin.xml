@@ -52,5 +52,38 @@
          </enablement>
       </Participant>
    </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <group
+            id="XMLRefactoring.group"
+            separatorsVisible="true">
+      </group>
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               label="XML Refactoring">
+            <command
+                  commandId="XMLRefactoring.Versioning"
+                  id="XMLRefactoring.Versioning"
+                  label="XML Versioning"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="xmlrefactoring.versioning.VersioningHandler"
+            commandId="XMLRefactoring.Versioning">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="XMLRefactoring.Versioning"
+            name="XML Versioning">
+      </command>
+   </extension>
 
 </plugin>

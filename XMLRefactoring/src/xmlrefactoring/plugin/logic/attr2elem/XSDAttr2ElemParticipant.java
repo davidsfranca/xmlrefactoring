@@ -1,5 +1,8 @@
 package xmlrefactoring.plugin.logic.attr2elem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -7,19 +10,25 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.Change;
+import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
-import org.eclipse.ltk.core.refactoring.TextFileChange;
+import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
-import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
-import org.eclipse.text.edits.TextEditGroup;
+import org.eclipse.wst.common.core.search.SearchMatch;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.eclipse.wst.xsd.ui.internal.refactor.TextChangeManager;
+import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
 import org.eclipse.xsd.XSDNamedComponent;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
+import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.SearchUtil;
 
 public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
 
@@ -39,27 +48,57 @@ public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
 		
 		if(SchemaElementVerifier.isGlobal(attribute)){
 			
-			IDOMElement idomElement = (IDOMElement) attribute;
-			String fileStr = idomElement.getModel().getBaseLocation();
-			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));		
-
-			TextFileChange textChange = new TextFileChange(fileStr, file);	
+			TextChangeManager manager = new TextChangeManager();
 			
-			textChange.setEdit(new MultiTextEdit());
+			transformDeclaration(manager);
+			transformReferences(manager);			
 			
-			TextEditGroup group = new TextEditGroup("Attribute into element transformation");
-			
-			int offset = idomElement.getStartOffset() + "<".length();
-			textChange.getEdit().addChild(replaceAttributeWithElement(idomElement, offset));
-			
-			if(idomElement.getEndStructuredDocumentRegion() != null){
-				int endTagOffset = idomElement.getEndStructuredDocumentRegion().getStartOffset() + "</".length();
-				textChange.getEdit().addChild(replaceAttributeWithElement(idomElement, endTagOffset));
-			}
-			
-			return textChange;
+			return new CompositeChange(PluginNamingConstants.ATTR_2_ELEM_TRANSF_NAME, 
+					manager.getAllChanges());
 		}
 		return null;
+	}
+	
+	private void transformDeclaration(TextChangeManager manager){
+		IDOMElement idomElement = (IDOMElement) attribute;
+		String fileStr = idomElement.getModel().getBaseLocation();
+		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
+		
+		TextChange textChange = manager.get(file); 
+		
+		TextEdit[] attr2elemTransformation = attr2elem(attribute);
+		
+		TextChangeCompatibility.addTextEdit(textChange, 
+				PluginNamingConstants.ATTR_2_ELEM_DEC_TRANSF_NAME , attr2elemTransformation);
+	}
+
+	private void transformReferences(TextChangeManager manager) throws CoreException {
+		for(SearchMatch match : SearchUtil.searchReferences(attribute)){
+			TextChange change = manager.get(match.getFile());
+			if(match.getObject() instanceof Node){
+				Node node = (Node)match.getObject();
+				if(node instanceof Attr){
+					Attr attr = (Attr) node;
+					TextEdit[] transformation = attr2elem(attr.getOwnerElement());
+					TextChangeCompatibility.addTextEdit(change, 
+							PluginNamingConstants.ATTR_2_ELEM_REF_TRANSF_NAME, transformation);
+				}	
+			}
+		}		
+	}
+
+	private TextEdit[] attr2elem(Element attribute) {
+		List<TextEdit> attr2elemTransformation = new ArrayList<TextEdit>();
+		IDOMElement idomElement = (IDOMElement) attribute;
+		
+		int offset = idomElement.getStartOffset() + "<".length();
+		attr2elemTransformation.add(replaceAttributeWithElement(idomElement, offset));
+		
+		if(idomElement.getEndStructuredDocumentRegion() != null){
+			int endTagOffset = idomElement.getEndStructuredDocumentRegion().getStartOffset() + "</".length();
+			attr2elemTransformation.add(replaceAttributeWithElement(idomElement, endTagOffset));
+		}
+		return attr2elemTransformation.toArray(new TextEdit[0]);
 	}
 
 	/**
@@ -69,8 +108,10 @@ public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
 	 * @return
 	 */
 	private TextEdit replaceAttributeWithElement(IDOMElement idomElement, int offset) {
-		if(idomElement.getPrefix() != null)
-			offset += idomElement.getPrefix().length();			
+		if(idomElement.getPrefix() != null){
+			offset += idomElement.getPrefix().length();
+			offset += ":".length();
+		}
 		return new ReplaceEdit(offset, SchemaElementVerifier.ATTRIBUTE.length(), SchemaElementVerifier.ELEMENT);		
 	}
 
