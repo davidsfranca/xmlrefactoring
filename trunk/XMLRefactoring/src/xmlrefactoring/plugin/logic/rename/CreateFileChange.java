@@ -15,6 +15,8 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.resource.DeleteResourceChange;
 
+import xmlrefactoring.plugin.xslt.FileControl;
+
 public class CreateFileChange extends Change{
 
 	private IFile file;
@@ -36,11 +38,13 @@ public class CreateFileChange extends Change{
 	@Override
 	public Change perform(IProgressMonitor pm) throws CoreException {
 		try{
-			FileWriter writer = new FileWriter(file.getLocation().toFile());
+			
+			FileWriter writer = new FileWriter(file.getLocation().toOSString());
 			template.merge(context, writer);
 		    writer.flush();
 		    writer.close();
-			//file.create(new ByteArrayInputStream(new byte[0]), true, null);
+		    FileControl.addToControl(file);
+		    
 		}catch (IOException e) {
 			// TODO: handle exception
 		}

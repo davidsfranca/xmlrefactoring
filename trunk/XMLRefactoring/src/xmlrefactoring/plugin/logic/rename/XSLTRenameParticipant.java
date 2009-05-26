@@ -1,7 +1,10 @@
 package xmlrefactoring.plugin.logic.rename;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -28,6 +31,7 @@ import org.eclipse.xsd.XSDComplexTypeDefinition;
 import org.eclipse.xsd.XSDConcreteComponent;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
+import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
@@ -41,7 +45,7 @@ import xmlrefactoring.plugin.xslt.XSLTWriter;
  */
 public class XSLTRenameParticipant extends RenameParticipant{
 
-	//TODO Organizar para seguir alguma arquitetura	
+	//TODO Organizar para seguir alguma arquitetura
 
 	private TextChangeManager manager;
 	private XSDNamedComponent component;
@@ -68,8 +72,20 @@ public class XSLTRenameParticipant extends RenameParticipant{
 			paths = XPathCreator.createPaths(component.getElement());
 		
 		RenameElementRefactoring refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName());
-		//Verificar a maneira adequada de encontrar o arquivo
-		Change fileChange = XSLTWriter.createXSL(refactoring,getRenameArguments().getChangeManager().getAllCompilationUnits()[0]);
+		
+		Change fileChange = null;
+		try {
+			fileChange = XSLTWriter.createXSL(refactoring,getRenameArguments().getChangeManager().getAllCompilationUnits()[0]);
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return fileChange;
 	}

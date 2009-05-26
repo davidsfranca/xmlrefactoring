@@ -1,6 +1,9 @@
 package xmlrefactoring.plugin.xslt;
 
+import java.io.IOException;
 import java.util.Properties;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -9,6 +12,7 @@ import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
+import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.logic.rename.CreateFileChange;
 import xmlrefactoring.plugin.refactoring.Refactoring;
@@ -24,8 +28,11 @@ public class XSLTWriter {
 	 * Creates the chane for creating the files
 	 * @param refactoring
 	 * @param schema
+	 * @throws IOException 
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
 	 */
-	public static CreateFileChange createXSL(Refactoring refactoring, IFile schema){
+	public static CreateFileChange createXSL(Refactoring refactoring, IFile schema) throws ParserConfigurationException, SAXException, IOException{
 		//Configures the Velocity
 		Properties p = new Properties();
 		p.setProperty( "resource.loader", "class" );
@@ -48,7 +55,9 @@ public class XSLTWriter {
 			e.printStackTrace();
 		}
 		
-		IPath newFilePath = FileControl.getNextPath(schema);
+		
+		IPath newFilePath;
+		newFilePath = FileControl.getNextPath(schema);
 		
 		CreateFileChange change = new CreateFileChange(newFilePath, context, template);
 		

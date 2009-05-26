@@ -1,8 +1,14 @@
 package xmlrefactoring.plugin.refactoring;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.runtime.directive.Foreach;
 
 /**
  * Abstract class which represents a generic refactoring
@@ -13,27 +19,30 @@ import org.apache.velocity.VelocityContext;
 public abstract class Refactoring {
 	
 	/**
-	 * Path where the changes will be applied
+	 * Paths where the changes will be applied
 	 */
-	private String path ;
-	
+	private List<QName[]> paths;
+
 	/**
 	 * Constructor 
 	 * Transform the array into a unique path
 	 */
+	
+	//TODO: Modificar para receber Lista de QName[]
+	//Metodo MOCK - considera que todos os paths tem apenas um qName
 	public Refactoring(List<String> paths){
-		
-		StringBuffer auxiliarBuffer = new StringBuffer(paths.get(0));
-		paths.remove(0);
-		
-		//Concatena cada pat individual em um œnico xPath
-		for(String singlePath:paths){
-			auxiliarBuffer.append("|");
-			auxiliarBuffer.append(singlePath);
+		setPaths(new ArrayList<QName[]>());
+
+		for(String path: paths){
+			int i = path.lastIndexOf(":");
+			QName[] qname = new QName[1];
+			if(i>0){
+				qname[0] = new QName(path.substring(0, i),path.substring(i+1));
+			}else{
+				qname[0] = new QName(path);
+			}
+			getPaths().add(qname);
 		}
-		
-		this.path = auxiliarBuffer.toString();
-		
 	}
 	
 	/**
@@ -42,19 +51,19 @@ public abstract class Refactoring {
 	 */
 	public abstract void fillContext(VelocityContext context);
 
-	
-	//Getters and Setters
-	public String getPath() {
-		return path;
-	}
-
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-	
 	public abstract String getTemplatePath();
 
+	//GETTERS AND SETTERS
+	public List<QName[]> getPaths() {
+		return paths;
+	}
+
+	public void setPaths(List<QName[]> paths) {
+		this.paths = paths;
+	}
+	
+	//Getters and Setters
+	
 	
 	
 	
