@@ -25,9 +25,10 @@ public class RenameElementRefactoring extends Refactoring{
 
 
 	@Override
+	//TODO Mock - alterar quando for mudada a versao do velocity
 	public void fillContext(VelocityContext context) {
 		context.put("newName",getNewName());
-		context.put("path", getPath());
+		context.put("paths", getPaths());
 	}
 	
 	

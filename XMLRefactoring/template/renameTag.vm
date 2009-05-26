@@ -13,15 +13,17 @@
 
 <!-- substitui uma tag por outra copiando os valores de 
 	atributo namesapce e descendentes-->
-<xsl:template match="$path">
-	<$newName>
+#foreach( $path in $paths )
+	<xsl:template match="/#foreach( $elem in $path )/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end">
+	<xsl:element name="{if (prefix-from-QName(node-name(.))) then concat(prefix-from-QName(node-name(.)), ':') else ''}$newName" namespace="{namespace-uri(.)}">
 	    <xsl:copy-of select="@*"/>
 	    <xsl:for-each select="namespace::*">
 			<xsl:copy />
 		</xsl:for-each>
 		<xsl:apply-templates/>
-	</$rename.newName>
+	</xsl:element>
 </xsl:template>
+#end
 
 </xsl:stylesheet>
 
