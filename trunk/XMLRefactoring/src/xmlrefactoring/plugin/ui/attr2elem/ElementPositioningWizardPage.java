@@ -13,6 +13,7 @@ import org.eclipse.xsd.XSDNamedComponent;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import xmlrefactoring.plugin.logic.attr2elem.ReferenceWithCompositor;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
 import xmlrefactoring.plugin.ui.BaseUserInputWizardPage;
 
@@ -62,6 +63,7 @@ public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
 			final Tree selectionTree = new Tree(composite, SWT.BORDER);
 
 			selectionTree.setSize(300,500);
+			createTreeBranch(selectionTree, null, rootCompositor);
 			selectionTree.addSelectionListener(new SelectionListener(){
 
 				TreeItem newNode;
@@ -94,10 +96,11 @@ public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
 						newNode = new TreeItem(parentNode, 0, newNodeIndex);
 					}
 					newNode.setText("NEW ELEMENT: " + attributeName);
+					ReferenceWithCompositor reference = new ReferenceWithCompositor(referenceComplexType,(Element)selectedItem.getData());
 					return newNode;
 				}
 			});
-			createTreeBranch(selectionTree, null, rootCompositor);
+			
 			
 		}
 		else{
