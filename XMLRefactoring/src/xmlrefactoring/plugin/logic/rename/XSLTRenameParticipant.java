@@ -1,9 +1,9 @@
 package xmlrefactoring.plugin.logic.rename;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
@@ -15,10 +15,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
-import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RenameParticipant;
-import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
@@ -27,8 +25,6 @@ import org.eclipse.wst.xsd.ui.internal.refactor.TextChangeManager;
 import org.eclipse.wst.xsd.ui.internal.refactor.rename.ComponentRenameArguments;
 import org.eclipse.wst.xsd.ui.internal.refactor.rename.RenameComponentProcessor;
 import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
-import org.eclipse.xsd.XSDComplexTypeDefinition;
-import org.eclipse.xsd.XSDConcreteComponent;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
 import org.xml.sax.SAXException;
@@ -53,7 +49,7 @@ public class XSLTRenameParticipant extends RenameParticipant{
 	/**
 	 * The list of Xpaths to the element being renamed
 	 */
-	private List<String> paths;
+	private List<List<QName>> paths;
 
 	@Override
 	public RefactoringStatus checkConditions(IProgressMonitor pm,

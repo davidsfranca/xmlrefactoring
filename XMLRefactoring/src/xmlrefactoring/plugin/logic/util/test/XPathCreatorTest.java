@@ -1,13 +1,14 @@
 package xmlrefactoring.plugin.logic.util.test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -36,24 +37,24 @@ public class XPathCreatorTest {
 	private final String SCHEMA_COMPLEX_TYPE = "complexType";
 	private final String SCHEMA_ATTRIBUTE_GROUP = "attributeGroup";
 	private final String CREATE_ELEMENT_PATHS_TEST_SCHEMA_PATH = "/PluginTest/src/xPathCreator/createElementPathsTest.xsd";
-	private final String[] EXPECTED_ELEMENT_PATHS = {
-			"/" + TEST_NAMESPACE + ":" + "globalElement/internalElement",
-			"/" + TEST_NAMESPACE + ":" + "globalElement2/moreComplexElement/internalElement",
-			"/" + TEST_NAMESPACE + ":" + "globalElement3/anonymousType/internalElement",
-			"/" + TEST_NAMESPACE + ":" + "globalElement4/contentElement/internalElement",
-			"/" + TEST_NAMESPACE + ":" + "globalElement4/internalElement",
-			"/" + TEST_NAMESPACE + ":" + "globalElement6/groupElement/internalElement"
+	private final QName[][] EXPECTED_ELEMENT_PATHS = {
+			{new QName(TEST_NAMESPACE, "globalElement"), new QName("internalElement")},
+			{new QName(TEST_NAMESPACE, "globalElement2"), new QName("moreComplexElement"), new QName("internalElement")},
+			{new QName(TEST_NAMESPACE, "globalElement3"), new QName("anonymousType"), new QName("internalElement")},
+			{new QName(TEST_NAMESPACE, "globalElement4"), new QName("contentElement"), new QName("internalElement")},
+			{new QName(TEST_NAMESPACE, "globalElement4"), new QName("internalElement")},
+			{new QName(TEST_NAMESPACE, "globalElement6"), new QName("groupElement"), new QName("internalElement")}
 	};
-	private final String[] EXPECTED_ATTRIBUTE_PATHS = {
-			"/" + TEST_NAMESPACE + ":" + "globalElement/internalAttribute",
-			"/" + TEST_NAMESPACE + ":" + "globalElement2/moreComplexElement/internalAttribute",
-			"/" + TEST_NAMESPACE + ":" + "globalElement3/anonymousType/internalAttribute",
-			"/" + TEST_NAMESPACE + ":" + "globalElement4/contentElement/internalAttribute",
-			"/" + TEST_NAMESPACE + ":" + "globalElement4/internalAttribute",
-			"/" + TEST_NAMESPACE + ":" + "globalElement6/groupElement/internalAttribute"
-	};
-	private final String[] EXPECTED_ATTRIBUTE_GROUP_PATHS={
-			"/" + TEST_NAMESPACE + ":" + "globalElement7/internalAttribute"
+	private final QName[][] EXPECTED_ATTRIBUTE_PATHS = {
+			{new QName(TEST_NAMESPACE, "globalElement"), new QName("internalAttribute")},
+			{new QName(TEST_NAMESPACE, "globalElement2"), new QName("moreComplexElement"),new QName("internalAttribute")},
+			{new QName(TEST_NAMESPACE, "globalElement3"), new QName("anonymousType"), new QName("internalAttribute")},
+			{new QName(TEST_NAMESPACE, "globalElement4"), new QName("contentElement"), new QName("internalAttribute")},
+			{new QName(TEST_NAMESPACE, "globalElement4"), new QName("internalAttribute")},
+			{new QName(TEST_NAMESPACE, "globalElement6"), new QName("groupElement"), new QName("internalAttribute")}
+	};	
+	private final QName[][] EXPECTED_ATTRIBUTE_GROUP_PATHS = {
+			{new QName(TEST_NAMESPACE, "globalElement7"), new QName("internalAttribute")}
 	};
 
 	@Test
@@ -80,12 +81,16 @@ public class XPathCreatorTest {
 		Attr attr = (Attr) node;
 		Element complexType = attr.getOwnerElement();
 		Element internalElement = (Element) complexType.getElementsByTagName("element").item(0);
-		List<String> paths = XPathCreator.createPaths(internalElement);
+		List<List<QName>> paths = XPathCreator.createPaths(internalElement);
 
 		Assert.assertEquals("Expected " + EXPECTED_ELEMENT_PATHS.length + " paths, actual: "
 				+ paths.size(),EXPECTED_ELEMENT_PATHS.length, paths.size());
-		for(String path : EXPECTED_ELEMENT_PATHS)
-			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));	
+		for(QName[] path : EXPECTED_ELEMENT_PATHS){
+			List pathList = new ArrayList<QName>();
+			for(QName qName : path)
+				pathList.add(qName);
+			Assert.assertTrue("Expected path " + pathList + " wasn`t created.",paths.contains(pathList));
+		}
 	}
 
 	@Test
@@ -111,13 +116,17 @@ public class XPathCreatorTest {
 		Attr attr = (Attr) node;
 		Element complexType = attr.getOwnerElement();
 		Element internalAttribute = (Element) complexType.getElementsByTagName("attribute").item(0);
-		List<String> paths = XPathCreator.createPaths(internalAttribute);
+		List<List<QName>> paths = XPathCreator.createPaths(internalAttribute);
 
 		Assert.assertEquals("Expected " + EXPECTED_ATTRIBUTE_PATHS.length + " paths, actual: "
 				+ paths.size(),EXPECTED_ATTRIBUTE_PATHS.length, paths.size());
-		for(String path : EXPECTED_ATTRIBUTE_PATHS)
-			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));
-
+		
+		for(QName[] path : EXPECTED_ATTRIBUTE_PATHS){
+			List pathList = new ArrayList<QName>();
+			for(QName qName : path)
+				pathList.add(qName);
+			Assert.assertTrue("Expected path " + pathList + " wasn`t created.",paths.contains(pathList));
+		}
 	}
 
 
@@ -144,11 +153,16 @@ public class XPathCreatorTest {
 		Attr attr = (Attr) node;
 		Element attributeGroup = attr.getOwnerElement();
 		Element internalAttribute = (Element) attributeGroup.getElementsByTagName("attribute").item(0);
-		List<String> paths = XPathCreator.createPaths(internalAttribute);
+		List<List<QName>> paths = XPathCreator.createPaths(internalAttribute);
 
 		Assert.assertEquals("Expected " + EXPECTED_ATTRIBUTE_GROUP_PATHS.length + " paths, actual: "
 				+ paths.size(),EXPECTED_ATTRIBUTE_GROUP_PATHS.length, paths.size());
-		for(String path : EXPECTED_ATTRIBUTE_GROUP_PATHS)
-			Assert.assertTrue("Expected path " + path + " wasn`t created.",paths.contains(path));
+		
+		for(QName[] path : EXPECTED_ATTRIBUTE_GROUP_PATHS){
+			List pathList = new ArrayList<QName>();
+			for(QName qName : path)
+				pathList.add(qName);
+			Assert.assertTrue("Expected path " + pathList + " wasn`t created.",paths.contains(pathList));
+		}
 	}
 }
