@@ -1,11 +1,13 @@
 package xmlrefactoring.plugin.logic.util;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+
+import javax.xml.namespace.QName;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.core.search.SearchMatch;
-import org.eclipse.wst.xsd.ui.internal.adt.design.editparts.ComplexTypeEditPart;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -19,15 +21,15 @@ public class XPathCreator {
 	 * @param suffix - the suffix of the XPath that takes to the element
 	 * @throws CoreException 
 	 */
-	public static List<String> createPaths(Element element) throws CoreException{
-		List<String> complexTypeReferencePaths = new ArrayList<String>();
-		return createPaths(element, "", complexTypeReferencePaths);
+	public static List<List<QName>> createPaths(Element element) throws CoreException{
+		List<List<QName>> complexTypeReferencePaths = new ArrayList<List<QName>>();
+		return createPaths(element, new LinkedList<QName>(), complexTypeReferencePaths);
 	}
 
-	private static List<String> createPaths(Element element, String suffix, List<String> paths) throws CoreException{
+	private static List<List<QName>> createPaths(Element element, List<QName> suffix, List<List<QName>> paths) throws CoreException{
 
 		Element referenceToBeSearched = null;
-		String newSuffix;
+		List<QName> newSuffix;
 
 		if(SchemaElementVerifier.isGlobal(element)){
 			newSuffix = insertGlobalElement(element,suffix);
@@ -79,22 +81,20 @@ public class XPathCreator {
 		return paths;
 	}
 
-	private static String insertLocalElement(Element element, String suffix) {
-		StringBuilder namedElement = new StringBuilder();
-		namedElement.append("/");
-		namedElement.append(element.getAttribute("name"));					
-		namedElement.append(suffix);
-		return namedElement.toString();		
+	private static List<QName> insertLocalElement(Element element, List<QName> suffix) {		
+		QName elementQName = new QName(element.getAttribute("name"));		
+		return insertElement(elementQName, suffix);		
 	}
 
-	private static String insertGlobalElement(Element element, String suffix) {
-		StringBuilder namedElement = new StringBuilder();
-		namedElement.append("/");
-		namedElement.append(getTargetNamespace(element));
-		namedElement.append(":");
-		namedElement.append(element.getAttribute("name"));					
-		namedElement.append(suffix);
-		return namedElement.toString();
+	private static List<QName> insertGlobalElement(Element element, List<QName> suffix) {
+		QName elementQName = new QName(getTargetNamespace(element), element.getAttribute("name"));			
+		return insertElement(elementQName, suffix);
+	}
+	
+	private static List<QName> insertElement(QName elementQName, List<QName> suffix){
+		List<QName> newPath = new LinkedList<QName>(suffix);
+		newPath.add(0, elementQName);
+		return newPath;
 	}
 
 	private static String getTargetNamespace(Element element) {

@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Label;
 public class VersioningWizardPage extends WizardPage{
 
 	private static final String pageName = "XML Versioning";
+	private Combo xmlTargetVersion;
 	
 	protected VersioningWizardPage() {
 		super(pageName);
@@ -25,13 +26,17 @@ public class VersioningWizardPage extends WizardPage{
 		
 		new Label(composite, SWT.None).setText("Enter with the desired version for the XML:");
 		
-		Combo xmlTargetVersion = new Combo(composite, SWT.DROP_DOWN);
+		xmlTargetVersion = new Combo(composite, SWT.DROP_DOWN);
 		for(int i = 1; i <= 3; i++){
 			for(int j = 0; j < 5; j++){
 				xmlTargetVersion.add(i + "." + j);
 			}
 		}
 		
+	}
+	
+	public String getSelectedVersion(){
+		return xmlTargetVersion.getItem(xmlTargetVersion.getSelectionIndex());
 	}
 
 }

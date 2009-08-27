@@ -2,6 +2,8 @@ package xmlrefactoring.plugin.refactoring;
 
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.apache.velocity.VelocityContext;
 
 public class RenameElementRefactoring extends Refactoring{
@@ -14,11 +16,11 @@ public class RenameElementRefactoring extends Refactoring{
 	private static String RENAMEELEMTEMPLATE = "/template/renameTag.vm";
 	
 
-	public RenameElementRefactoring(List<String> paths) {
+	public RenameElementRefactoring(List<List<QName>> paths) {
 		super(paths);
 	}
 	
-	public RenameElementRefactoring(List<String> paths, String newName) {
+	public RenameElementRefactoring(List<List<QName>> paths, String newName) {
 		super(paths);
 		setNewName(newName);
 	}
