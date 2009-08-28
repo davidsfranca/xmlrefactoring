@@ -12,7 +12,7 @@ import org.apache.velocity.VelocityContext;
  * @author marcela
  *
  */
-public abstract class Refactoring {
+public abstract class XMLRefactoring {
 	
 	/**
 	 * Paths where the changes will be applied
@@ -23,10 +23,7 @@ public abstract class Refactoring {
 	 * Constructor 
 	 * Transform the array into a unique path
 	 */
-	
-	//TODO: Modificar para receber Lista de QName[]
-	//Metodo MOCK - considera que todos os paths tem apenas um qName
-	public Refactoring(List<List<QName>> paths){
+	public XMLRefactoring(List<List<QName>> paths){
 		this.paths = paths;
 	}
 	
@@ -46,12 +43,5 @@ public abstract class Refactoring {
 	public void setPaths(List<List<QName>> paths) {
 		this.paths = paths;
 	}
-	
-	//Getters and Setters
-	
-	
-	
-	
-	
 
 }

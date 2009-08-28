@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.IPath;
 import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.logic.rename.CreateFileChange;
-import xmlrefactoring.plugin.refactoring.Refactoring;
+import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 
 /**
  * Class responsible for create the xsl file
@@ -32,7 +32,7 @@ public class XSLTWriter {
 	 * @throws SAXException 
 	 * @throws ParserConfigurationException 
 	 */
-	public static CreateFileChange createXSL(Refactoring refactoring, IFile schema) throws ParserConfigurationException, SAXException, IOException{
+	public static CreateFileChange createXSL(XMLRefactoring refactoring, IFile schema, IPath nextFilePath ) throws ParserConfigurationException, SAXException, IOException{
 		//Configures the Velocity
 		Properties p = new Properties();
 		p.setProperty( "resource.loader", "class" );
@@ -54,15 +54,17 @@ public class XSLTWriter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		IPath newFilePath;
-		newFilePath = FileControl.getNextPath(schema);
-		
-		CreateFileChange change = new CreateFileChange(newFilePath, context, template);
+			
+		CreateFileChange change = new CreateFileChange(nextFilePath, context, template);
 		
 		return change;
 		
+	}
+	
+	public static CreateFileChange createXSL(XMLRefactoring refactoring, IFile schema) throws ParserConfigurationException, SAXException, IOException{
+
+		IPath newFilePath = FileControl.getNextPath(schema);
+		return createXSL(refactoring,schema,newFilePath);
 	}
 
 	

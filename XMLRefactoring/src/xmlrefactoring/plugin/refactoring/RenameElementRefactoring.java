@@ -6,7 +6,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.velocity.VelocityContext;
 
-public class RenameElementRefactoring extends Refactoring{
+public class RenameElementRefactoring extends XMLRefactoring{
 	
 	/**
 	 * The new name for the element
@@ -27,7 +27,6 @@ public class RenameElementRefactoring extends Refactoring{
 
 
 	@Override
-	//TODO Mock - alterar quando for mudada a versao do velocity
 	public void fillContext(VelocityContext context) {
 		context.put("newName",getNewName());
 		context.put("paths", getPaths());
