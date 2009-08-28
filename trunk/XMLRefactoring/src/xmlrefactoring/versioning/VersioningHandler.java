@@ -10,7 +10,7 @@ import xmlrefactoring.plugin.XMLRefactoringPlugin;
 public class VersioningHandler extends AbstractHandler{
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		VersionigWizard wizard = new VersionigWizard();
+		VersionigWizard wizard = new VersionigWizard(null);
 		WizardDialog dialog = new WizardDialog
 		(XMLRefactoringPlugin.getShell(),wizard);
 		dialog.open();

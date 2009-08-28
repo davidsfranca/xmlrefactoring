@@ -30,6 +30,19 @@
                menubarPath="XMLRefactoring.RefactoringMenu/group1">
          </action>
       </viewerContribution>
+      <objectContribution
+            adaptable="false"
+            id="XMLRefactoring.ApplyChanges"
+            nameFilter="*.xsd"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="xmlrefactoring.versioning.ApplyChanges2XMLAction"
+               enablesFor="1"
+               id="XMLRefactoring.AppyChanges2XMLAction"
+               label="Apply Changes to XML"
+               menubarPath="refactor-slot">
+         </action>
+      </objectContribution>
    </extension>
    <extension
          point="org.eclipse.ltk.core.refactoring.renameParticipants">
