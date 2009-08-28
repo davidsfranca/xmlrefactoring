@@ -54,7 +54,7 @@ public class FileControl {
 	 * Tests if there is already an descriptor and 
 	 * @return
 	 */
-	public boolean isUnderVersionControl(IFile schemaFile){
+	public static boolean isUnderVersionControl(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
 		return container.exists(getDescriptorFilePath(schemaFile));
 	}
