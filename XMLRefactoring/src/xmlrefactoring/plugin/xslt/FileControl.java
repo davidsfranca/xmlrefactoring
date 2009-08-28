@@ -20,6 +20,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.eclipse.ltk.core.refactoring.TextChange;
+import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -181,7 +183,7 @@ public class FileControl {
 			//First file in the directory
 			IPath filePath= schemaFile.getParent().getFullPath().append(getFilePath(schemaFile, version, 0));
 			
-			XSLTWriter.createXSL(new VersioningRefactoring(null,0), schemaFile,filePath );
+	//		XSLTWriter.createXSL(new VersioningRefactoring(null,0), schemaFile,filePath );
 		
 		}catch (Exception e){//Catch exception if any
 		        System.err.println("Error: " + e.getMessage());

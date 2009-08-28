@@ -32,7 +32,6 @@ import org.xml.sax.SAXException;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
 import xmlrefactoring.plugin.refactoring.RenameElementRefactoring;
-import xmlrefactoring.plugin.xslt.XSLTWriter;
 
 //Este participant é uma exceção na arquitetura, pois se integra à estrutura do editor,
 //sem extender as classes base da aplicação
@@ -70,18 +69,18 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		RenameElementRefactoring refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName());
 		
 		Change fileChange = null;
-		try {
-			fileChange = XSLTWriter.createXSL(refactoring,getRenameArguments().getChangeManager().getAllCompilationUnits()[0]);
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//		//	fileChange = XSLTWriter.createXSL(refactoring,getRenameArguments().getChangeManager().getAllCompilationUnits()[0]);
+//		} catch (ParserConfigurationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SAXException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		return fileChange;
 	}
