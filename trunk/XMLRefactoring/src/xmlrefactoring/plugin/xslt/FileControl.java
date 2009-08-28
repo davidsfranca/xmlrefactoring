@@ -23,27 +23,32 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import xmlrefactoring.plugin.refactoring.VersioningRefactoring;
+
 
 public class FileControl {
 	
+	//CONSTANTS - PREFIX
+	private static final String DIRECTORYPREFIX = ".REF_";
+	private static final String VERSIONPREFIX = ".v_";
+	private static final String FILEPREFIX = ".ref_";
+	private static final String FILEEXTENSION = ".xsl";
+	private static final String DESCRIPTORPREFIX = "/.desc_";
+	private static final String DESCFILEEXTENSION = ".xml";
+	
+	//CONSTANTS - TAGS
+	private static final String DESCRIPTORTAG = "descriptor";
+	private static final String FILETAG = "lastFileNumber";
+	private static final String VERSIONTAG = "lastVersion";
+
 	public static IPath getNextPath(IFile schemaFile) throws ParserConfigurationException, SAXException, IOException{
 		
-		String SchemaFileName = schemaFile.getName().substring(0,schemaFile.getName().length()-4);
 		int[] versionAndFile = readDescriptor(schemaFile);
 		
-		
 		IContainer refactoringFolder = schemaFile.getParent();
+		String fileName = getFilePath(schemaFile, versionAndFile[0], versionAndFile[1]+1);
 		
-		StringBuffer fileName = new StringBuffer("/REF_");
-		//Takes the name without the extension
-		fileName.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
-		fileName.append("/v_");
-		fileName.append(versionAndFile[0]);
-		fileName.append("/ref_");
-		fileName.append(versionAndFile[1]+1);
-		fileName.append(".xsl");
-		
-		return refactoringFolder.getFullPath().append(fileName.toString());	
+		return refactoringFolder.getFullPath().append(fileName);	
 		
 	}
 	
@@ -55,27 +60,26 @@ public class FileControl {
 	public static void addToControl(IFile file) {
 		try{
 		//get fileNumber
-		String number = (file.getName().replace(".xsl","")).replace("ref_", "");
-		String version = file.getParent().getName().replace("v_","");
-		String fileName = file.getParent().getParent().getName().replace("REF_", "");
+		String number = (file.getName().replace(FILEEXTENSION,"")).replace(FILEPREFIX, "");
+		String version = file.getParent().getName().replace(VERSIONPREFIX,"");
+		String fileName = file.getParent().getParent().getName().replace(DIRECTORYPREFIX, "");
 	
-		String descriptionFile = file.getParent().getParent().getParent().getLocation()+"/desc_"+fileName+".xml";
+		String descriptionFile = file.getParent().getParent().getParent().getLocation()+DESCRIPTORPREFIX+fileName+DESCFILEEXTENSION;
 		
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 		Document doc = docBuilder.newDocument();
 		
-		Element descriptor = doc.createElement("descriptor");
-		Element lastVersion = doc.createElement("lastVersion");
+		Element descriptor = doc.createElement(DESCRIPTORTAG);
+		Element lastVersion = doc.createElement(VERSIONTAG);
 		lastVersion.setTextContent(version);
 		descriptor.appendChild(lastVersion);
-		Element lastFileNumer = doc.createElement("lastFileNumber");
+		Element lastFileNumer = doc.createElement(FILETAG);
 		lastFileNumer.setTextContent(number);
 		descriptor.appendChild(lastFileNumer);
 		doc.appendChild(descriptor);
 		
 		//TODO: Verificar como, usando XML substituir no arquivo, usar outra implementação do DOM
-		
 		saveXMLdoc(descriptionFile,doc);
 		
 		}catch (Exception e) {
@@ -86,16 +90,18 @@ public class FileControl {
 	}
 	
 	private static void saveXMLdoc(String fileName, Document doc){
+		
 		File xmlOutputFile = new File(fileName);
 		FileOutputStream fos = null;
 		Transformer transformer = null;
+		
 		try {
 			fos = new FileOutputStream(xmlOutputFile);
 		}
 		catch (FileNotFoundException e) {
 			System.out.println("Error occured: " + e.getMessage());
-			
 		}
+		
 		// Use a Transformer for output
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		try {
@@ -104,6 +110,7 @@ public class FileControl {
 		catch (TransformerConfigurationException e) {
 			System.out.println("Transformer configuration error: " + e.getMessage());
 		}
+		
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(fos);
 		// transform source into result will do save
@@ -127,44 +134,92 @@ public class FileControl {
 	 */	
 	private static int[] readDescriptor (IFile schemaFile) throws ParserConfigurationException, SAXException, IOException{
 		
+		int[] versionAndFile = new int[2];
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-		Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile));
-		
-		NodeList versionNode = doc.getElementsByTagName("lastVersion");
-		
-		int[] versionAndFile = new int[2];
-		
-		if(versionNode.getLength()!=1){
-			//TODO:error
-			System.out.println("Arquivo descritor Invalido");
-		}else{
-			versionAndFile[0] = (new Integer(versionNode.item(0).getTextContent())).intValue();
+		try{
+			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile));
+			
+			NodeList versionNode = doc.getElementsByTagName(VERSIONTAG);
+			
+			if(versionNode.getLength()!=1){
+				//TODO:error
+				System.out.println("Arquivo descritor Invalido");
+			}else{
+				versionAndFile[0] = (new Integer(versionNode.item(0).getTextContent())).intValue();
+			}
+			
+			NodeList fileNode = doc.getElementsByTagName(FILETAG);
+			
+			if(fileNode.getLength()!=1){
+				//TODO:error - trocar por excecao
+				System.out.println("Arquivo descritor Invalido");
+			}else{
+				versionAndFile[1] = (new Integer(fileNode.item(0).getTextContent())).intValue();
+			}
+		}catch(FileNotFoundException e){
+			//In this case, this is the first change in this XSD
+			//Create the Refactoring Dir
+			createVersioningDir(schemaFile,0);
+			versionAndFile[0] = 0;
+			versionAndFile[1] = 0;
 		}
-		
-		NodeList fileNode = doc.getElementsByTagName("lastFileNumber");
-		
-		if(fileNode.getLength()!=1){
-			//TODO:error - trocar por excecao
-			System.out.println("Arquivo descritor Invalido");
-		}else{
-			versionAndFile[1] = (new Integer(fileNode.item(0).getTextContent())).intValue();
-		}
-		
-		return versionAndFile;
-		
+		return versionAndFile;	
 	}
 	
 	private static String getDescriptorFilePath(IFile schemaFile){
 		//Build the descriptorFilePath
 		StringBuilder filePath = new StringBuilder(schemaFile.getParent().getLocation().toString());
-		filePath.append("/desc_");
+		filePath.append(DESCRIPTORPREFIX);
 		filePath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
-		filePath.append(".xml");
+		filePath.append(DESCFILEEXTENSION);
 		
 		return filePath.toString();
 	}
 
+	private static String getRefactoringDirPath(IFile schemaFile, int version){
+		//Build the descriptorFilePath
+		StringBuilder dirPath = new StringBuilder(schemaFile.getParent().getLocation().toString());
+		dirPath.append("/");
+		dirPath.append(DIRECTORYPREFIX);
+		dirPath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
+		dirPath.append("/");
+		dirPath.append(VERSIONPREFIX);
+		dirPath.append(version);
+		
+		return dirPath.toString();
+	}
+	
+	private static String getFilePath(IFile schemaFile, int version, int fileNumber){
+		StringBuffer fileName = new StringBuffer("/");
+		fileName.append(DIRECTORYPREFIX);
+		//Takes the name without the extension
+		fileName.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
+		fileName.append("/");
+		fileName.append(VERSIONPREFIX);
+		fileName.append(version);
+		fileName.append("/");
+		fileName.append(FILEPREFIX);
+		fileName.append(fileNumber);
+		fileName.append(FILEEXTENSION);
+		
+		return fileName.toString();
+	}
 
+	private static void createVersioningDir(IFile schemaFile, int version) throws ParserConfigurationException, SAXException, IOException{
+		String path = getRefactoringDirPath(schemaFile, version);
+		try{
+			(new File(path)).mkdirs();
+			
+			//First file in the directory
+			IPath filePath= schemaFile.getParent().getFullPath().append(getFilePath(schemaFile, version, 0));
+			
+			XSLTWriter.createXSL(new VersioningRefactoring(null,0), schemaFile,filePath );
+		
+		}catch (Exception e){//Catch exception if any
+		        System.err.println("Error: " + e.getMessage());
+		}
+		
+	}
 
 }
