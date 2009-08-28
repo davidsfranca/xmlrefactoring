@@ -18,6 +18,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.ltk.core.refactoring.Change;
+import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -40,19 +42,52 @@ public class FileControl {
 	private static final String DESCRIPTORTAG = "descriptor";
 	private static final String FILETAG = "lastFileNumber";
 	private static final String VERSIONTAG = "lastVersion";
-
-	public static IPath getNextPath(IFile schemaFile) throws ParserConfigurationException, SAXException, IOException{
+	
+	/**
+	 * Tests if there is already an descriptor and 
+	 * @return
+	 */
+	public boolean isUnderVersionControl(IFile schemaFile){
+		IContainer container = schemaFile.getParent();
+		//TODO: verify another way to do this
+		IPath descPath = container.getFullPath().append(getDescriptorFilePath(schemaFile));
+		return container.exists(descPath);
+	}
+	
+	/**
+	 * Return where the next refactoring file should be created
+	 * 
+	 * @param schemaFile
+	 * @param isInitial - flag to know if there is already an descriptr for that file or not
+	 * @return
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws IOException
+	 */
+	public static IPath getNextPath(IFile schemaFile, boolean isInitial) throws ParserConfigurationException, SAXException, IOException{
 		
 		int[] versionAndFile = readDescriptor(schemaFile);
 		
 		IContainer refactoringFolder = schemaFile.getParent();
-		String fileName = getFilePath(schemaFile, versionAndFile[0], versionAndFile[1]+1);
+		String fileName=null;
+		if(isInitial)
+			getFilePath(schemaFile, 0, 1);
+		else
+			getFilePath(schemaFile, versionAndFile[0], versionAndFile[1]+1);
 		
-		return refactoringFolder.getFullPath().append(fileName);	
-		
+		return refactoringFolder.getFullPath().append(fileName);		
 	}
 	
+	/**
+	 * Creates all the required structure to versioning the refactorings in a XSD file
+	 * @param schemaFile
+	 * @return
+	 */
+	public static CompositeChange addToVersionControl(IFile schemaFile){
+		return null;
+	}
 	
+	//TODO: change to receive a IPath and return a TextFileChange
 	/**
 	 * Changes the file Descriptor to include the newest file
 	 * @param file
@@ -88,44 +123,13 @@ public class FileControl {
 		
 		
 	}
-	
-	private static void saveXMLdoc(String fileName, Document doc){
-		
-		File xmlOutputFile = new File(fileName);
-		FileOutputStream fos = null;
-		Transformer transformer = null;
-		
-		try {
-			fos = new FileOutputStream(xmlOutputFile);
-		}
-		catch (FileNotFoundException e) {
-			System.out.println("Error occured: " + e.getMessage());
-		}
-		
-		// Use a Transformer for output
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		try {
-			transformer = transformerFactory.newTransformer();
-		}
-		catch (TransformerConfigurationException e) {
-			System.out.println("Transformer configuration error: " + e.getMessage());
-		}
-		
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(fos);
-		// transform source into result will do save
-		try {
-			transformer.transform(source, result);
-		}
-		catch (TransformerException e) {
-		      System.out.println("Error transform: " + e.getMessage());
-		}
-		
-	}
 
+
+	//TODO: remove the version inclusion
 	/**
 	 * Reads the descriptor file for that Schema 
 	 * Gets the last version and file Number
+	 * Only called when it is known that the descriptor file is available
 	 * @param schemaFile
 	 * @return
 	 * @throws ParserConfigurationException
@@ -167,6 +171,63 @@ public class FileControl {
 		return versionAndFile;	
 	}
 	
+	//TODO: change to only create the version directory
+	// It is called from the RefactoringParticipant and from the versioning participant
+	public static Change createVersioningDir(IFile schemaFile, int version) throws ParserConfigurationException, SAXException, IOException{
+		String path = getRefactoringDirPath(schemaFile, version);
+		try{
+			(new File(path)).mkdirs();
+			
+			//First file in the directory
+			IPath filePath= schemaFile.getParent().getFullPath().append(getFilePath(schemaFile, version, 0));
+			
+			XSLTWriter.createXSL(new VersioningRefactoring(null,0), schemaFile,filePath );
+		
+		}catch (Exception e){//Catch exception if any
+		        System.err.println("Error: " + e.getMessage());
+		}
+		return null;
+	}
+	
+	private static Change createRefactoringDir(IFile schemaFile){
+		return null;
+	}
+	
+	//TODO: Probably this is not required anymore
+	private static void saveXMLdoc(String fileName, Document doc){
+		
+		File xmlOutputFile = new File(fileName);
+		FileOutputStream fos = null;
+		Transformer transformer = null;
+		
+		try {
+			fos = new FileOutputStream(xmlOutputFile);
+		}
+		catch (FileNotFoundException e) {
+			System.out.println("Error occured: " + e.getMessage());
+		}
+		
+		// Use a Transformer for output
+		TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		try {
+			transformer = transformerFactory.newTransformer();
+		}
+		catch (TransformerConfigurationException e) {
+			System.out.println("Transformer configuration error: " + e.getMessage());
+		}
+		
+		DOMSource source = new DOMSource(doc);
+		StreamResult result = new StreamResult(fos);
+		// transform source into result will do save
+		try {
+			transformer.transform(source, result);
+		}
+		catch (TransformerException e) {
+		      System.out.println("Error transform: " + e.getMessage());
+		}
+		
+	}
+	
 	private static String getDescriptorFilePath(IFile schemaFile){
 		//Build the descriptorFilePath
 		StringBuilder filePath = new StringBuilder(schemaFile.getParent().getLocation().toString());
@@ -206,20 +267,5 @@ public class FileControl {
 		return fileName.toString();
 	}
 
-	private static void createVersioningDir(IFile schemaFile, int version) throws ParserConfigurationException, SAXException, IOException{
-		String path = getRefactoringDirPath(schemaFile, version);
-		try{
-			(new File(path)).mkdirs();
-			
-			//First file in the directory
-			IPath filePath= schemaFile.getParent().getFullPath().append(getFilePath(schemaFile, version, 0));
-			
-			XSLTWriter.createXSL(new VersioningRefactoring(null,0), schemaFile,filePath );
-		
-		}catch (Exception e){//Catch exception if any
-		        System.err.println("Error: " + e.getMessage());
-		}
-		
-	}
 
 }

@@ -63,7 +63,7 @@ public class XSLTWriter {
 	
 	public static CreateFileChange createXSL(XMLRefactoring refactoring, IFile schema) throws ParserConfigurationException, SAXException, IOException{
 
-		IPath newFilePath = FileControl.getNextPath(schema);
+		IPath newFilePath = FileControl.getNextPath(schema, true);
 		return createXSL(refactoring,schema,newFilePath);
 	}
 
