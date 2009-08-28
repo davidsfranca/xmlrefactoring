@@ -65,9 +65,6 @@ public class FileControl {
 	 * @param schemaFile
 	 * @param isInitial - flag to know if there is already an descriptr for that file or not
 	 * @return
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */
 	public static IPath getNextPath(IFile schemaFile, boolean isInitial) throws ParserConfigurationException, SAXException, IOException{
 		
@@ -87,11 +84,8 @@ public class FileControl {
 	 * Creates all the required structure to versioning the refactorings in a XSD file
 	 * @param schemaFile
 	 * @return
-	 * @throws IOException 
-	 * @throws SAXException 
-	 * @throws ParserConfigurationException 
 	 */
-	public static CompositeChange addToVersionControl(IFile schemaFile) throws ParserConfigurationException, SAXException, IOException{
+	public static CompositeChange addToVersionControl(IFile schemaFile){
 		CompositeChange allChanges = new CompositeChange(COMPOSITENAME);
 		
 		//Create descriptor file
@@ -106,6 +100,7 @@ public class FileControl {
 		
 		//Create version directory
 		allChanges.add(createVersioningDir(schemaFile, 0));
+
 		
 		//Create XSL that adds version
 		Change xslChange = new CreateXSLChange(new VersioningRefactoring(null,0),getFilePath(schemaFile, 0, 0));
@@ -152,23 +147,19 @@ public class FileControl {
 	}
 
 
-	//TODO: remove the version inclusion
 	/**
 	 * Reads the descriptor file for that Schema 
 	 * Gets the last version and file Number
 	 * Only called when it is known that the descriptor file is available
 	 * @param schemaFile
 	 * @return
-	 * @throws ParserConfigurationException
-	 * @throws SAXException
-	 * @throws IOException
 	 */	
-	private static int[] readDescriptor (IFile schemaFile) throws ParserConfigurationException, SAXException, IOException{
+	private static int[] readDescriptor (IFile schemaFile) {
 		
 		int[] versionAndFile = new int[2];
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 		try{
+			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile).toString());
 			
 			NodeList versionNode = doc.getElementsByTagName(VERSIONTAG);
@@ -188,19 +179,14 @@ public class FileControl {
 			}else{
 				versionAndFile[1] = (new Integer(fileNode.item(0).getTextContent())).intValue();
 			}
-		}catch(FileNotFoundException e){
-			//In this case, this is the first change in this XSD
-			//Create the Refactoring Dir
-			createVersioningDir(schemaFile,0);
-			versionAndFile[0] = 0;
-			versionAndFile[1] = 0;
+		}catch(Exception e){
+			//TODO: treat Eception
 		}
 		return versionAndFile;	
 	}
 	
-	//TODO: change to only create the version directory
 	// It is called from the RefactoringParticipant and from the versioning participant
-	public static Change createVersioningDir(IFile schemaFile, int version) throws ParserConfigurationException, SAXException, IOException{
+	public static Change createVersioningDir(IFile schemaFile, int version){
 		
 		IContainer container = schemaFile.getParent();
 		IPath versionDirPath = container.getFullPath().append(getVersionDirPath(schemaFile, version));
@@ -248,7 +234,7 @@ public class FileControl {
 		
 	}
 	
-	private static IPath getDescriptorFilePath(IFile schemaFile){
+	public static IPath getDescriptorFilePath(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
 		
 		//Build the descriptorFilePath
