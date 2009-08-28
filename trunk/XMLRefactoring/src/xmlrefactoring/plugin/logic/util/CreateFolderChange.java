@@ -12,7 +12,8 @@ import org.eclipse.ltk.core.refactoring.resource.ResourceChange;
 
 public class CreateFolderChange extends ResourceChange {
 
-	IFolder folder;
+	private IFolder folder;
+	private final String CREATE_FOLDER_CHANGE_NAME = "Create folder change";
 	
 	public CreateFolderChange(IPath path){
 		ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
@@ -25,8 +26,7 @@ public class CreateFolderChange extends ResourceChange {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return CREATE_FOLDER_CHANGE_NAME;
 	}
 
 	@Override
