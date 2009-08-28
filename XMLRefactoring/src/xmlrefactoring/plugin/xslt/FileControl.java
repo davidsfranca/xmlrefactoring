@@ -27,6 +27,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import xmlrefactoring.plugin.logic.util.CreateFolderChange;
+import xmlrefactoring.plugin.logic.util.CreateXSLChange;
 import xmlrefactoring.plugin.refactoring.VersioningRefactoring;
 
 
@@ -45,15 +47,16 @@ public class FileControl {
 	private static final String FILETAG = "lastFileNumber";
 	private static final String VERSIONTAG = "lastVersion";
 	
+	//CONSTANT - OTHERS
+	private static final String COMPOSITENAME = "Add to version control";
+	
 	/**
 	 * Tests if there is already an descriptor and 
 	 * @return
 	 */
 	public boolean isUnderVersionControl(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
-		//TODO: verify another way to do this
-		IPath descPath = container.getFullPath().append(getDescriptorFilePath(schemaFile));
-		return container.exists(descPath);
+		return container.exists(getDescriptorFilePath(schemaFile));
 	}
 	
 	/**
@@ -84,9 +87,31 @@ public class FileControl {
 	 * Creates all the required structure to versioning the refactorings in a XSD file
 	 * @param schemaFile
 	 * @return
+	 * @throws IOException 
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
 	 */
-	public static CompositeChange addToVersionControl(IFile schemaFile){
-		return null;
+	public static CompositeChange addToVersionControl(IFile schemaFile) throws ParserConfigurationException, SAXException, IOException{
+		CompositeChange allChanges = new CompositeChange(COMPOSITENAME);
+		
+		//Create descriptor file
+		IContainer container = schemaFile.getParent();
+		IPath descPath = container.getFullPath().append(getDescriptorFilePath(schemaFile));
+		//Change change = new CreateFileChange(descPath);
+		
+		//Create refactoring directory
+		IPath refDirPath = container.getFullPath().append(getRefactoringDirPath(schemaFile));
+		Change refDirCreation = new CreateFolderChange(refDirPath);
+		allChanges.add(refDirCreation);
+		
+		//Create version directory
+		allChanges.add(createVersioningDir(schemaFile, 0));
+		
+		//Create XSL that adds version
+		Change xslChange = new CreateXSLChange(new VersioningRefactoring(null,0),getFilePath(schemaFile, 0, 0));
+		allChanges.add(xslChange);
+		
+		return allChanges;
 	}
 	
 	//TODO: change to receive a IPath and return a TextFileChange
@@ -144,7 +169,7 @@ public class FileControl {
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 		try{
-			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile));
+			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile).toString());
 			
 			NodeList versionNode = doc.getElementsByTagName(VERSIONTAG);
 			
@@ -176,19 +201,12 @@ public class FileControl {
 	//TODO: change to only create the version directory
 	// It is called from the RefactoringParticipant and from the versioning participant
 	public static Change createVersioningDir(IFile schemaFile, int version) throws ParserConfigurationException, SAXException, IOException{
-		String path = getRefactoringDirPath(schemaFile, version);
-		try{
-			(new File(path)).mkdirs();
-			
-			//First file in the directory
-			IPath filePath= schemaFile.getParent().getFullPath().append(getFilePath(schemaFile, version, 0));
-			
-	//		XSLTWriter.createXSL(new VersioningRefactoring(null,0), schemaFile,filePath );
 		
-		}catch (Exception e){//Catch exception if any
-		        System.err.println("Error: " + e.getMessage());
-		}
-		return null;
+		IContainer container = schemaFile.getParent();
+		IPath versionDirPath = container.getFullPath().append(getVersionDirPath(schemaFile, version));
+		Change versionDirCreation = new CreateFolderChange(versionDirPath);
+		
+		return versionDirCreation;
 	}
 	
 	private static Change createRefactoringDir(IFile schemaFile){
@@ -230,43 +248,48 @@ public class FileControl {
 		
 	}
 	
-	private static String getDescriptorFilePath(IFile schemaFile){
+	private static IPath getDescriptorFilePath(IFile schemaFile){
+		IContainer container = schemaFile.getParent();
+		
 		//Build the descriptorFilePath
-		StringBuilder filePath = new StringBuilder(schemaFile.getParent().getLocation().toString());
-		filePath.append(DESCRIPTORPREFIX);
+		StringBuilder filePath = new StringBuilder(DESCRIPTORPREFIX);
 		filePath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
 		filePath.append(DESCFILEEXTENSION);
 		
-		return filePath.toString();
+		IPath descPath = container.getFullPath().append(getDescriptorFilePath(schemaFile));
+		
+		return descPath;
 	}
 
-	private static String getRefactoringDirPath(IFile schemaFile, int version){
+	private static IPath getRefactoringDirPath(IFile schemaFile){
+		IContainer container = schemaFile.getParent();
+		
 		//Build the descriptorFilePath
-		StringBuilder dirPath = new StringBuilder(schemaFile.getParent().getLocation().toString());
-		dirPath.append("/");
+		StringBuilder dirPath = new StringBuilder("/");
 		dirPath.append(DIRECTORYPREFIX);
 		dirPath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
 		dirPath.append("/");
+		
+		return container.getLocation().append(dirPath.toString());
+	}
+	
+	private static IPath getVersionDirPath(IFile schemaFile , int version){
+		IPath dir =  getRefactoringDirPath(schemaFile);
+		StringBuilder dirPath = new StringBuilder("/");
 		dirPath.append(VERSIONPREFIX);
 		dirPath.append(version);
 		
-		return dirPath.toString();
+		return dir.append(dirPath.toString());
+		
 	}
-	
-	private static String getFilePath(IFile schemaFile, int version, int fileNumber){
+		
+	private static IPath getFilePath(IFile schemaFile, int version, int fileNumber){
 		StringBuffer fileName = new StringBuffer("/");
-		fileName.append(DIRECTORYPREFIX);
-		//Takes the name without the extension
-		fileName.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
-		fileName.append("/");
-		fileName.append(VERSIONPREFIX);
-		fileName.append(version);
-		fileName.append("/");
 		fileName.append(FILEPREFIX);
 		fileName.append(fileNumber);
 		fileName.append(FILEEXTENSION);
 		
-		return fileName.toString();
+		return getVersionDirPath(schemaFile, version).append(fileName.toString());
 	}
 
 
