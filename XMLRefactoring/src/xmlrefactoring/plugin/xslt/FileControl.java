@@ -46,6 +46,7 @@ public class FileControl {
 	private static final String DESCRIPTORTAG = "descriptor";
 	private static final String FILETAG = "lastFileNumber";
 	private static final String VERSIONTAG = "lastVersion";
+	private static final String VERSIONSTAG = "versions";
 	
 	//CONSTANT - OTHERS
 	private static final String COMPOSITENAME = "Add to version control";
@@ -152,7 +153,7 @@ public class FileControl {
 	 * Gets the last version and file Number
 	 * Only called when it is known that the descriptor file is available
 	 * @param schemaFile
-	 * @return
+	 * @return [1]: version number, [2]: file number
 	 */	
 	private static int[] readDescriptor (IFile schemaFile) {
 		
@@ -185,6 +186,41 @@ public class FileControl {
 		return versionAndFile;	
 	}
 	
+	/**
+	 * Reads the descriptor file for that Schema 
+	 * Gets the last file Number for each version
+	 * @param schemafile
+	 * @return
+	 */
+	public static int[] getVersionsFromDescriptor(IFile schemaFile, int initialVersion, int stopVersion){
+/*
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+		try{
+			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();		
+			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile).toString());
+			doc
+			
+			NodeList versions = doc.getElementsByTagName(VERSIONSTAG);
+			
+			if(versions.getLength()!=1){
+				//TODO:error
+				System.out.println("Ainda não há versão fechada. Não pode aplicar mudança");
+			}else{
+				Node versionRoot = versions.item(0);
+				versionRoot.
+			}
+		} catch (ParserConfigurationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		return null;
+	}
 	// It is called from the RefactoringParticipant and from the versioning participant
 	public static Change createVersioningDir(IFile schemaFile, int version){
 		
@@ -194,10 +230,7 @@ public class FileControl {
 		
 		return versionDirCreation;
 	}
-	
-	private static Change createRefactoringDir(IFile schemaFile){
-		return null;
-	}
+
 	
 	//TODO: Probably this is not required anymore
 	private static void saveXMLdoc(String fileName, Document doc){
@@ -242,7 +275,7 @@ public class FileControl {
 		filePath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
 		filePath.append(DESCFILEEXTENSION);
 		
-		IPath descPath = container.getFullPath().append(getDescriptorFilePath(schemaFile));
+		IPath descPath = container.getFullPath().append(filePath.toString());
 		
 		return descPath;
 	}
