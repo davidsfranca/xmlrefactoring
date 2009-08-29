@@ -1,4 +1,4 @@
-package xmlrefactoring.versioning;
+package xmlrefactoring.applyChanges.ui;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;

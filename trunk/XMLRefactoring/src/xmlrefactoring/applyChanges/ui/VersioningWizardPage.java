@@ -1,4 +1,4 @@
-package xmlrefactoring.versioning;
+package xmlrefactoring.applyChanges.ui;
 
 import java.io.File;
 import java.io.IOException;
