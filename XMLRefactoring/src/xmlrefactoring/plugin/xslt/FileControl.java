@@ -14,6 +14,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -24,6 +29,7 @@ import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -46,7 +52,10 @@ public class FileControl {
 	private static final String DESCRIPTORTAG = "descriptor";
 	private static final String FILETAG = "lastFileNumber";
 	private static final String VERSIONTAG = "lastVersion";
-	private static final String VERSIONSTAG = "versions";
+	private static final String VERSIONATTR = "number";
+	
+	//CONSTANT - XPATH EXPRESSION
+	private static final String VERSIONXPATH = "descriptor/versions/version";
 	
 	//CONSTANT - OTHERS
 	private static final String COMPOSITENAME = "Add to version control";
@@ -192,23 +201,23 @@ public class FileControl {
 	 * @param schemafile
 	 * @return
 	 */
-	public static int[] getVersionsFromDescriptor(IFile schemaFile, int initialVersion, int stopVersion){
-/*
+	public static int[] getVersionsFromDescriptor(IFile schemaFile, int initialVersion, int lastVersion){
+
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+		int fileNumbers[] = new int[lastVersion-initialVersion];
 		try{
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();		
 			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile).toString());
-			doc
+
+			XPath xpath = XPathFactory.newInstance().newXPath();
+			XPathExpression expr;
 			
-			NodeList versions = doc.getElementsByTagName(VERSIONSTAG);
-			
-			if(versions.getLength()!=1){
-				//TODO:error
-				System.out.println("Ainda não há versão fechada. Não pode aplicar mudança");
-			}else{
-				Node versionRoot = versions.item(0);
-				versionRoot.
+			for(int i = initialVersion; i < lastVersion; i++){
+				expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
+				Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+				fileNumbers[i]=new Integer(file.getNodeValue());
 			}
+			
 		} catch (ParserConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -218,8 +227,11 @@ public class FileControl {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-		return null;
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return fileNumbers;
 	}
 	// It is called from the RefactoringParticipant and from the versioning participant
 	public static Change createVersioningDir(IFile schemaFile, int version){

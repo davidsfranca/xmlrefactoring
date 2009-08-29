@@ -36,7 +36,7 @@
             nameFilter="*.xsd"
             objectClass="org.eclipse.core.resources.IFile">
          <action
-               class="xmlrefactoring.versioning.ApplyChanges2XMLAction"
+               class="xmlrefactoring.applyChanges.ui.ApplyChanges2XMLAction"
                enablesFor="1"
                id="XMLRefactoring.AppyChanges2XMLAction"
                label="Apply Changes to XML"
@@ -87,7 +87,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="xmlrefactoring.versioning.VersioningHandler"
+            class="xmlrefactoring.applyChanges.ui.VersioningHandler"
             commandId="XMLRefactoring.Versioning">
       </handler>
    </extension>

@@ -1,4 +1,4 @@
-package xmlrefactoring.versioning;
+package xmlrefactoring.applyChanges.ui;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
