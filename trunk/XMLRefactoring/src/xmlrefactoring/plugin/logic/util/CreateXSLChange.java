@@ -8,19 +8,19 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.resource.DeleteResourceChange;
+import org.eclipse.ltk.core.refactoring.resource.ResourceChange;
 
 import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 import xmlrefactoring.plugin.xslt.FileControl;
 
-public class CreateXSLChange extends Change{
+public class CreateXSLChange extends ResourceChange{
 
 	private XMLRefactoring refactoring;
 	private IFile xslFile;
@@ -72,20 +72,12 @@ public class CreateXSLChange extends Change{
 	}
 
 	@Override
-	public Object getModifiedElement() {
-		return xslFile;
-	}
-
-	@Override
-	public void initializeValidationData(IProgressMonitor pm) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public RefactoringStatus isValid(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
-		return new RefactoringStatus();
+	protected IResource getModifiedResource() {
+		//Workaround: The validation demands that the resource`s change exists
+		IResource resource = xslFile;
+		while(!resource.exists())
+			resource = resource.getParent();
+		return resource;
 	}
 
 }

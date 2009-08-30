@@ -16,7 +16,7 @@ public abstract class BaseProcessor extends RefactoringProcessor{
 	protected abstract BaseRefactoringArguments getRefactoringArguments();
 	
 	/**
-	 * The subclasses will have only one element that is targe of the refactoring
+	 * The subclasses will have only one element that is target of the refactoring
 	 * @return
 	 */
 	protected abstract Object getElement();
