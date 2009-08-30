@@ -9,10 +9,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.Change;
+import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
@@ -29,9 +31,11 @@ import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
 import org.xml.sax.SAXException;
 
+import xmlrefactoring.plugin.logic.util.CreateXSLChange;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
 import xmlrefactoring.plugin.refactoring.RenameElementRefactoring;
+import xmlrefactoring.plugin.xslt.FileControl;
 
 //Este participant é uma exceção na arquitetura, pois se integra à estrutura do editor,
 //sem extender as classes base da aplicação
@@ -40,11 +44,11 @@ import xmlrefactoring.plugin.refactoring.RenameElementRefactoring;
  */
 public class XSLTRenameParticipant extends RenameParticipant{
 
-	//TODO Organizar para seguir alguma arquitetura
-
 	private TextChangeManager manager;
 	private XSDNamedComponent component;
 
+	private static final String XSLT_CHANGE_TEXT = "XSLT change";
+	
 	/**
 	 * The list of Xpaths to the element being renamed
 	 */
@@ -67,22 +71,26 @@ public class XSLTRenameParticipant extends RenameParticipant{
 			paths = XPathCreator.createPaths(component.getElement());
 		
 		RenameElementRefactoring refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName());
+			
+		String schemaPath = ((IDOMElement) component.getElement()).getModel().getBaseLocation();
+		IFile schemaFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(schemaPath));
 		
-		Change fileChange = null;
-//		try {
-//		//	fileChange = XSLTWriter.createXSL(refactoring,getRenameArguments().getChangeManager().getAllCompilationUnits()[0]);
-//		} catch (ParserConfigurationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-		return fileChange;
+		CompositeChange compositeChange = new CompositeChange(XSLT_CHANGE_TEXT);
+		IPath xslPath;
+
+		if(FileControl.isUnderVersionControl(schemaFile)){
+			xslPath = FileControl.getNextPath(schemaFile, false);	
+			Change incrementDescriptorLastFile = FileControl.incrementLastFile(schemaFile);
+			compositeChange.add(incrementDescriptorLastFile);
+		}
+		else{
+			compositeChange.add(FileControl.addToVersionControl(schemaFile));
+			xslPath = FileControl.getNextPath(schemaFile, true);
+		}
+		Change xslChange = new CreateXSLChange(refactoring, xslPath);
+		compositeChange.add(xslChange);	
+
+		return compositeChange;
 	}
 
 	/**

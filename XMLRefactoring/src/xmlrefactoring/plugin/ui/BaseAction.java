@@ -43,7 +43,7 @@ public abstract class BaseAction implements IEditorActionDelegate {
 			action.setEnabled(true);
 		}
 		else
-			action.setEnabled(false);		
+			action.setEnabled(false);
 	}
 	
 	protected XSDNamedComponent getSelectedComponent(){

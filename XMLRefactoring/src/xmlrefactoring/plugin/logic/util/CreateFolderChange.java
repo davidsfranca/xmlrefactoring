@@ -16,12 +16,16 @@ public class CreateFolderChange extends ResourceChange {
 	private final String CREATE_FOLDER_CHANGE_NAME = "Create folder change";
 	
 	public CreateFolderChange(IPath path){
-		ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
+		folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
 	}
 	
 	@Override
 	protected IResource getModifiedResource() {
-		return folder;
+		//Workaround: The validation demands that the resource`s change exists
+		IResource resource = folder;
+		while(!resource.exists())
+			resource = resource.getParent();
+		return resource;
 	}
 
 	@Override

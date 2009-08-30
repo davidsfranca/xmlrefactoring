@@ -15,5 +15,9 @@ public class PluginNamingConstants {
 	public static final String ATTR_2_ELEM_REF_TRANSF_NAME = "Attribute into element reference transformation";
 	
 	public static final String ATTR_2_ELEM_DEC_TRANSF_NAME = "Attribute into element declaration transformation";
+
+	public static final String RENAME_PROCESSOR_IDENTIFIER = "ElementRenameProcessor";
+
+	public static final String RENAME_PROCESSOR_NAME = "Element Rename";
 	
 }

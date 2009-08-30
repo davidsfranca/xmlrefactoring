@@ -9,8 +9,8 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.xsd.XSDNamedComponent;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
+import xmlrefactoring.plugin.logic.BaseParticipant;
 import xmlrefactoring.plugin.logic.BaseProcessor;
-import xmlrefactoring.plugin.logic.BaseRefactoringArguments;
 
 public class Attr2ElemProcessor extends BaseProcessor{	
 
@@ -71,7 +71,7 @@ public class Attr2ElemProcessor extends BaseProcessor{
 
 	@Override
 	protected Class getParticipantType() {
-		return Attr2ElemParticipant.class;
+		return BaseParticipant.class;
 	}
 
 }
