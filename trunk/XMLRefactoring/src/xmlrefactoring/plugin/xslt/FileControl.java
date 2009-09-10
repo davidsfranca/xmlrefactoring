@@ -73,12 +73,12 @@ public class FileControl {
 		DESCRIPTORTAG + ">";
 
 	/**
-	 * Tests if there is already an descriptor and 
+	 * Tests if there is already a descriptor and 
 	 * @return
 	 */
 	public static boolean isUnderVersionControl(IFile schemaFile){
-		IContainer container = schemaFile.getParent();
-		return container.exists(getDescriptorFilePath(schemaFile));
+		IContainer root = schemaFile.getWorkspace().getRoot();
+		return root.exists(getDescriptorFilePath(schemaFile));
 	}
 
 	/**
@@ -341,9 +341,10 @@ public class FileControl {
 			IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(FILETAG).item(0);
 
 			TextChange change = new TextFileChange("Last File Increase", descriptorFile);
-			int textContentOffset = lastFileTag.getStartEndOffset() + 1; 
-			Integer lastFileNewValue = Integer.parseInt(lastFileTag.getTextContent()) + 1;
-			TextEdit edit = new ReplaceEdit(textContentOffset, lastFileNewValue.toString().length(), lastFileNewValue.toString());
+			int textContentOffset = lastFileTag.getStartEndOffset();
+			Integer lastFileNewValue = Integer.parseInt(lastFileTag.getFirstChild().getNodeValue()) + 1;
+			int length = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
+			TextEdit edit = new ReplaceEdit(textContentOffset, length, lastFileNewValue.toString());
 			change.setEdit(edit);
 			return change;	
 		}
