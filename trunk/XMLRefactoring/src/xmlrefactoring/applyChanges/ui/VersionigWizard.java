@@ -14,7 +14,7 @@ public class VersionigWizard extends Wizard {
 	@Override
 	public boolean performFinish() {
 		System.out.println(page.getSelectedVersion());
-		System.out.println(page.getSelectedFile());
+		System.out.println(page.getSelectedXMLFile().getName());
 		return true;
 	}
 	
