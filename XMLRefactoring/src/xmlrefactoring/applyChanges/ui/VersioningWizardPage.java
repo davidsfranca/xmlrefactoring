@@ -40,7 +40,7 @@ public class VersioningWizardPage extends WizardPage{
 	private int schemaMaxVersion;
 	private int xmlVersion;
 	
-	private final int XML_PATH_WIDTH = 30, XML_PATH_HEIGHT = 50;
+	private final int XSD_NAME_WIDTH = 400, XSD_NAME_HEIGHT = 20, XML_PATH_WIDTH = 270, XML_PATH_HEIGHT = 20;
 
 	public VersioningWizardPage(IFile selectedSchema) {
 		super(pageName);
@@ -49,7 +49,7 @@ public class VersioningWizardPage extends WizardPage{
 	}
 
 	public void createControl(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
+		final Composite composite = new Composite(parent, SWT.NONE);
 		setControl(composite);		
 		GridLayout grid = new GridLayout();
 		grid.numColumns = 2;
@@ -65,26 +65,26 @@ public class VersioningWizardPage extends WizardPage{
 		if(selectedSchema != null){
 			String schemaName = selectedSchema.getName();
 			selectedSchemaText.setText(schemaName);
-			GC gc = new GC (selectedSchemaText);
-			FontMetrics fm = gc.getFontMetrics ();
-			int schemaTextWidth = schemaName.length() * fm.getAverageCharWidth();		
-			int schemaTextHeight = fm.getHeight();
-			selectedSchemaText.setSize(schemaTextWidth + 100, schemaTextHeight);
+			selectedSchemaText.setSize(XSD_NAME_WIDTH, XSD_NAME_HEIGHT);
 		}
 		
 		//XML Path
 		xmlPath = new Combo(composite, SWT.DROP_DOWN);
+		xmlPath.setText("Choose a XML to refactor               ");
+		xmlPath.setSize(XML_PATH_WIDTH, XML_PATH_HEIGHT);
 		
 		//Browse button
 		Button browseButton = new Button(composite, SWT.PUSH);
 		browseButton.setText(BROWSE_BUTTON_TEXT);
 		browseButton.addSelectionListener(new SelectionAdapter(){
 
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog dialog = new FileDialog(XMLRefactoringPlugin.getShell());
 				String fileString = dialog.open(); 
 				xmlPath.add(fileString);
 				xmlPath.select(0);
+				xmlPath.setSize(XML_PATH_WIDTH, XML_PATH_HEIGHT);
 				selectedXMLFile = new File(fileString);
 				try {
 					DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -93,6 +93,7 @@ public class VersioningWizardPage extends WizardPage{
 					String versionString = doc.getDocumentElement().getAttribute("schemaVersion");
 					xmlVersion = Integer.parseInt(versionString);
 					updateXMLTargetVersion();
+					getContainer().updateButtons();
 				} catch (SAXException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -110,7 +111,16 @@ public class VersioningWizardPage extends WizardPage{
 		new Label(composite, SWT.None).setText(VERSION_LABEL);
 		
 		//Version Combo
-		xmlTargetVersion = new Combo(composite, SWT.DROP_DOWN);				
+		xmlTargetVersion = new Combo(composite, SWT.DROP_DOWN);
+		xmlTargetVersion.setText("--");
+		xmlTargetVersion.addSelectionListener(new SelectionAdapter(){
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				getContainer().updateButtons();
+			}
+			
+		});
 	}
 	
 	private void updateXMLTargetVersion() {
@@ -119,12 +129,30 @@ public class VersioningWizardPage extends WizardPage{
 				xmlTargetVersion.add(i.toString());
 	}
 	
-	public String getSelectedVersion(){
-		return xmlTargetVersion.getItem(xmlTargetVersion.getSelectionIndex());
+	/**
+	 * Returns the Selected version to apply into the XML. If no selection was made return -1.
+	 */
+	public int getSelectedVersion(){
+		if(xmlTargetVersion.getSelectionIndex() != -1)
+			return Integer.parseInt(xmlTargetVersion.getItem(xmlTargetVersion.getSelectionIndex()));
+		else	
+			return -1;
 	}
 	
-	public String getSelectedFile(){
-		return xmlPath.getItem(xmlPath.getSelectionIndex());
+	public File getSelectedXMLFile(){
+		return selectedXMLFile;
+	}
+	
+	@Override
+	public boolean isPageComplete(){
+		if(!super.isPageComplete() ||
+			selectedSchema == null ||
+			getSelectedVersion() == -1 ||
+			!getSelectedXMLFile().exists()
+			)
+			return false;
+		else			
+			return true;
 	}
 
 }
