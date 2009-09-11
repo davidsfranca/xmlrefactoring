@@ -9,11 +9,12 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import xmlrefactoring.plugin.XMLRefactoringPlugin;
+import xmlrefactoring.plugin.xslt.FileControl;
 
 public class ApplyChanges2XMLAction implements IObjectActionDelegate{
 
 	private IFile selectedSchema;
-	
+
 	public void run(IAction action) {
 		VersionigWizard wizard = new VersionigWizard(selectedSchema);
 		WizardDialog dialog = new WizardDialog
@@ -27,18 +28,17 @@ public class ApplyChanges2XMLAction implements IObjectActionDelegate{
 			TreeSelection tree = (TreeSelection) selection;
 			if(tree.getFirstElement() instanceof IFile){
 				IFile selectedFile = (IFile) tree.getFirstElement();
-				
-				//TODO Verificar se Ž um schema sob controle de vers‹o
-				
-				action.setEnabled(true);
-				selectedSchema = selectedFile;
+				if(FileControl.isUnderVersionControl(selectedFile)){
+					action.setEnabled(true);
+					selectedSchema = selectedFile;
+				}
 			}
 		}		
 	}
 
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
