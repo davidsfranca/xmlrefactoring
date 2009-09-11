@@ -1,5 +1,6 @@
 package xmlrefactoring.plugin.logic.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
@@ -59,12 +60,15 @@ public class CreateXSLChange extends ResourceChange{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			FileWriter writer = new FileWriter(xslFile.getLocation().toOSString());
+			
+			xslFile.create(new ByteArrayInputStream("".getBytes()), true, pm);
+			FileWriter writer = new FileWriter(xslFile.getLocation().toFile());
 			template.merge(context, writer);
 		    writer.flush();
 		    writer.close();
 		    
 		}catch (IOException e) {
+			e.printStackTrace();
 			e.printStackTrace();
 		}
 		return new DeleteResourceChange(xslFile.getFullPath(),true);

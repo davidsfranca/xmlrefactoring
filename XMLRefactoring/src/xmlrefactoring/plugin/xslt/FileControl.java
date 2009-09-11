@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -68,8 +70,9 @@ public class FileControl {
 	
 	//CONSTANT - OTHERS
 	private static final String COMPOSITENAME = "Add to version control";
+	//TODO: mudar para arquivo
 	private static final String INITIAL_DESCRIPTOR = "<" + DESCRIPTORTAG + ">\n<" +
-		FILETAG + ">1</" + FILETAG + ">\n<" + VERSIONTAG + ">0</" + VERSIONTAG + ">\n<" +
+		FILETAG + ">1</" + FILETAG + ">\n<" + VERSIONTAG + ">0</" + VERSIONTAG + ">\n</" +
 		DESCRIPTORTAG + ">";
 
 	/**
@@ -92,14 +95,13 @@ public class FileControl {
 
 		int[] versionAndFile = readDescriptor(schemaFile);
 
-		IContainer refactoringFolder = schemaFile.getParent();
 		IPath fileName=null;
 		if(isInitial)
 			fileName = getFilePath(schemaFile, 0, 1);
 		else
 			fileName = getFilePath(schemaFile, versionAndFile[0], versionAndFile[1]+1);
 
-		return refactoringFolder.getFullPath().append(fileName);		
+		return fileName;		
 	}
 
 	/**
@@ -214,10 +216,11 @@ public class FileControl {
 	 * @param schemafile
 	 * @return
 	 */
-	public static int[] getVersionsFromDescriptor(IFile schemaFile, int initialVersion, int lastVersion){
-
+	public static List<IPath> getAllXSL(IFile schemaFile, int initialVersion, int lastVersion){
+		
+		List<IPath> files = new ArrayList<IPath>();
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		int fileNumbers[] = new int[lastVersion-initialVersion];
+		
 		try{
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();		
 			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile).toString());
@@ -228,7 +231,10 @@ public class FileControl {
 			for(int i = initialVersion; i < lastVersion; i++){
 				expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
 				Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-				fileNumbers[i]=new Integer(file.getNodeValue());
+				int maxFile = new Integer(file.getNodeValue());
+				for(int j = 0; j<maxFile; j++){
+					files.add(getFilePath(schemaFile, i, j));
+				}
 			}
 			
 		} catch (ParserConfigurationException e1) {
@@ -244,7 +250,7 @@ public class FileControl {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return fileNumbers;
+		return files;
 	}
 	// It is called from the RefactoringParticipant and from the versioning participant
 	public static Change createVersioningDir(IFile schemaFile, int version){
@@ -304,7 +310,6 @@ public class FileControl {
 	private static String buildDescriptorFilePath(IFile schemaFile){
 		//Build the descriptorFilePath
 		StringBuilder filePath = new StringBuilder(DESCRIPTORPREFIX);
-		//TODO Melhor maneira de se tratar das extens›es?
 		filePath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
 		filePath.append(DESCFILEEXTENSION);
 		
@@ -339,7 +344,8 @@ public class FileControl {
 		fileName.append(fileNumber);
 		fileName.append(FILEEXTENSION);
 
-		return getVersionDirPath(schemaFile, version).append(fileName.toString());
+		IPath dir = getVersionDirPath(schemaFile, version);
+		return dir.append(fileName.toString());
 	}
 
 	public static Change incrementLastFile(IFile schemaFile) throws CoreException{
