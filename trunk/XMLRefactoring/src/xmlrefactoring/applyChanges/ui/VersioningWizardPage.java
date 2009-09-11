@@ -12,6 +12,8 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -23,6 +25,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.XMLRefactoringPlugin;
+import xmlrefactoring.plugin.xslt.FileControl;
 
 public class VersioningWizardPage extends WizardPage{
 
@@ -42,23 +45,37 @@ public class VersioningWizardPage extends WizardPage{
 	public VersioningWizardPage(IFile selectedSchema) {
 		super(pageName);
 		this.selectedSchema = selectedSchema;
+		this.schemaMaxVersion = FileControl.readDescriptor(selectedSchema)[0];
 	}
 
 	public void createControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		setControl(composite);		
 		GridLayout grid = new GridLayout();
-		composite.setLayout(grid);
 		grid.numColumns = 2;
-				
+		composite.setLayout(grid);
+		
+		//Schema name label		
 		new Label(composite, SWT.None).setText(SCHEMA_LABEL);
+		
+		//Schema name
 		Text selectedSchemaText = new Text(composite, SWT.SIMPLE);
 		selectedSchemaText.setEditable(false);
 		//TODO Verificar como ficar‡ l—gica, colocado para manter compatibilidade com Handler
-		if(selectedSchemaText != null)
-			selectedSchemaText.setText(selectedSchema.getName());
+		if(selectedSchema != null){
+			String schemaName = selectedSchema.getName();
+			selectedSchemaText.setText(schemaName);
+			GC gc = new GC (selectedSchemaText);
+			FontMetrics fm = gc.getFontMetrics ();
+			int schemaTextWidth = schemaName.length() * fm.getAverageCharWidth();		
+			int schemaTextHeight = fm.getHeight();
+			selectedSchemaText.setSize(schemaTextWidth + 100, schemaTextHeight);
+		}
 		
-		xmlPath = new Combo(composite, SWT.DROP_DOWN);		
+		//XML Path
+		xmlPath = new Combo(composite, SWT.DROP_DOWN);
+		
+		//Browse button
 		Button browseButton = new Button(composite, SWT.PUSH);
 		browseButton.setText(BROWSE_BUTTON_TEXT);
 		browseButton.addSelectionListener(new SelectionAdapter(){
@@ -89,8 +106,10 @@ public class VersioningWizardPage extends WizardPage{
 			}			
 		});
 		
+		//Version label
 		new Label(composite, SWT.None).setText(VERSION_LABEL);
 		
+		//Version Combo
 		xmlTargetVersion = new Combo(composite, SWT.DROP_DOWN);				
 	}
 	

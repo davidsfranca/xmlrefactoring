@@ -63,10 +63,9 @@ public class CreateXSLChange extends ResourceChange{
 			template.merge(context, writer);
 		    writer.flush();
 		    writer.close();
-		    FileControl.addToControl(xslFile);
 		    
 		}catch (IOException e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return new DeleteResourceChange(xslFile.getFullPath(),true);
 	}

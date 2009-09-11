@@ -173,15 +173,15 @@ public class FileControl {
 	 * Gets the last version and file Number
 	 * Only called when it is known that the descriptor file is available
 	 * @param schemaFile
-	 * @return [1]: version number, [2]: file number
+	 * @return [0]: version number, [1]: file number
 	 */	
-	private static int[] readDescriptor (IFile schemaFile) {
+	public static int[] readDescriptor (IFile schemaFile) {
 
 		int[] versionAndFile = new int[2];
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		try{
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile).toString());
+			Document doc = docBuilder.parse (getDescriptorFileAbsolutePath(schemaFile).toFile());
 
 			NodeList versionNode = doc.getElementsByTagName(VERSIONTAG);
 
@@ -202,6 +202,7 @@ public class FileControl {
 			}
 		}catch(Exception e){
 			//TODO: treat Eception
+			e.printStackTrace();
 		}
 		return versionAndFile;	
 	}
@@ -291,16 +292,23 @@ public class FileControl {
 
 	public static IPath getDescriptorFilePath(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
-
+		IPath descPath = container.getFullPath().append(buildDescriptorFilePath(schemaFile));		
+		return descPath;
+	}
+	
+	private static IPath getDescriptorFileAbsolutePath(IFile schemaFile){
+		IContainer container = schemaFile.getParent();
+		return container.getLocation().append(buildDescriptorFilePath(schemaFile));
+	}
+	
+	private static String buildDescriptorFilePath(IFile schemaFile){
 		//Build the descriptorFilePath
 		StringBuilder filePath = new StringBuilder(DESCRIPTORPREFIX);
 		//TODO Melhor maneira de se tratar das extens›es?
 		filePath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
 		filePath.append(DESCFILEEXTENSION);
 		
-		IPath descPath = container.getFullPath().append(filePath.toString());
-		
-		return descPath;
+		return filePath.toString();
 	}
 
 	private static IPath getRefactoringDirPath(IFile schemaFile){
