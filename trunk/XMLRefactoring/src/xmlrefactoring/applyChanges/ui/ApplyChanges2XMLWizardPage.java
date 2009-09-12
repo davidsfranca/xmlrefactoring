@@ -12,8 +12,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -27,12 +26,13 @@ import org.xml.sax.SAXException;
 import xmlrefactoring.plugin.XMLRefactoringPlugin;
 import xmlrefactoring.plugin.xslt.FileControl;
 
-public class VersioningWizardPage extends WizardPage{
+public class ApplyChanges2XMLWizardPage extends WizardPage{
 
-	private static final String pageName = "XML Versioning";
+	private static final String PAGE_NAME = "Apply changes to XML input";
 	private static final String BROWSE_BUTTON_TEXT = "Browse...";
 	private static final String VERSION_LABEL = "Enter with the desired version for the XML:";
 	private static final String SCHEMA_LABEL = "Selected Schema:";
+	private static final String PAGE_TITLE = "Apply changes to XML";
 	private Combo xmlTargetVersion;
 	private Combo xmlPath;
 	private File selectedXMLFile;
@@ -42,8 +42,8 @@ public class VersioningWizardPage extends WizardPage{
 	
 	private final int XSD_NAME_WIDTH = 400, XSD_NAME_HEIGHT = 20, XML_PATH_WIDTH = 270, XML_PATH_HEIGHT = 20;
 
-	public VersioningWizardPage(IFile selectedSchema) {
-		super(pageName);
+	public ApplyChanges2XMLWizardPage(IFile selectedSchema) {
+		super(PAGE_NAME, PAGE_TITLE, null);
 		this.selectedSchema = selectedSchema;
 		this.schemaMaxVersion = FileControl.readDescriptor(selectedSchema)[0];
 	}
@@ -153,6 +153,11 @@ public class VersioningWizardPage extends WizardPage{
 			return false;
 		else			
 			return true;
+	}
+	
+	@Override
+	public Image getImage(){
+		return getWizard().getDefaultPageImage();
 	}
 
 }
