@@ -7,10 +7,17 @@ import org.eclipse.jface.wizard.WizardDialog;
 
 import xmlrefactoring.plugin.XMLRefactoringPlugin;
 
-public class VersioningHandler extends AbstractHandler{
+/**
+ * Primeira idéia de chamada do ApplyChanges. 
+ * Foi trocado pela seleção a partir do XSD, através de ApplyChanges2XMLAction.
+ * @author guilherme
+ *
+ */
+@Deprecated
+public class ApplyChanges2XMLHandler extends AbstractHandler{
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		VersionigWizard wizard = new VersionigWizard(null);
+		ApplyChanges2XMLWizard wizard = new ApplyChanges2XMLWizard(null);
 		WizardDialog dialog = new WizardDialog
 		(XMLRefactoringPlugin.getShell(),wizard);
 		dialog.open();

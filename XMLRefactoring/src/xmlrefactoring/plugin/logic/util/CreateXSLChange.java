@@ -69,7 +69,6 @@ public class CreateXSLChange extends ResourceChange{
 		    
 		}catch (IOException e) {
 			e.printStackTrace();
-			e.printStackTrace();
 		}
 		return new DeleteResourceChange(xslFile.getFullPath(),true);
 	}

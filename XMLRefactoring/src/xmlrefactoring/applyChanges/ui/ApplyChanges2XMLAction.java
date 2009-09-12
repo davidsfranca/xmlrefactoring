@@ -16,7 +16,7 @@ public class ApplyChanges2XMLAction implements IObjectActionDelegate{
 	private IFile selectedSchema;
 
 	public void run(IAction action) {
-		VersionigWizard wizard = new VersionigWizard(selectedSchema);
+		ApplyChanges2XMLWizard wizard = new ApplyChanges2XMLWizard(selectedSchema);
 		WizardDialog dialog = new WizardDialog
 		(XMLRefactoringPlugin.getShell(),wizard);
 		dialog.open();		
