@@ -17,7 +17,7 @@ public class ApplyChanges2XMLWizard extends Wizard {
 		setWindowTitle(APPLY_CHANGES_WIZARD_TITLE);
 		ImageDescriptor defaultImageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
 				XMLRefactoringPlugin.PLUGIN_ID, "icons/applychanges.png");
-		setDefaultPageImageDescriptor(defaultImageDescriptor);		
+		setDefaultPageImageDescriptor(defaultImageDescriptor);
 	}
 
 	@Override

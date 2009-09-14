@@ -125,7 +125,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 	
 	private void updateXMLTargetVersion() {
 		xmlTargetVersion.removeAll();
-		for(Integer i = xmlVersion + 1; i <= schemaMaxVersion; i++)
+		for(Integer i = xmlVersion + 1; i < schemaMaxVersion; i++)
 				xmlTargetVersion.add(i.toString());
 	}
 	
@@ -153,11 +153,6 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 			return false;
 		else			
 			return true;
-	}
-	
-	@Override
-	public Image getImage(){
-		return getWizard().getDefaultPageImage();
 	}
 
 }

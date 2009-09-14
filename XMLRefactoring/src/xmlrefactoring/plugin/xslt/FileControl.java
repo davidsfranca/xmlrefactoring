@@ -307,6 +307,11 @@ public class FileControl {
 		return container.getLocation().append(buildDescriptorFilePath(schemaFile));
 	}
 	
+	public static IFile getDescriptorFile(IFile schemaFile){
+		IPath path = getDescriptorFilePath(schemaFile);
+		return ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+	}
+	
 	private static String buildDescriptorFilePath(IFile schemaFile){
 		//Build the descriptorFilePath
 		StringBuilder filePath = new StringBuilder(DESCRIPTORPREFIX);
@@ -367,6 +372,28 @@ public class FileControl {
 			//TODO Exceção
 		}
 		return null;
+	}
+
+	public static Change incrementVersion(IFile schemaFile) throws CoreException {
+		try{
+			IFile descriptorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getDescriptorFilePath(schemaFile));
+			IDOMModel model =  (IDOMModel) StructuredModelManager.getModelManager().getModelForEdit(descriptorFile);
+			IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(VERSIONTAG).item(0);
+
+			TextChange change = new TextFileChange("Version Increase", descriptorFile);
+			int textContentOffset = lastFileTag.getStartEndOffset();
+			Integer lastFileNewValue = Integer.parseInt(lastFileTag.getFirstChild().getNodeValue()) + 1;
+			int length = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
+			TextEdit edit = new ReplaceEdit(textContentOffset, length, lastFileNewValue.toString());
+			change.setEdit(edit);
+			return change;	
+		}
+		catch(IOException e){
+			e.printStackTrace();
+			//TODO Exceção
+		}
+		return null;
+		
 	}
 
 }

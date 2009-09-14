@@ -43,6 +43,19 @@
                menubarPath="refactor-slot">
          </action>
       </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="XMLRefactoring.ChangeVersion"
+            nameFilter="*.xsd"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="xmlrefactoring.changeVersion.ui.ChangeVersionAction"
+               enablesFor="1"
+               id="XMLRefactoring.ChangeVersionAction"
+               label="Change Version"
+               menubarPath="refactor-slot">
+         </action>
+      </objectContribution>
    </extension>
    <extension
          point="org.eclipse.ltk.core.refactoring.renameParticipants">
