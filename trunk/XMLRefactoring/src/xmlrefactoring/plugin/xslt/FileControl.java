@@ -216,24 +216,26 @@ public class FileControl {
 	 * @param schemafile
 	 * @return
 	 */
-	public static List<IPath> getAllXSL(IFile schemaFile, int initialVersion, int lastVersion){
+	public static List<File> getAllXSL(IFile schemaFile, int initialVersion, int lastVersion){
 		
-		List<IPath> files = new ArrayList<IPath>();
+		List<File> files = new ArrayList<File>();
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+		IPath root = schemaFile.getWorkspace().getRoot().getLocation();
 		
 		try{
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();		
-			Document doc = docBuilder.parse (getDescriptorFilePath(schemaFile).toString());
+			Document doc = docBuilder.parse (getDescriptorFileAbsolutePath(schemaFile).toFile());
 
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			XPathExpression expr;
 			
-			for(int i = initialVersion; i < lastVersion; i++){
+			for(int i = initialVersion; i <= lastVersion; i++){
 				expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
 				Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-				int maxFile = new Integer(file.getNodeValue());
+				int maxFile = new Integer(file.getFirstChild().getNodeValue());
 				for(int j = 0; j<maxFile; j++){
-					files.add(getFilePath(schemaFile, i, j));
+					//TODO:Manipula‹o de arquivo bem feia - mudar
+					files.add(root.append(getFilePath(schemaFile, i, j)).toFile());
 				}
 			}
 			
