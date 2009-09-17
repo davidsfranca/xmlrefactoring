@@ -91,7 +91,10 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 					DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();				
 					Document doc = docBuilder.parse (selectedXMLFile);
 					String versionString = doc.getDocumentElement().getAttribute("schemaVersion");
-					xmlVersion = Integer.parseInt(versionString);
+					if(versionString.equals(""))
+						xmlVersion = -1;
+					else
+						xmlVersion = Integer.parseInt(versionString);
 					updateXMLTargetVersion();
 					getContainer().updateButtons();
 				} catch (SAXException e1) {
@@ -153,6 +156,10 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 			return false;
 		else			
 			return true;
+	}
+
+	public int getXmlVersion() {
+		return xmlVersion;
 	}
 
 }
