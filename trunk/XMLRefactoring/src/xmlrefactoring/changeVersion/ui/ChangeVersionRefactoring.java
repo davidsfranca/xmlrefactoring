@@ -40,7 +40,7 @@ public class ChangeVersionRefactoring extends Refactoring {
 		RefactoringStatus status = new RefactoringStatus();		
 		if(!schemaFile.isSynchronized(IResource.DEPTH_ZERO))
 			status.addFatalError(SCHEMA_FILE_OUT_SYNC);
-		if(FileControl.getDescriptorFile(schemaFile).isSynchronized(IResource.DEPTH_ZERO))
+		if(!FileControl.getDescriptorFile(schemaFile).isSynchronized(IResource.DEPTH_ZERO))
 			status.addFatalError(DESCRIPTOR_FILE_OUT_SYNC);
 		return status;
 	}

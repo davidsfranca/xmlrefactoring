@@ -1,4 +1,6 @@
-package xmlrefactoring.plugin.logic.attr2elem;
+package xmlrefactoring.plugin.logic.groupElements;
+
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -9,20 +11,34 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.xsd.XSDNamedComponent;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
-import xmlrefactoring.plugin.logic.BaseParticipant;
 import xmlrefactoring.plugin.logic.BaseProcessor;
+import xmlrefactoring.plugin.logic.SingleInputRefactoringArguments;
 
-public class Attr2ElemProcessor extends BaseProcessor{	
+public class GroupElementsProcessor extends BaseProcessor {
 
-	private Attr2ElemRefactoringArguments arguments;
+	private GroupElementsRefactoringArguments arguments;
 	
-	public Attr2ElemProcessor(XSDNamedComponent component){
-		arguments = new Attr2ElemRefactoringArguments();
-		arguments.setComponent(component);
+	/**
+	 * Initialize the processor with the elements to be grouped
+	 * @param components
+	 */
+	public GroupElementsProcessor(List<XSDNamedComponent> components){
+		arguments = new GroupElementsRefactoringArguments();
+		arguments.setComponents(components);
 	}
 	
 	@Override
-	protected Attr2ElemRefactoringArguments getRefactoringArguments() {
+	protected Object getElement() {
+		return arguments.getComponents();
+	}
+
+	@Override
+	protected Class getParticipantType() {
+		return GroupElementsParticipant.class;
+	}
+
+	@Override
+	protected GroupElementsRefactoringArguments getRefactoringArguments() {
 		return arguments;
 	}
 
@@ -30,37 +46,29 @@ public class Attr2ElemProcessor extends BaseProcessor{
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws CoreException,
 			OperationCanceledException {
-		// TODO Auto-generated method stub
 		return new RefactoringStatus();
 	}
 
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		// TODO Auto-generated method stub
 		return new RefactoringStatus();
 	}
 
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Object getElement() {
-		return arguments.getComponent();
-	}
-
-	@Override
 	public String getIdentifier() {
-		return PluginNamingConstants.ATTR_2_ELEM_PROCESSOR_IDENTIFIER;
+		return PluginNamingConstants.GROUP_ELEMENTS_PROCESSOR_IDENTIFIER;
 	}
 
 	@Override
 	public String getProcessorName() {
-		return PluginNamingConstants.ATTR_2_ELEM_PROCESSOR_NAME;
+		return PluginNamingConstants.GROUP_ELEMENTS_PROCESSOR_NAME;
 	}
 
 	@Override
@@ -68,15 +76,14 @@ public class Attr2ElemProcessor extends BaseProcessor{
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	@Override
-	protected Class getParticipantType() {
-		return BaseParticipant.class;
+	
+	public void setGroupName(String groupName){
+		arguments.setGroupName(groupName);
 	}
 
 	@Override
 	protected String getParticipantExtensionPoint() {
-		return PluginNamingConstants.ATTR_2_ELEM_PARTICIPANT_EXTENSION_POINT_ID;
+		return PluginNamingConstants.GROUP_ELEMENT_PARTICIPANT_EXTENSION_POINT_ID;
 	}
 
 }

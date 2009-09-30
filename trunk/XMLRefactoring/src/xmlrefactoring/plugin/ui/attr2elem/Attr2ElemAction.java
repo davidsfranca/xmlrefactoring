@@ -7,9 +7,9 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 import xmlrefactoring.plugin.logic.attr2elem.Attr2ElemProcessor;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
-import xmlrefactoring.plugin.ui.BaseAction;
+import xmlrefactoring.plugin.ui.SingleInputAction;
 
-public class Attr2ElemAction extends BaseAction{
+public class Attr2ElemAction extends SingleInputAction{
 
 	@Override
 	protected RefactoringWizard getWizard() {
@@ -24,7 +24,7 @@ public class Attr2ElemAction extends BaseAction{
 		if(getSelectedComponent() != null){
 			if(!SchemaElementVerifier.isAttribute(getSelectedComponent().getElement()))
 				action.setEnabled(false);
-		}
+		}		
 	}
 	
 	

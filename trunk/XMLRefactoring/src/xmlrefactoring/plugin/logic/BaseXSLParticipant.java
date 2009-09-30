@@ -27,7 +27,7 @@ public abstract class BaseXSLParticipant extends RefactoringParticipant {
 
 	@Override
 	public void initialize(RefactoringArguments arguments){
-		BaseRefactoringArguments baseArguments = (BaseRefactoringArguments) arguments;
+		SingleInputRefactoringArguments baseArguments = (SingleInputRefactoringArguments) arguments;
 		component = baseArguments.getComponent();
 		String schemaPath = ((IDOMElement) component.getElement()).getModel().getBaseLocation();
 		schemaFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(schemaPath));

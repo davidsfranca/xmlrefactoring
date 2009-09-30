@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="XMLRefactoringParticipant" name="XML Refactoring Participant" schema="schema/XMLRefactoringParticipant.exsd"/>
+   <extension-point id="GroupElemenetParticipant" name="Group element participant" schema="schema/GroupElemenetParticipant.exsd"/>
+   <extension-point id="Attr2ElemParticipant" name="Attribute into element transformation participant" schema="schema/Attr2ElemRefactoringParticipant.exsd"/>
    <extension
          id="XMLRefactoringMenu"
          name="XML Refactoring Menu"
@@ -19,14 +20,22 @@
          </menu>
          <action
                class="xmlrefactoring.plugin.ui.rename.RenameAction"
+               enablesFor="1"
                id="XMLRefactoring.RenameAction"
                label="Rename"
                menubarPath="XMLRefactoring.RefactoringMenu/group1">
          </action>
          <action
                class="xmlrefactoring.plugin.ui.attr2elem.Attr2ElemAction"
+               enablesFor="1"
                id="XMLRefactoring.Attr2ElemAction"
                label="Transform into element"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.groupElements.GroupElementsAction"
+               id="XMLRefactoring.GroupElements"
+               label="Group elements"
                menubarPath="XMLRefactoring.RefactoringMenu/group1">
          </action>
       </viewerContribution>
@@ -67,7 +76,18 @@
       </renameParticipant>
    </extension>
    <extension
-         point="XMLRefactoring.XMLRefactoringParticipant">
+         point="XMLRefactoring.GroupElemenetParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.groupElements.XSDGroupElementsParticipant"
+            id="XSDGroupElementsParticipant"
+            name="Element grouping refactoring">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.Attr2ElemParticipant">
       <Participant
             Class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
             class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
@@ -77,39 +97,6 @@
             enablement body text
          </enablement>
       </Participant>
-   </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <group
-            id="XMLRefactoring.group"
-            separatorsVisible="true">
-      </group>
-      <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
-         <menu
-               label="XML Refactoring">
-            <command
-                  commandId="XMLRefactoring.Versioning"
-                  id="XMLRefactoring.Versioning"
-                  label="XML Versioning"
-                  style="push">
-            </command>
-         </menu>
-      </menuContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
-            class="xmlrefactoring.applyChanges.ui.ApplyChanges2XMLHandler"
-            commandId="XMLRefactoring.Versioning">
-      </handler>
-   </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <command
-            id="XMLRefactoring.Versioning"
-            name="XML Versioning">
-      </command>
    </extension>
 
 </plugin>

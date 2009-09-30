@@ -21,7 +21,7 @@ public abstract class BaseRefactoringWizard<T extends BaseProcessor> extends Ref
 		setDefaultPageImageDescriptor(defaultImageDescriptor);
 	}
 	
-	protected T getProcessor(){
+	public T getProcessor(){
 		return processor;
 	}
 	
