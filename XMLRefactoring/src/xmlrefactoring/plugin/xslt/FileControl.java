@@ -203,7 +203,7 @@ public class FileControl {
 				versionAndFile[1] = (new Integer(fileNode.item(0).getTextContent())).intValue();
 			}
 		}catch(Exception e){
-			//TODO: treat Eception
+			//TODO: treat Exception
 			e.printStackTrace();
 		}
 		return versionAndFile;	

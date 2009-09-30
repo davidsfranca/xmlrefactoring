@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.eclipse.xsd.XSDNamedComponent;
 
-import xmlrefactoring.plugin.logic.BaseRefactoringArguments;
+import xmlrefactoring.plugin.logic.SingleInputRefactoringArguments;
 
-public class Attr2ElemRefactoringArguments extends BaseRefactoringArguments{
+public class Attr2ElemRefactoringArguments extends SingleInputRefactoringArguments{
 
 
 	

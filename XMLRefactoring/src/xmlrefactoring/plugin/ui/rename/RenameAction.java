@@ -7,9 +7,9 @@ import org.eclipse.wst.xsd.ui.internal.refactor.RefactoringComponent;
 import org.eclipse.wst.xsd.ui.internal.refactor.XMLRefactoringComponent;
 import org.eclipse.wst.xsd.ui.internal.refactor.rename.RenameComponentProcessor;
 
-import xmlrefactoring.plugin.ui.BaseAction;
+import xmlrefactoring.plugin.ui.SingleInputAction;
 
-public class RenameAction extends BaseAction{
+public class RenameAction extends SingleInputAction{
 
 	@Override
 	protected RefactoringWizard getWizard(){
