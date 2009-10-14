@@ -33,8 +33,10 @@ public class VersioningRefactoring extends XMLRefactoring{
 	
 	@Override
 	public void createReverseRefactoring() {
-		//if(versionNumber>0)
+		if(versionNumber>0)
 			setReverseRefactoring(new VersioningRefactoring(null,versionNumber-1, false));
+		else
+			setReverseRefactoring(new RemoveVersioning(null));
 	}	
 	
 	@Override
