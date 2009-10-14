@@ -11,6 +11,7 @@ import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import xmlrefactoring.plugin.refactoring.VersioningRefactoring;
 import xmlrefactoring.plugin.xslt.FileControl;
 
 public class ChangeVersionRefactoring extends Refactoring {
@@ -50,9 +51,11 @@ public class ChangeVersionRefactoring extends Refactoring {
 			OperationCanceledException {
 		CompositeChange composite = new CompositeChange(CHANGE_NAME);
 		Change versionDirCreation = FileControl.createVersioningDir(schemaFile, newVersion);
-		Change descriptorUpdate = FileControl.incrementVersion(schemaFile);
+		Change versionRefactoring = FileControl.createVersioningRefactoring(schemaFile, newVersion);
+		Change descriptorUpdate = FileControl.updateDescriptor(schemaFile);
 		composite.add(versionDirCreation);
 		composite.add(descriptorUpdate);
+		composite.add(versionRefactoring);
 		return composite;
 	}
 

@@ -70,25 +70,31 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		if(SchemaElementVerifier.isElementOrAttribute(component.getElement()))
 			paths = XPathCreator.createPaths(component.getElement());
 		
-		RenameElementRefactoring refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName());
+		RenameElementRefactoring refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName(),true);
 			
 		String schemaPath = ((IDOMElement) component.getElement()).getModel().getBaseLocation();
 		IFile schemaFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(schemaPath));
 		
 		CompositeChange compositeChange = new CompositeChange(XSLT_CHANGE_TEXT);
 		IPath xslPath;
+		IPath xslPathRev;
 
 		if(FileControl.isUnderVersionControl(schemaFile)){
 			xslPath = FileControl.getNextPath(schemaFile, false);	
 			Change incrementDescriptorLastFile = FileControl.incrementLastFile(schemaFile);
 			compositeChange.add(incrementDescriptorLastFile);
+			xslPathRev = FileControl.getNextReversePath(schemaFile,false);
 		}
 		else{
 			compositeChange.add(FileControl.addToVersionControl(schemaFile));
 			xslPath = FileControl.getNextPath(schemaFile, true);
+			xslPathRev = FileControl.getNextReversePath(schemaFile,true);
 		}
 		Change xslChange = new CreateXSLChange(refactoring, xslPath);
 		compositeChange.add(xslChange);	
+		
+		Change xslReverseChange = new CreateXSLChange(refactoring.getReverseRefactoring(), xslPathRev);
+		compositeChange.add(xslReverseChange);
 
 		return compositeChange;
 	}

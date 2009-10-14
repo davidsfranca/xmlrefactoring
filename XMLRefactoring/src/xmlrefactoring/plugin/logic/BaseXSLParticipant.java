@@ -40,19 +40,24 @@ public abstract class BaseXSLParticipant extends RefactoringParticipant {
 		
 		CompositeChange compositeChange = new CompositeChange(XSLT_CHANGE_TEXT);
 		IPath xslPath;
+		IPath xslPathRev;
 
 		if(FileControl.isUnderVersionControl(schemaFile)){
 			xslPath = FileControl.getNextPath(schemaFile, false);
 			Change incrementDescriptorLastFile = FileControl.incrementLastFile(schemaFile);
 			compositeChange.add(incrementDescriptorLastFile);
+			xslPathRev = FileControl.getNextReversePath(schemaFile,false);
 		}
 		else{
 			compositeChange.add(FileControl.addToVersionControl(schemaFile));
 			xslPath = FileControl.getNextPath(schemaFile, true);
+			xslPathRev = FileControl.getNextReversePath(schemaFile,true);
 		}
 		Change xslChange = new CreateXSLChange(getXMLRefactoring(), xslPath);
 		compositeChange.add(xslChange);
 		
+		Change xslReverseChange = new CreateXSLChange(getXMLRefactoring().getReverseRefactoring(), xslPathRev);
+		compositeChange.add(xslReverseChange);
 		
 
 		return compositeChange;		
