@@ -20,12 +20,22 @@ public class VersioningRefactoring extends XMLRefactoring{
 	public VersioningRefactoring(List<List<QName>> paths) {
 		super(paths);
 		setVersionNumber(0);
+		createReverseRefactoring();
 	}
 	
-	public VersioningRefactoring(List<List<QName>> paths, int version) {
+	public VersioningRefactoring(List<List<QName>> paths, int version, boolean isRootRef) {
 		super(paths);
 		setVersionNumber(version);
+		if(isRootRef)
+			createReverseRefactoring();
+		setRootRef(isRootRef);
 	}
+	
+	@Override
+	public void createReverseRefactoring() {
+		//if(versionNumber>0)
+			setReverseRefactoring(new VersioningRefactoring(null,versionNumber-1, false));
+	}	
 	
 	@Override
 	public void fillContext(VelocityContext context) {
@@ -45,6 +55,6 @@ public class VersioningRefactoring extends XMLRefactoring{
 
 	public void setVersionNumber(int versionNumber) {
 		this.versionNumber = versionNumber;
-	}	
+	}
 
 }

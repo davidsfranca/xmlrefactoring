@@ -2,8 +2,6 @@ package xmlrefactoring.plugin.xslt;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +9,6 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -32,11 +24,13 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
+import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -64,6 +58,8 @@ public class FileControl {
 	private static final String FILETAG = "lastFileNumber";
 	private static final String VERSIONTAG = "lastVersion";
 	private static final String VERSIONATTR = "number";
+	private static final String AllVERSIONSTAG = "versions";
+	private static final String VERSIONINFOTAG = "version";
 	
 	//CONSTANT - XPATH EXPRESSION
 	private static final String VERSIONXPATH = "descriptor/versions/version";
@@ -71,8 +67,8 @@ public class FileControl {
 	//CONSTANT - OTHERS
 	private static final String COMPOSITENAME = "Add to version control";
 	//TODO: mudar para arquivo
-	private static final String INITIAL_DESCRIPTOR = "<" + DESCRIPTORTAG + ">\n<" +
-		FILETAG + ">1</" + FILETAG + ">\n<" + VERSIONTAG + ">0</" + VERSIONTAG + ">\n</" +
+	private static final String INITIAL_DESCRIPTOR = "<" + DESCRIPTORTAG + ">\n<" + AllVERSIONSTAG + ">\n</" + AllVERSIONSTAG + ">\n<" +
+		FILETAG + ">2</" + FILETAG + ">\n<" + VERSIONTAG + ">0</" + VERSIONTAG + ">\n</" +
 		DESCRIPTORTAG + ">";
 
 	/**
@@ -84,26 +80,37 @@ public class FileControl {
 		return root.exists(getDescriptorFilePath(schemaFile));
 	}
 
+	
 	/**
 	 * Return where the next refactoring file should be created
 	 * 
 	 * @param schemaFile
-	 * @param isInitial - flag to know if there is already an descriptr for that file or not
+	 * @param isInitial - flag to know if there is already an descriptor for that file or not
 	 * @return
 	 */
 	public static IPath getNextPath(IFile schemaFile, boolean isInitial){
 
-		int[] versionAndFile = readDescriptor(schemaFile);
-
 		IPath fileName=null;
 		if(isInitial)
-			fileName = getFilePath(schemaFile, 0, 1);
-		else
+			fileName = getFilePath(schemaFile, 0, 2);
+		else{
+			int[] versionAndFile = readDescriptor(schemaFile);
 			fileName = getFilePath(schemaFile, versionAndFile[0], versionAndFile[1]+1);
-
+		}
 		return fileName;		
 	}
 
+	public static IPath getNextReversePath(IFile schemaFile, boolean isInitial) {
+		IPath path;
+		if(isInitial){
+			path = getFilePath(schemaFile, 0, -2);
+		}else{
+			int[] versionAndFile = readDescriptor(schemaFile);
+		 	path = getFilePath(schemaFile, versionAndFile[0], -versionAndFile[1]-1);
+		}
+		return path;
+	}
+	
 	/**
 	 * Creates all the required structure to versioning the refactorings in a XSD file
 	 * @param schemaFile
@@ -126,47 +133,10 @@ public class FileControl {
 
 
 		//Create XSL that adds version
-		Change xslChange = new CreateXSLChange(new VersioningRefactoring(null,0),getFilePath(schemaFile, 0, 0));
+		Change xslChange = createVersioningRefactoring(schemaFile, 0);
 		allChanges.add(xslChange);
 
 		return allChanges;
-	}
-
-	//TODO: change to receive a IPath and return a TextFileChange
-	/**
-	 * Changes the file Descriptor to include the newest file
-	 * @param file
-	 */
-	public static void addToControl(IFile file) {
-		try{
-			//get fileNumber
-			String number = (file.getName().replace(FILEEXTENSION,"")).replace(FILEPREFIX, "");
-			String version = file.getParent().getName().replace(VERSIONPREFIX,"");
-			String fileName = file.getParent().getParent().getName().replace(DIRECTORYPREFIX, "");
-
-			String descriptionFile = file.getParent().getParent().getParent().getFullPath()+DESCRIPTORPREFIX+fileName+DESCFILEEXTENSION;
-
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			Document doc = docBuilder.newDocument();
-
-			Element descriptor = doc.createElement(DESCRIPTORTAG);
-			Element lastVersion = doc.createElement(VERSIONTAG);
-			lastVersion.setTextContent(version);
-			descriptor.appendChild(lastVersion);
-			Element lastFileNumer = doc.createElement(FILETAG);
-			lastFileNumer.setTextContent(number);
-			descriptor.appendChild(lastFileNumer);
-			doc.appendChild(descriptor);
-
-			//TODO: Verificar como, usando XML substituir no arquivo, usar outra implementação do DOM
-			saveXMLdoc(descriptionFile,doc);
-
-		}catch (Exception e) {
-			// TODO: handle exception
-		}
-
-
 	}
 
 
@@ -177,6 +147,7 @@ public class FileControl {
 	 * @param schemaFile
 	 * @return [0]: version number, [1]: file number
 	 */	
+	
 	public static int[] readDescriptor (IFile schemaFile) {
 
 		int[] versionAndFile = new int[2];
@@ -233,7 +204,7 @@ public class FileControl {
 				expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
 				Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
 				int maxFile = new Integer(file.getFirstChild().getNodeValue());
-				for(int j = 0; j<maxFile; j++){
+				for(int j = 1; j<=maxFile; j++){
 					//TODO:Manipulação de arquivo bem feia - mudar
 					files.add(root.append(getFilePath(schemaFile, i, j)).toFile());
 				}
@@ -257,47 +228,23 @@ public class FileControl {
 	// It is called from the RefactoringParticipant and from the versioning participant
 	public static Change createVersioningDir(IFile schemaFile, int version){
 
-		IContainer container = schemaFile.getParent();
-		Change versionDirCreation = new CreateFolderChange(getVersionDirPath(schemaFile, version));
-
-		return versionDirCreation;
-	}
-
-	//TODO: Probably this is not required anymore
-	private static void saveXMLdoc(String fileName, Document doc){
-
-		File xmlOutputFile = new File(fileName);
-		FileOutputStream fos = null;
-		Transformer transformer = null;
-
-		try {
-			fos = new FileOutputStream(xmlOutputFile);
-		}
-		catch (FileNotFoundException e) {
-			System.out.println("Error occured: " + e.getMessage());
-		}
-
-		// Use a Transformer for output
-		TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		try {
-			transformer = transformerFactory.newTransformer();
-		}
-		catch (TransformerConfigurationException e) {
-			System.out.println("Transformer configuration error: " + e.getMessage());
-		}
-
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(fos);
-		// transform source into result will do save
-		try {
-			transformer.transform(source, result);
-		}
-		catch (TransformerException e) {
-			System.out.println("Error transform: " + e.getMessage());
-		}
+		return new CreateFolderChange(getVersionDirPath(schemaFile, version));
 
 	}
 
+	public static Change createVersioningRefactoring(IFile schemaFile,
+			int newVersion) {
+		VersioningRefactoring ref = new VersioningRefactoring(null,newVersion, true);
+		Change directChange = new CreateXSLChange(ref,getFilePath(schemaFile, newVersion, 1));
+		Change reverseChange = new CreateXSLChange(ref.getReverseRefactoring(),getFilePath(schemaFile, newVersion, -1));
+		
+		CompositeChange versionChange = new CompositeChange("Version Change");
+		versionChange.add(directChange);
+		versionChange.add(reverseChange);
+		
+		return versionChange;
+	}
+	
 	public static IPath getDescriptorFilePath(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
 		IPath descPath = container.getFullPath().append(buildDescriptorFilePath(schemaFile));		
@@ -345,10 +292,10 @@ public class FileControl {
 
 	}
 
-	private static IPath getFilePath(IFile schemaFile, int version, int fileNumber){
+	private static IPath getFilePath(IFile schemaFile, int version, Integer fileNumber){
 		StringBuffer fileName = new StringBuffer("/");
 		fileName.append(FILEPREFIX);
-		fileName.append(fileNumber);
+		fileName.append(fileNumber.toString());
 		fileName.append(FILEEXTENSION);
 
 		IPath dir = getVersionDirPath(schemaFile, version);
@@ -376,26 +323,58 @@ public class FileControl {
 		return null;
 	}
 
-	public static Change incrementVersion(IFile schemaFile) throws CoreException {
+	//TODO: Quebrar em dois métodos ou preservar um?
+	/**
+	 * Method used to update the descriptor file when the version changes
+	 * It's responsible for save the last version information, increment the last version number,
+	 * change the lastFile number to 0
+	 */
+	public static Change updateDescriptor(IFile schemaFile) throws CoreException {
 		try{
 			IFile descriptorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getDescriptorFilePath(schemaFile));
 			IDOMModel model =  (IDOMModel) StructuredModelManager.getModelManager().getModelForEdit(descriptorFile);
-			IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(VERSIONTAG).item(0);
-
+			
+			IDOMElement lastVersionTag = (IDOMElement) model.getDocument().getElementsByTagName(VERSIONTAG).item(0);
+			IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(FILETAG).item(0);
+			IDOMElement versions = (IDOMElement) model.getDocument().getElementsByTagName(AllVERSIONSTAG).item(0);
+			
+			
 			TextChange change = new TextFileChange("Version Increase", descriptorFile);
-			int textContentOffset = lastFileTag.getStartEndOffset();
-			Integer lastFileNewValue = Integer.parseInt(lastFileTag.getFirstChild().getNodeValue()) + 1;
-			int length = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
-			TextEdit edit = new ReplaceEdit(textContentOffset, length, lastFileNewValue.toString());
+			int textContentOffset = lastVersionTag.getStartEndOffset();
+			Integer lastVersionValue = Integer.parseInt(lastVersionTag.getFirstChild().getNodeValue());
+			Integer lastFileValue = Integer.parseInt(lastFileTag.getFirstChild().getNodeValue());
+
+			int length = lastVersionTag.getEndStartOffset() - lastVersionTag.getStartEndOffset();
+			TextEdit edit = new ReplaceEdit(textContentOffset, length, (new Integer(lastVersionValue+1)).toString());
 			change.setEdit(edit);
-			return change;	
+			
+			TextChange fileChange = new TextFileChange("Restart the file number counting", descriptorFile);
+			int fileTextContentOffset = lastFileTag.getStartEndOffset();
+			int fileLength = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
+			TextEdit fileEdit = new ReplaceEdit(fileTextContentOffset, fileLength, "1");
+			fileChange.setEdit(fileEdit);
+	
+			//Version information to be saved
+			//TODO: FEIO!!!
+			String versionInfo = "<"+VERSIONINFOTAG+" " + VERSIONATTR+"=\""+lastVersionValue+"\" >"+ lastFileValue +
+			"</"+ VERSIONINFOTAG + " >\n";
+			InsertEdit insertLast = new InsertEdit(versions.getEndStartOffset(),versionInfo);
+			TextChange change2 = new TextFileChange("Save last version Info", descriptorFile);
+			change2.setEdit(insertLast);
+			
+			CompositeChange changes = new CompositeChange(COMPOSITENAME);
+			changes.add(change);
+			changes.add(fileChange);
+			changes.add(change2);
+			
+			return changes;	
 		}
 		catch(IOException e){
 			e.printStackTrace();
 			//TODO Exceção
 		}
 		return null;
-		
 	}
+
 
 }
