@@ -81,7 +81,7 @@ public class XPathCreatorTest {
 		Attr attr = (Attr) node;
 		Element complexType = attr.getOwnerElement();
 		Element internalElement = (Element) complexType.getElementsByTagName("element").item(0);
-		List<List<QName>> paths = XPathCreator.createPaths(internalElement);
+		List<List<QName>> paths = XPathCreator.createElementPaths(internalElement);
 
 		Assert.assertEquals("Expected " + EXPECTED_ELEMENT_PATHS.length + " paths, actual: "
 				+ paths.size(),EXPECTED_ELEMENT_PATHS.length, paths.size());
@@ -116,7 +116,7 @@ public class XPathCreatorTest {
 		Attr attr = (Attr) node;
 		Element complexType = attr.getOwnerElement();
 		Element internalAttribute = (Element) complexType.getElementsByTagName("attribute").item(0);
-		List<List<QName>> paths = XPathCreator.createPaths(internalAttribute);
+		List<List<QName>> paths = XPathCreator.createElementPaths(internalAttribute);
 
 		Assert.assertEquals("Expected " + EXPECTED_ATTRIBUTE_PATHS.length + " paths, actual: "
 				+ paths.size(),EXPECTED_ATTRIBUTE_PATHS.length, paths.size());
@@ -153,7 +153,7 @@ public class XPathCreatorTest {
 		Attr attr = (Attr) node;
 		Element attributeGroup = attr.getOwnerElement();
 		Element internalAttribute = (Element) attributeGroup.getElementsByTagName("attribute").item(0);
-		List<List<QName>> paths = XPathCreator.createPaths(internalAttribute);
+		List<List<QName>> paths = XPathCreator.createElementPaths(internalAttribute);
 
 		Assert.assertEquals("Expected " + EXPECTED_ATTRIBUTE_GROUP_PATHS.length + " paths, actual: "
 				+ paths.size(),EXPECTED_ATTRIBUTE_GROUP_PATHS.length, paths.size());

@@ -17,13 +17,26 @@ public class XPathCreator {
 	/**
 	 * Search references to the specified element and create the XPaths corresponding to
 	 * the references.
-	 * @param element - the complexType which the references will be searched
+	 * @param element - the element which the references will be searched
 	 * @param suffix - the suffix of the XPath that takes to the element
 	 * @throws CoreException 
 	 */
-	public static List<List<QName>> createPaths(Element element) throws CoreException{
+	public static List<List<QName>> createElementPaths(Element element) throws CoreException{
 		List<List<QName>> complexTypeReferencePaths = new ArrayList<List<QName>>();
 		return createPaths(element, new LinkedList<QName>(), complexTypeReferencePaths);
+	}
+	
+	/**
+	 * Search references to the specified attribute and create the XPaths to the
+	 * elements that have that attribute.
+	 * @param element - the element which the references will be searched
+	 * @param suffix - the suffix of the XPath that takes to the element
+	 * @throws CoreException 
+	 */
+	public static List<List<QName>> createAttributePaths(Element attribute) throws CoreException{
+		List<List<QName>> elementList = createElementPaths(attribute);
+		elementList.remove(elementList.size() - 1);
+		return elementList;
 	}
 
 	private static List<List<QName>> createPaths(Element element, List<QName> suffix, List<List<QName>> paths) throws CoreException{
@@ -80,14 +93,16 @@ public class XPathCreator {
 		}
 		return paths;
 	}
+	
+	
 
 	private static List<QName> insertLocalElement(Element element, List<QName> suffix) {		
-		QName elementQName = new QName(element.getAttribute("name"));		
+		QName elementQName = new QName(SchemaElementVerifier.getName(element));		
 		return insertElement(elementQName, suffix);		
 	}
 
 	private static List<QName> insertGlobalElement(Element element, List<QName> suffix) {
-		QName elementQName = new QName(getTargetNamespace(element), element.getAttribute("name"));			
+		QName elementQName = new QName(SchemaElementVerifier.getTargetNamespace(element), SchemaElementVerifier.getName(element));			
 		return insertElement(elementQName, suffix);
 	}
 	
@@ -97,11 +112,7 @@ public class XPathCreator {
 		return newPath;
 	}
 
-	private static String getTargetNamespace(Element element) {
-		Element schemaElement = (Element) element.getOwnerDocument().
-			getElementsByTagNameNS(element.getNamespaceURI(), "schema").item(0);		
-		return schemaElement.getAttribute("targetNamespace");
-	}
+
 
 
 	

@@ -44,5 +44,11 @@ public class SchemaElementVerifier {
 	public static String getRef(Element element){
 		return element.getAttribute("ref");
 	}
+	
+	public static String getTargetNamespace(Element element) {
+		Element schemaElement = (Element) element.getOwnerDocument().
+			getElementsByTagNameNS(element.getNamespaceURI(), "schema").item(0);		
+		return schemaElement.getAttribute("targetNamespace");
+	}
 
 }
