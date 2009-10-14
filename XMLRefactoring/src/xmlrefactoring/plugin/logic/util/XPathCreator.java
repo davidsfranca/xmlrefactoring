@@ -35,7 +35,8 @@ public class XPathCreator {
 	 */
 	public static List<List<QName>> createAttributePaths(Element attribute) throws CoreException{
 		List<List<QName>> elementList = createElementPaths(attribute);
-		elementList.remove(elementList.size() - 1);
+		for(List<QName> path : elementList)
+			path.remove(path.size() - 1);		
 		return elementList;
 	}
 
