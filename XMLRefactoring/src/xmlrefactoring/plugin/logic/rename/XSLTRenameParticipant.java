@@ -34,7 +34,9 @@ import org.xml.sax.SAXException;
 import xmlrefactoring.plugin.logic.util.CreateXSLChange;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
+import xmlrefactoring.plugin.refactoring.RenameAttributeRefactoring;
 import xmlrefactoring.plugin.refactoring.RenameElementRefactoring;
+import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 import xmlrefactoring.plugin.xslt.FileControl;
 
 //Este participant é uma exceção na arquitetura, pois se integra à estrutura do editor,
@@ -67,10 +69,17 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		if(!isGlobalElement(component))
 			renameLocalElements();
 
-		if(SchemaElementVerifier.isElementOrAttribute(component.getElement()))
-			paths = XPathCreator.createPaths(component.getElement());
+		XMLRefactoring refactoring = null;
 		
-		RenameElementRefactoring refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName(),true);
+		if(SchemaElementVerifier.isElement(component.getElement())){
+			paths = XPathCreator.createElementPaths(component.getElement());
+			refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName(),true);
+		}
+		else{
+			paths = XPathCreator.createAttributePaths(component.getElement());			
+			QName attr = new QName(SchemaElementVerifier.getTargetNamespace(component.getElement()), SchemaElementVerifier.getName(component.getElement()));
+			refactoring = new RenameAttributeRefactoring(paths,getRenameArguments().getNewName(), attr, true);
+		}
 			
 		String schemaPath = ((IDOMElement) component.getElement()).getModel().getBaseLocation();
 		IFile schemaFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(schemaPath));
