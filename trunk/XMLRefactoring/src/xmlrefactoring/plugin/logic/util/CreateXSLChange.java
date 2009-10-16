@@ -19,7 +19,6 @@ import org.eclipse.ltk.core.refactoring.resource.DeleteResourceChange;
 import org.eclipse.ltk.core.refactoring.resource.ResourceChange;
 
 import xmlrefactoring.plugin.refactoring.XMLRefactoring;
-import xmlrefactoring.plugin.xslt.FileControl;
 
 public class CreateXSLChange extends ResourceChange{
 

@@ -17,7 +17,5 @@ Require-Bundle: org.eclipse.ui,
  org.junit4
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Bundle-ClassPath: lib/velocity-1.6.2-dep.jar,
- lib/velocity-1.6.2.jar,
- .,
- lib/saxon9.jar
+Bundle-ClassPath: .,
+ lib/
