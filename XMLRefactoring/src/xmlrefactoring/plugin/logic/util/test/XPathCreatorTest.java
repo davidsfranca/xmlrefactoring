@@ -46,15 +46,15 @@ public class XPathCreatorTest {
 			{new QName(TEST_NAMESPACE, "globalElement6"), new QName("groupElement"), new QName("internalElement")}
 	};
 	private final QName[][] EXPECTED_ATTRIBUTE_PATHS = {
-			{new QName(TEST_NAMESPACE, "globalElement"), new QName("internalAttribute")},
-			{new QName(TEST_NAMESPACE, "globalElement2"), new QName("moreComplexElement"),new QName("internalAttribute")},
-			{new QName(TEST_NAMESPACE, "globalElement3"), new QName("anonymousType"), new QName("internalAttribute")},
-			{new QName(TEST_NAMESPACE, "globalElement4"), new QName("contentElement"), new QName("internalAttribute")},
-			{new QName(TEST_NAMESPACE, "globalElement4"), new QName("internalAttribute")},
-			{new QName(TEST_NAMESPACE, "globalElement6"), new QName("groupElement"), new QName("internalAttribute")}
+			{new QName(TEST_NAMESPACE, "globalElement")},
+			{new QName(TEST_NAMESPACE, "globalElement2"), new QName("moreComplexElement")},
+			{new QName(TEST_NAMESPACE, "globalElement3"), new QName("anonymousType")},
+			{new QName(TEST_NAMESPACE, "globalElement4"), new QName("contentElement")},
+			{new QName(TEST_NAMESPACE, "globalElement4")},
+			{new QName(TEST_NAMESPACE, "globalElement6"), new QName("groupElement")}
 	};	
 	private final QName[][] EXPECTED_ATTRIBUTE_GROUP_PATHS = {
-			{new QName(TEST_NAMESPACE, "globalElement7"), new QName("internalAttribute")}
+			{new QName(TEST_NAMESPACE, "globalElement7")}
 	};
 
 	@Test
@@ -116,7 +116,7 @@ public class XPathCreatorTest {
 		Attr attr = (Attr) node;
 		Element complexType = attr.getOwnerElement();
 		Element internalAttribute = (Element) complexType.getElementsByTagName("attribute").item(0);
-		List<List<QName>> paths = XPathCreator.createElementPaths(internalAttribute);
+		List<List<QName>> paths = XPathCreator.createAttributePaths(internalAttribute);
 
 		Assert.assertEquals("Expected " + EXPECTED_ATTRIBUTE_PATHS.length + " paths, actual: "
 				+ paths.size(),EXPECTED_ATTRIBUTE_PATHS.length, paths.size());
@@ -153,7 +153,7 @@ public class XPathCreatorTest {
 		Attr attr = (Attr) node;
 		Element attributeGroup = attr.getOwnerElement();
 		Element internalAttribute = (Element) attributeGroup.getElementsByTagName("attribute").item(0);
-		List<List<QName>> paths = XPathCreator.createElementPaths(internalAttribute);
+		List<List<QName>> paths = XPathCreator.createAttributePaths(internalAttribute);
 
 		Assert.assertEquals("Expected " + EXPECTED_ATTRIBUTE_GROUP_PATHS.length + " paths, actual: "
 				+ paths.size(),EXPECTED_ATTRIBUTE_GROUP_PATHS.length, paths.size());

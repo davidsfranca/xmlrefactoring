@@ -29,5 +29,7 @@ public class PluginNamingConstants {
 	public static final String GROUP_ELEMENT_TYPE_CREATION = "New type creation";
 
 	public static final String GROUP_ELEMENT_TRANSF_NAME = "Group elements refactoring";
+
+	public static final String GROUP_ELEMENT_DELETE = "Element delete";
 	
 }
