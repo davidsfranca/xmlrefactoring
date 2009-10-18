@@ -1,10 +1,9 @@
 package xmlrefactoring.applyChanges.ui;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
@@ -12,7 +11,6 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -20,7 +18,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.XMLRefactoringPlugin;
@@ -87,14 +84,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 				xmlPath.setSize(XML_PATH_WIDTH, XML_PATH_HEIGHT);
 				selectedXMLFile = new File(fileString);
 				try {
-					DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();				
-					Document doc = docBuilder.parse (selectedXMLFile);
-					String versionString = doc.getDocumentElement().getAttribute("schemaVersion");
-					if(versionString.equals(""))
-						xmlVersion = -1;
-					else
-						xmlVersion = Integer.parseInt(versionString);
+					xmlVersion = FileControl.getSchemaVersion(new FileInputStream(selectedXMLFile));
 					updateXMLTargetVersion();
 					getContainer().updateButtons();
 				} catch (SAXException e1) {
