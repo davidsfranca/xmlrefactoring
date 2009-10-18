@@ -3,6 +3,7 @@ package xmlrefactoring.plugin.xslt;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,9 +31,7 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -60,16 +59,16 @@ public class FileControl {
 	private static final String VERSIONATTR = "number";
 	private static final String AllVERSIONSTAG = "versions";
 	private static final String VERSIONINFOTAG = "version";
-	
+
 	//CONSTANT - XPATH EXPRESSION
 	private static final String VERSIONXPATH = "descriptor/versions/version";
-	
+
 	//CONSTANT - OTHERS
 	private static final String COMPOSITENAME = "Add to version control";
 	//TODO: mudar para arquivo
 	private static final String INITIAL_DESCRIPTOR = "<" + DESCRIPTORTAG + ">\n<" + AllVERSIONSTAG + ">\n</" + AllVERSIONSTAG + ">\n<" +
-		FILETAG + ">2</" + FILETAG + ">\n<" + VERSIONTAG + ">0</" + VERSIONTAG + ">\n</" +
-		DESCRIPTORTAG + ">";
+	FILETAG + ">2</" + FILETAG + ">\n<" + VERSIONTAG + ">0</" + VERSIONTAG + ">\n</" +
+	DESCRIPTORTAG + ">";
 
 	/**
 	 * Tests if there is already a descriptor and 
@@ -80,7 +79,7 @@ public class FileControl {
 		return root.exists(getDescriptorFilePath(schemaFile));
 	}
 
-	
+
 	/**
 	 * Return where the next refactoring file should be created
 	 * 
@@ -106,11 +105,11 @@ public class FileControl {
 			path = getFilePath(schemaFile, 0, -2);
 		}else{
 			int[] versionAndFile = readDescriptor(schemaFile);
-		 	path = getFilePath(schemaFile, versionAndFile[0], -versionAndFile[1]-1);
+			path = getFilePath(schemaFile, versionAndFile[0], -versionAndFile[1]-1);
 		}
 		return path;
 	}
-	
+
 	/**
 	 * Creates all the required structure to versioning the refactorings in a XSD file
 	 * @param schemaFile
@@ -123,7 +122,7 @@ public class FileControl {
 		IContainer container = schemaFile.getParent();
 		Change descriptorCreation = new CreateFileChange(getDescriptorFilePath(schemaFile), new ByteArrayInputStream(INITIAL_DESCRIPTOR.getBytes()));		
 		allChanges.add(descriptorCreation);
-		
+
 		//Create refactoring directory
 		Change refDirCreation = new CreateFolderChange(getRefactoringDirPath(schemaFile));
 		allChanges.add(refDirCreation);
@@ -147,7 +146,7 @@ public class FileControl {
 	 * @param schemaFile
 	 * @return [0]: version number, [1]: file number
 	 */	
-	
+
 	public static int[] readDescriptor (IFile schemaFile) {
 
 		int[] versionAndFile = new int[2];
@@ -180,36 +179,35 @@ public class FileControl {
 		return versionAndFile;	
 	}
 
-	
+
 	/**
 	 * Reads the descriptor file for that Schema 
 	 * Gets the last file Number for each version
 	 * @param schemafile
 	 * @return
 	 */
-	public static List<File> getAllXSL(IFile schemaFile, int initialVersion, int lastVersion){
-		
+	public static List<File> getAllXSL(File schemaFile, int initialVersion, int lastVersion){
+
 		List<File> files = new ArrayList<File>();
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		IPath root = schemaFile.getWorkspace().getRoot().getLocation();
-		
+
 		try{
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();		
-			Document doc = docBuilder.parse (getDescriptorFileAbsolutePath(schemaFile).toFile());
+			Document doc = docBuilder.parse (getDescriptorFile(schemaFile));
 
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			XPathExpression expr;
-			
+
 			for(int i = initialVersion; i <= lastVersion; i++){
 				expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
 				Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
 				int maxFile = new Integer(file.getFirstChild().getNodeValue());
 				for(int j = 1; j<=maxFile; j++){
 					//TODO:Manipulação de arquivo bem feia - mudar
-					files.add(root.append(getFilePath(schemaFile, i, j)).toFile());
+					files.add(new File(getFilePath(schemaFile, i, j)));
 				}
 			}
-			
+
 		} catch (ParserConfigurationException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -237,36 +235,36 @@ public class FileControl {
 		VersioningRefactoring ref = new VersioningRefactoring(null,newVersion, true);
 		Change directChange = new CreateXSLChange(ref,getFilePath(schemaFile, newVersion, 1));
 		Change reverseChange = new CreateXSLChange(ref.getReverseRefactoring(),getFilePath(schemaFile, newVersion, -1));
-		
+
 		CompositeChange versionChange = new CompositeChange("Version Change");
 		versionChange.add(directChange);
 		versionChange.add(reverseChange);
-		
+
 		return versionChange;
 	}
-	
+
 	public static IPath getDescriptorFilePath(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
 		IPath descPath = container.getFullPath().append(buildDescriptorFilePath(schemaFile));		
 		return descPath;
 	}
-	
+
 	private static IPath getDescriptorFileAbsolutePath(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
 		return container.getLocation().append(buildDescriptorFilePath(schemaFile));
 	}
-	
+
 	public static IFile getDescriptorFile(IFile schemaFile){
 		IPath path = getDescriptorFilePath(schemaFile);
 		return ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 	}
-	
+
 	private static String buildDescriptorFilePath(IFile schemaFile){
 		//Build the descriptorFilePath
 		StringBuilder filePath = new StringBuilder(DESCRIPTORPREFIX);
 		filePath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
 		filePath.append(DESCFILEEXTENSION);
-		
+
 		return filePath.toString();
 	}
 
@@ -302,6 +300,76 @@ public class FileControl {
 		return dir.append(fileName.toString());
 	}
 
+	private static String getDescriptorFileAbsolutePath(File schemaFile){
+		String container = schemaFile.getParent();
+		return container.concat(buildDescriptorFilePath(schemaFile));
+	}
+
+	private static File getDescriptorFile(File schemaFile){
+		String descriptorPath = getDescriptorFileAbsolutePath(schemaFile);
+		return new File(descriptorPath);
+	}
+
+	private static String buildDescriptorFilePath(File schemaFile){
+		//Build the descriptorFilePath
+		StringBuilder filePath = new StringBuilder(DESCRIPTORPREFIX);
+		filePath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
+		filePath.append(DESCFILEEXTENSION);
+
+		return filePath.toString();
+	}
+
+	/**
+	 * Returns the absolute path of the refactoring directory
+	 * @param schemaFile
+	 * @return
+	 */
+	private static String getRefactoringDirPath(File schemaFile){
+		StringBuilder refactoringDirPath = new StringBuilder();
+		refactoringDirPath.append(schemaFile.getParent());
+
+		refactoringDirPath.append("/");
+		refactoringDirPath.append(DIRECTORYPREFIX);
+		refactoringDirPath.append(schemaFile.getName().substring(0,schemaFile.getName().length()-4));
+		refactoringDirPath.append("/");
+
+		return refactoringDirPath.toString();
+	}
+
+	/**
+	 * Returns the absolute path of this XSL directory
+	 * @param schemaFile
+	 * @param version
+	 * @return
+	 */
+	private static String getVersionDirPath(File schemaFile , int version){
+		StringBuilder versionDirPath = new StringBuilder();
+		versionDirPath.append(getRefactoringDirPath(schemaFile));
+		versionDirPath.append("/");
+		versionDirPath.append(VERSIONPREFIX);
+		versionDirPath.append(version);
+
+		return versionDirPath.toString();
+	}
+
+	/**
+	 * Returns the absolute path of this XSL file
+	 * @param schemaFile
+	 * @param version
+	 * @param fileNumber
+	 * @return
+	 */
+	private static String getFilePath(File schemaFile, int version, Integer fileNumber){
+		StringBuilder filePath = new StringBuilder();
+		filePath.append(getVersionDirPath(schemaFile, version));		
+		filePath.append("/");
+		filePath.append(FILEPREFIX);
+		filePath.append(fileNumber.toString());
+		filePath.append(FILEEXTENSION);
+
+		return filePath.toString();
+	}
+
 	public static Change incrementLastFile(IFile schemaFile) throws CoreException{
 		try{
 			IFile descriptorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getDescriptorFilePath(schemaFile));
@@ -333,12 +401,12 @@ public class FileControl {
 		try{
 			IFile descriptorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getDescriptorFilePath(schemaFile));
 			IDOMModel model =  (IDOMModel) StructuredModelManager.getModelManager().getModelForEdit(descriptorFile);
-			
+
 			IDOMElement lastVersionTag = (IDOMElement) model.getDocument().getElementsByTagName(VERSIONTAG).item(0);
 			IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(FILETAG).item(0);
 			IDOMElement versions = (IDOMElement) model.getDocument().getElementsByTagName(AllVERSIONSTAG).item(0);
-			
-			
+
+
 			TextChange change = new TextFileChange("Version Increase", descriptorFile);
 			int textContentOffset = lastVersionTag.getStartEndOffset();
 			Integer lastVersionValue = Integer.parseInt(lastVersionTag.getFirstChild().getNodeValue());
@@ -347,13 +415,13 @@ public class FileControl {
 			int length = lastVersionTag.getEndStartOffset() - lastVersionTag.getStartEndOffset();
 			TextEdit edit = new ReplaceEdit(textContentOffset, length, (new Integer(lastVersionValue+1)).toString());
 			change.setEdit(edit);
-			
+
 			TextChange fileChange = new TextFileChange("Restart the file number counting", descriptorFile);
 			int fileTextContentOffset = lastFileTag.getStartEndOffset();
 			int fileLength = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
 			TextEdit fileEdit = new ReplaceEdit(fileTextContentOffset, fileLength, "1");
 			fileChange.setEdit(fileEdit);
-	
+
 			//Version information to be saved
 			//TODO: FEIO!!!
 			String versionInfo = "<"+VERSIONINFOTAG+" " + VERSIONATTR+"=\""+lastVersionValue+"\" >"+ lastFileValue +
@@ -361,12 +429,12 @@ public class FileControl {
 			InsertEdit insertLast = new InsertEdit(versions.getEndStartOffset(),versionInfo);
 			TextChange change2 = new TextFileChange("Save last version Info", descriptorFile);
 			change2.setEdit(insertLast);
-			
+
 			CompositeChange changes = new CompositeChange(COMPOSITENAME);
 			changes.add(change);
 			changes.add(fileChange);
 			changes.add(change2);
-			
+
 			return changes;	
 		}
 		catch(IOException e){
@@ -374,6 +442,18 @@ public class FileControl {
 			//TODO Exceção
 		}
 		return null;
+	}
+
+	//TODO: É responsabilidade do FileControl?
+	public static int getSchemaVersion(InputStream selectedXMLFile) throws ParserConfigurationException, SAXException, IOException{
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();				
+		Document doc = docBuilder.parse (selectedXMLFile);
+		String versionString = doc.getDocumentElement().getAttribute("schemaVersion");
+		if(versionString.equals(""))
+			return -1;
+		else
+			return Integer.parseInt(versionString);
 	}
 
 
