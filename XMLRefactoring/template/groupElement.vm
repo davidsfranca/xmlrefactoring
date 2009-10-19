@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xsl:stylesheet 
+		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+		version="2.0">
+<xsl:output indent="yes"/>
+<xsl:strip-space elements="*"/>
+#set( $maxIndex = $paths.size() - 1 )
+#foreach( $count in [0..$maxIndex] ) <xsl:variable 
+	name="#evaluate("set$count")" select="/#foreach( $elem in $paths.get($count))/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end /element()[#set( $maxIndex = $inGroup.size() - 1 ) #foreach($count in [0..$maxIndex])(namespace-uri(.)='$inGroup.get($count).getNamespaceURI()')and(local-name(.)='$inGroup.get($count).getLocalPart()')#if($count!=$maxIndex) or #end #end]" />#end 
+
+<xsl:template match="*">
+    <xsl:copy>
+        <xsl:copy-of select="@*"/>
+        <xsl:apply-templates />
+    </xsl:copy>
+</xsl:template>
+
+#set( $maxIndex = $paths.size() - 1 )
+#foreach( $count in [0..$maxIndex] )
+	<xsl:template match="/#foreach( $elem in $paths.get($count))/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end
+/element()[#set( $maxIndex = $inGroup.size() - 1 ) #foreach($count in [0..$maxIndex])(namespace-uri(.)='$inGroup.get($count).getNamespaceURI()')and(local-name(.)='$inGroup.get($count).getLocalPart()')#if($count!=$maxIndex) or #end#end]">
+		#set($actual = $count + 1)
+		<xsl:if test="set$count[$actual] = current()">
+			<xsl:element name="$groupName.getLocalPart()" namespace="$groupName.getNamespaceURI()">
+			#foreach($elem in $inGroup)
+				<xsl:copy-of select="../element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name()='$elem.getLocalPart()')]"/>
+			#end
+			</xsl:element>
+		</xsl:if>
+	</xsl:template>
+#end
+</xsl:stylesheet>

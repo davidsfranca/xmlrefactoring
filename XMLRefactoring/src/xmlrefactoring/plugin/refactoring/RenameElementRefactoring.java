@@ -33,7 +33,7 @@ public class RenameElementRefactoring extends XMLRefactoring{
 		List<List<QName>> newPaths =  new ArrayList();
 		String newName = getPaths().get(0).get(0).getLocalPart();
 		
-		for(int i= 0; i<getPaths().size();i++){//(List<QName> path: getPaths()){
+		for(int i= 0; i<getPaths().size();i++){
 			
 			List<QName> path = new ArrayList<QName>();
 			

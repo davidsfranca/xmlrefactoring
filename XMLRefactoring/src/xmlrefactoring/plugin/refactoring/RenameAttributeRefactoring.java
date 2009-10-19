@@ -14,7 +14,6 @@ public class RenameAttributeRefactoring extends XMLRefactoring{
 	 */
 	private QName attrName;
 	
-	
 	/**
 	 * The new name for the attribute
 	 */
@@ -38,7 +37,9 @@ public class RenameAttributeRefactoring extends XMLRefactoring{
 
 	@Override
 	public void createReverseRefactoring() {
-		
+		String newName = getAttrName().getLocalPart();
+		QName attrName = new QName(getAttrName().getNamespaceURI(),getNewName());
+		setReverseRefactoring(new RenameAttributeRefactoring(getPaths(),newName,attrName,false));
 	}
 
 	@Override
