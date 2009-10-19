@@ -13,7 +13,6 @@
 <!-- copia todos os atributos do elemento exceto o schemaVersion e cria um nova atributo de schemaVersion -->
 	<xsl:template match="/element()">
 		<xsl:copy>
-			<xsl:attribute name="schemaVersion">$version</xsl:attribute>
 	     	<xsl:copy-of select="@* except attribute(schemaVersion)"/>
 		    <xsl:for-each select="namespace::*">
 				<xsl:copy />

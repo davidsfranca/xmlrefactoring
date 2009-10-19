@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xsl:stylesheet 
+		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+		version="2.0">
+
+<xsl:template match="*">
+    <xsl:copy>
+        <xsl:copy-of select="@*"/>
+        <xsl:apply-templates />
+    </xsl:copy>
+</xsl:template>
+
+<!-- substitui uma tag por outra copiando os valores de 
+	atributo namesapce e descendentes-->
+#foreach( $path in $paths )
+	<xsl:template match="/#foreach( $elem in $path )/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end">
+	<xsl:copy>
+	    <xsl:attribute name="$newName" namespace="$attrName.getNamespaceURI()"/>
+	    <xsl:copy-of select="@* [not((namespace-uri()='$attrName.getNamespaceURI()') and (local-name() ='$attrName.getLocalName()'))] />
+	    <xsl:attribute name="$newName" namespace="$attrName.getNamespaceURI()">
+		<xsl:value-of select="@* [((local-name(.) =''$attrName.getLocalName()')and(namespace-uri(.)='$attrName.getNamespaceURI()'))]"/>
+	    </xsl:attribute>
+	    <xsl:for-each select="namespace::*">
+			<xsl:copy />
+	    </xsl:for-each>
+	 <xsl:apply-templates/>
+	</xsl:copy>
+</xsl:template>
+#end
+
+</xsl:stylesheet>
