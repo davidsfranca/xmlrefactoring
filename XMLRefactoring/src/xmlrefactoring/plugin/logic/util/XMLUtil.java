@@ -1,9 +1,8 @@
 package xmlrefactoring.plugin.logic.util;
 
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,6 +32,13 @@ public abstract class XMLUtil {
 	public static Element createElementNS(String nameSpaceURI, String prefix, String elementName){
 		return createElementNS(nameSpaceURI, createQName(prefix, elementName));		
 	}
+	
+	public static QName createQName(Element element){
+		String namespace = null;
+		if(SchemaElementVerifier.isGlobal(element))
+			namespace = SchemaElementVerifier.getTargetNamespace(element);
+		return new QName(namespace, SchemaElementVerifier.getName(element));
+	}
 
 	public static String createQName(String prefix, String elementName){
 		StringBuilder qName = new StringBuilder();
@@ -42,6 +48,10 @@ public abstract class XMLUtil {
 		}
 		qName.append(elementName);
 		return qName.toString();
+	}
+	
+	public static String getLocalName(String name){
+		return name.substring(name.indexOf(":") + 1, name.length());
 	}
 
 	private static Document createNewDocument(){
