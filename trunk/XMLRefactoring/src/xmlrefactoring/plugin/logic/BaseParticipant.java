@@ -9,8 +9,7 @@ public abstract class BaseParticipant extends RefactoringParticipant{
 
 	@Override
 	public void initialize(RefactoringArguments arguments){
-		baseArguments = (BaseRefactoringArguments) arguments;
-		
+		baseArguments = (BaseRefactoringArguments) arguments;		
 	}
 	
 }
