@@ -62,4 +62,8 @@ public class SchemaElementVerifier {
 		return schemaElement.getAttribute("targetNamespace");
 	}
 
+	public static boolean isSimpleContent(Element derivedContent) {
+		return derivedContent.getLocalName().equals(SIMPLE_CONTENT);
+	}
+
 }

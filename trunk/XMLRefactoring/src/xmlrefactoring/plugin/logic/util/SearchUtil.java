@@ -48,10 +48,11 @@ public class SearchUtil {
 		return searchTypeDeclaration(element, false);
 	}
 
-	public static List<SearchMatch> searchTypeDeclaration(Element element, boolean simpleType) throws CoreException {
+	//TODO Contem erros
+	private static List<SearchMatch> searchTypeDeclaration(Element element, boolean simpleType) throws CoreException {
 		if(SchemaElementVerifier.isElement(element)){
 
-			String typeName = SchemaElementVerifier.getType(element);
+			String typeName = XMLUtil.getLocalName(SchemaElementVerifier.getType(element));
 			String componentNamespace = element.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
 			QualifiedName elementQName = new QualifiedName(componentNamespace, typeName);
 			QualifiedName typeQName;

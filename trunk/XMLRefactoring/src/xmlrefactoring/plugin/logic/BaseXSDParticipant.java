@@ -1,5 +1,8 @@
 package xmlrefactoring.plugin.logic;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -14,7 +17,7 @@ import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
+import org.eclipse.wst.common.core.search.SearchMatch;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.eclipse.wst.xsd.ui.internal.refactor.TextChangeManager;
@@ -27,6 +30,7 @@ import org.w3c.dom.NodeList;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.SearchUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.xslt.FileControl;
 
@@ -80,9 +84,9 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 
 	private void addSchemaVersion(IDOMElement rootElement) throws CoreException {
 		
-		String elementType = SchemaElementVerifier.getType(rootElement);
+		String elementTypeName = SchemaElementVerifier.getType(rootElement);
 		
-		if(elementType == null){
+		if(elementTypeName == null){
 			NodeList simpleTypeList = rootElement.getElementsByTagName(SchemaElementVerifier.SIMPLE_TYPE);
 			//The element type is a local declared Simple Type
 			if(simpleTypeList.getLength() != 0){
@@ -107,12 +111,12 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		}
 		else{
 			//TODO: Talvez seria melhor n‹o extender em alguns casos
-			extendType(rootElement, elementType);
+			extendType(rootElement, elementTypeName);
 		}
 			
 	}
 
-	private void extendType(IDOMElement rootElement, String elementType) {		
+	private void extendType(IDOMElement rootElement, String elementType) throws CoreException {		
 		String newTypeName = elementType + "Extended";		
 		//Element update to the new type
 		Element newRootElement = (Element) rootElement.cloneNode(true);
@@ -120,10 +124,15 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		createReplacement(newRootElement, rootElement);
 		//New type
 		Element extendedType = XMLUtil.createComplexType(root, newTypeName);
-		String extensionQName = XMLUtil.createQName(extendedType.getPrefix(), SchemaElementVerifier.EXTENSION);
+		
+		String contentQName = XMLUtil.createQName(extendedType.getPrefix(), SchemaElementVerifier.COMPLEX_CONTENT);
+		Element contentElement = schemaDocument.createElement(contentQName);
+		extendedType.appendChild(contentElement);
+		
+		String extensionQName = XMLUtil.createQName(extendedType.getPrefix(), SchemaElementVerifier.EXTENSION);		
 		Element extension = schemaDocument.createElement(extensionQName);
 		extension.setAttribute(SchemaElementVerifier.BASE, elementType);
-		extendedType.appendChild(extension);
+		contentElement.appendChild(extension);
 		extension.appendChild(createSchemaAttribute(root.getPrefix()));
 		InsertEdit extendedTypeInsert = new InsertEdit(root.getEndStartOffset(), XMLUtil.toString(extendedType));
 		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, extendedTypeInsert);		
