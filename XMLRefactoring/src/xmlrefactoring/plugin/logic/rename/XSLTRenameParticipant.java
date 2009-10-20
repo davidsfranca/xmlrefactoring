@@ -1,10 +1,8 @@
 package xmlrefactoring.plugin.logic.rename;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -29,7 +27,6 @@ import org.eclipse.wst.xsd.ui.internal.refactor.rename.RenameComponentProcessor;
 import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
-import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.logic.util.CreateXSLChange;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;

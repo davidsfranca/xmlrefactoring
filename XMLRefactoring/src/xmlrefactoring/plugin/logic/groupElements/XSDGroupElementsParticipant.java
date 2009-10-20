@@ -22,10 +22,11 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
+import xmlrefactoring.plugin.logic.BaseXSDParticipant;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 
-public class XSDGroupElementsParticipant extends GroupElementsParticipant {
+public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 
 	private GroupElementsRefactoringArguments arguments;
 
@@ -39,23 +40,23 @@ public class XSDGroupElementsParticipant extends GroupElementsParticipant {
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
-
-		//Gets the TextChange for the file
-		TextChangeManager manager = new TextChangeManager();		
+		super.createChange(pm);
+		
+		//Gets the TextChange for the file	
 		IDOMElement idomElement = (IDOMElement) arguments.getComponents().get(0).getElement();
 		String fileStr = idomElement.getModel().getBaseLocation();
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));		
 		TextChange change = manager.get(file);
 
 		IDOMElement root = (IDOMElement) idomElement.getOwnerDocument().getDocumentElement();
-		Element complexType = createNewType(root);
+		Element complexType = XMLUtil.createComplexType(root, arguments.getTypeName());
 
 		Element all = createAllNode(complexType); 			
 		complexType.appendChild(all);
 
 		for(XSDNamedComponent component : arguments.getComponents()){
 			IDOMElement movingElement = (IDOMElement) component.getElement();
-			all.appendChild(movingElement.cloneNode(false));
+			all.appendChild(movingElement.cloneNode(true));
 			DeleteEdit deleteElement = new DeleteEdit(movingElement.getStartOffset(), movingElement.getEndOffset() - movingElement.getStartOffset());
 			TextChangeCompatibility.addTextEdit(change, PluginNamingConstants.GROUP_ELEMENT_DELETE, deleteElement);
 		}
@@ -127,14 +128,7 @@ public class XSDGroupElementsParticipant extends GroupElementsParticipant {
 		return sb.toString();
 	}
 
-	private Element createNewType(Element root) {
-		String qName = XMLUtil.createQName(root.getPrefix(), SchemaElementVerifier.COMPLEX_TYPE);
-		Element complexType = root.getOwnerDocument().createElement(qName);
-		Attr name = complexType.getOwnerDocument().createAttribute("name");
-		name.setValue(arguments.getTypeName());
-		complexType.appendChild(name);
-		return complexType;
-	}
+	
 
 	private String createPrefix(IDOMElement idomElement){
 		String prefix = idomElement.getPrefix();
@@ -158,7 +152,8 @@ public class XSDGroupElementsParticipant extends GroupElementsParticipant {
 	}
 
 	@Override
-	protected void initialize(RefactoringArguments arguments) {
+	public void initialize(RefactoringArguments arguments) {
+		super.initialize(arguments);
 		this.arguments = (GroupElementsRefactoringArguments) arguments;
 	}
 

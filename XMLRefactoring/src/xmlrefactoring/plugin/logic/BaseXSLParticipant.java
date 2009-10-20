@@ -19,21 +19,10 @@ import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 import xmlrefactoring.plugin.xslt.FileControl;
 
 
-public abstract class BaseXSLParticipant extends RefactoringParticipant {
+public abstract class BaseXSLParticipant extends BaseParticipant {
 
 	private static final String XSLT_CHANGE_TEXT = "XSLT change";
-	private XSDNamedComponent component;
-	private IFile schemaFile;
-
-	@Override
-	public void initialize(RefactoringArguments arguments){
-		SingleInputRefactoringArguments baseArguments = (SingleInputRefactoringArguments) arguments;
-		component = baseArguments.getComponent();
-		String schemaPath = ((IDOMElement) component.getElement()).getModel().getBaseLocation();
-		schemaFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(schemaPath));
-	}
-
-
+	
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
@@ -41,7 +30,8 @@ public abstract class BaseXSLParticipant extends RefactoringParticipant {
 		CompositeChange compositeChange = new CompositeChange(XSLT_CHANGE_TEXT);
 		IPath xslPath;
 		IPath xslPathRev;
-
+		IFile schemaFile = baseArguments.getSchemaFile();
+		
 		if(FileControl.isUnderVersionControl(schemaFile)){
 			xslPath = FileControl.getNextPath(schemaFile, false);
 			Change incrementDescriptorLastFile = FileControl.incrementLastFile(schemaFile);

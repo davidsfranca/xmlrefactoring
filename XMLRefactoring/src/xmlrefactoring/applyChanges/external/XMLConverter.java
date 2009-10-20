@@ -11,6 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import xmlrefactoring.applyChanges.logic.XSLTransformer;
+import xmlrefactoring.plugin.xslt.FileControl;
 
 public class XMLConverter {
 	
@@ -23,11 +24,15 @@ public class XMLConverter {
 		this.schema = schema;
 	}
 	
-	public InputStream getXML(InputStream baseXML, int version) throws IOException, ParserConfigurationException, SAXException{
+	public InputStream getXML(InputStream baseXML, int targetVersion) throws IOException, ParserConfigurationException, SAXException{
+		return getXML(baseXML, FileControl.getSchemaVersion(baseXML), targetVersion);
+	}
+	
+	public InputStream getXML(InputStream baseXML, int version, int targetVersion) throws IOException, ParserConfigurationException, SAXException{
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		XSLTransformer.changeVersion(schema, baseXML, output, version);
+		XSLTransformer.changeVersion(schema, baseXML, output, version, targetVersion);
 		return new ByteArrayInputStream(output.toByteArray());
-	}	
+	}
 
 	public void setSchema(File schema) {
 		this.schema = schema;

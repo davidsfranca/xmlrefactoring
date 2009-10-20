@@ -133,7 +133,7 @@ public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
 	}
 
 	@Override
-	protected void initialize(RefactoringArguments arguments) {
+	public void initialize(RefactoringArguments arguments) {
 		this.arguments = (Attr2ElemRefactoringArguments) arguments;		
 	}
 

@@ -1,9 +1,17 @@
 package xmlrefactoring.plugin.logic.groupElements;
 
-import xmlrefactoring.plugin.logic.MultipleInputRefactoringArguments;
-import xmlrefactoring.plugin.logic.SingleInputRefactoringArguments;
+import java.util.List;
 
-public class GroupElementsRefactoringArguments extends MultipleInputRefactoringArguments {
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
+import org.eclipse.xsd.XSDNamedComponent;
+
+import xmlrefactoring.plugin.logic.BaseRefactoringArguments;
+
+public class GroupElementsRefactoringArguments extends BaseRefactoringArguments {
+
+	public GroupElementsRefactoringArguments(List<XSDNamedComponent> components) {
+		super(components);
+	}
 
 	private String groupName;
 	private String typeName;

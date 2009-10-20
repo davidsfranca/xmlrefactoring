@@ -12,7 +12,6 @@ import org.eclipse.xsd.XSDNamedComponent;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseProcessor;
-import xmlrefactoring.plugin.logic.SingleInputRefactoringArguments;
 
 public class GroupElementsProcessor extends BaseProcessor {
 
@@ -23,18 +22,12 @@ public class GroupElementsProcessor extends BaseProcessor {
 	 * @param components
 	 */
 	public GroupElementsProcessor(List<XSDNamedComponent> components){
-		arguments = new GroupElementsRefactoringArguments();
-		arguments.setComponents(components);
+		arguments = new GroupElementsRefactoringArguments(components);
 	}
 	
 	@Override
 	protected Object getElement() {
 		return arguments.getComponents();
-	}
-
-	@Override
-	protected Class getParticipantType() {
-		return GroupElementsParticipant.class;
 	}
 
 	@Override
