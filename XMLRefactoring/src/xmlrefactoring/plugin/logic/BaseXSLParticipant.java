@@ -53,5 +53,5 @@ public abstract class BaseXSLParticipant extends BaseParticipant {
 		return compositeChange;		
 	}
 
-	protected abstract XMLRefactoring getXMLRefactoring();	
+	protected abstract XMLRefactoring getXMLRefactoring() throws CoreException;	
 }

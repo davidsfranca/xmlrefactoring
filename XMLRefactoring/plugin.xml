@@ -80,7 +80,15 @@
       <Participant
             class="xmlrefactoring.plugin.logic.groupElements.XSDGroupElementsParticipant"
             id="XSDGroupElementsParticipant"
-            name="Element grouping refactoring">
+            name="Element grouping XSD refactoring">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.groupElements.XSLTGroupElementsParticipant"
+            id="XSLTGroupElementsParticipant"
+            name="Element grouping XSLT refactoring">
          <enablement>
             enablement body text
          </enablement>
