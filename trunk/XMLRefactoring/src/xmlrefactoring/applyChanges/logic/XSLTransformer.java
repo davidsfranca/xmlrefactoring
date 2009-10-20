@@ -44,10 +44,6 @@ public class XSLTransformer {
 
 		
 	}
-	
-	public static void changeVersion(File schema, InputStream xml, OutputStream destination, int finalVersion) throws IOException, ParserConfigurationException, SAXException{
-		changeVersion(schema, xml, destination, FileControl.getSchemaVersion(xml), finalVersion);
-	}
 
 	public static void changeVersion(File schema, InputStream xml, OutputStream destination, int initialVersion, int finalVersion) throws IOException{
 		

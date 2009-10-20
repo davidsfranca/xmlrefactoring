@@ -36,6 +36,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.util.CreateFileChange;
 import xmlrefactoring.plugin.logic.util.CreateFolderChange;
 import xmlrefactoring.plugin.logic.util.CreateXSLChange;
@@ -449,9 +450,9 @@ public class FileControl {
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();				
 		Document doc = docBuilder.parse (selectedXMLFile);
-		String versionString = doc.getDocumentElement().getAttribute("schemaVersion");
+		String versionString = doc.getDocumentElement().getAttribute(PluginNamingConstants.SCHEMA_VERSION);
 		if(versionString.equals(""))
-			return -1;
+			return 0;
 		else
 			return Integer.parseInt(versionString);
 	}

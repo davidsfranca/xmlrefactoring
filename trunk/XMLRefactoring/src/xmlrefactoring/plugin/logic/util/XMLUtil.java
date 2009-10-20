@@ -15,6 +15,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -58,7 +59,8 @@ public abstract class XMLUtil {
 	public static String toString(Node node) {
 		try {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			transformerFactory.setAttribute("indent-number", 4);
+			//TODO: Pq parou de funcionar?
+			//transformerFactory.setAttribute("indent-number", 4);
 			Transformer trans = transformerFactory.newTransformer();
 			trans.setOutputProperty(OutputKeys.INDENT, "yes");
 			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -76,6 +78,15 @@ public abstract class XMLUtil {
 			e.printStackTrace();
 		}
 		return null;		
+	}
+	
+	public static Element createComplexType(Element root, String name) {
+		String qName = XMLUtil.createQName(root.getPrefix(), SchemaElementVerifier.COMPLEX_TYPE);
+		Element complexType = root.getOwnerDocument().createElement(qName);
+		Attr nameAttr = complexType.getOwnerDocument().createAttribute("name");
+		nameAttr.setValue(name);
+		complexType.setAttributeNode(nameAttr);
+		return complexType;
 	}
 
 }

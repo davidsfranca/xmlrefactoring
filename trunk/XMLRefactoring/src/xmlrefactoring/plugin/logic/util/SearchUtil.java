@@ -16,14 +16,15 @@ import org.eclipse.wst.common.core.search.scope.SearchScope;
 import org.eclipse.wst.common.core.search.scope.WorkspaceSearchScope;
 import org.eclipse.wst.common.core.search.util.CollectingSearchRequestor;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
+import org.eclipse.wst.xml.core.internal.search.XMLComponentDeclarationPattern;
 import org.eclipse.wst.xml.core.internal.search.XMLComponentReferencePattern;
 import org.w3c.dom.Element;
 
 public class SearchUtil {
-	
+
 	public static List<SearchMatch> searchReferences(Element element) throws CoreException {
-		String componentName = element.getAttribute("name");
-		String componentNamespace = element.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
+		String componentName = SchemaElementVerifier.getName(element);
+		String componentNamespace = SchemaElementVerifier.getTargetNamespace(element);
 		QualifiedName elementQName = new QualifiedName(componentNamespace, componentName);
 		QualifiedName typeQName = new QualifiedName(element.getNamespaceURI(), element.getLocalName());
 
@@ -38,5 +39,42 @@ public class SearchUtil {
 		searchEngine.search(pattern, requestor, scope, map, new NullProgressMonitor());
 		return requestor.getResults();
 	}
+
+	public static List<SearchMatch> searchSimpleTypeDeclaration(Element element) throws CoreException {
+		return searchTypeDeclaration(element, true);
+	}
+
+	public static List<SearchMatch> searchComplexTypeDeclaration(Element element) throws CoreException {
+		return searchTypeDeclaration(element, false);
+	}
+
+	public static List<SearchMatch> searchTypeDeclaration(Element element, boolean simpleType) throws CoreException {
+		if(SchemaElementVerifier.isElement(element)){
+
+			String typeName = SchemaElementVerifier.getType(element);
+			String componentNamespace = element.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
+			QualifiedName elementQName = new QualifiedName(componentNamespace, typeName);
+			QualifiedName typeQName;
+			if(simpleType)
+				typeQName = new QualifiedName(element.getNamespaceURI(), SchemaElementVerifier.SIMPLE_TYPE);
+			else
+				typeQName = new QualifiedName(element.getNamespaceURI(), SchemaElementVerifier.COMPLEX_TYPE);
+
+			String fileStr = ((IDOMNode) element).getModel().getBaseLocation();
+			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
+
+			SearchScope scope = new WorkspaceSearchScope();
+			CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+			SearchPattern pattern = new XMLComponentDeclarationPattern(file, elementQName, typeQName);
+			SearchEngine searchEngine = new SearchEngine();
+			HashMap map = new HashMap();
+			searchEngine.search(pattern, requestor, scope, map, new NullProgressMonitor());
+			return requestor.getResults();
+		}
+		else 
+			return null;
+	}
+
+
 
 }

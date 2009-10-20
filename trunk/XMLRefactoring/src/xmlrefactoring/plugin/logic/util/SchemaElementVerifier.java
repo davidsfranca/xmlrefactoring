@@ -11,6 +11,13 @@ public class SchemaElementVerifier {
 	public static final String SEQUENCE = "sequence";
 	public static final String ALL = "all";
 	public static final String CHOICE = "choice";
+	public static final String SIMPLE_TYPE = "simpleType";
+	public static final String NAME = "name";
+	public static final String SIMPLE_CONTENT = "simpleContent";
+	public static final String COMPLEX_CONTENT = "complexContent";
+	public static final String TYPE = "type";
+	public static final String EXTENSION = "extension";
+	public static final String BASE = "base";
 
 	
 	public static boolean isElement(Element element) {
@@ -43,6 +50,10 @@ public class SchemaElementVerifier {
 	
 	public static String getRef(Element element){
 		return element.getAttribute("ref");
+	}
+	
+	public static String getType(Element element){
+		return element.getAttribute("type");
 	}
 	
 	public static String getTargetNamespace(Element element) {
