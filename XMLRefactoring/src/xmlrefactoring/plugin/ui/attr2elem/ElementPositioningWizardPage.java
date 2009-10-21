@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import xmlrefactoring.plugin.logic.attr2elem.ReferenceWithCompositor;
-import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.ui.BaseUserInputWizardPage;
 
 public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
@@ -22,15 +22,15 @@ public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
 	private XSDNamedComponent attribute;
 	private Element referenceComplexType;
 	private String attributeName;
-	private static final String[] compositors = {SchemaElementVerifier.ALL, SchemaElementVerifier.SEQUENCE, SchemaElementVerifier.CHOICE};
+	private static final String[] compositors = {XSDUtil.ALL, XSDUtil.SEQUENCE, XSDUtil.CHOICE};
 	
 	public ElementPositioningWizardPage(XSDNamedComponent attribute, Element referenceComplexType) {
 		super("Element Positioning");
 		this.attribute = attribute;
 		this.referenceComplexType = referenceComplexType;
-		attributeName = SchemaElementVerifier.getName(attribute.getElement());
+		attributeName = XSDUtil.getName(attribute.getElement());
 		if(attributeName == null){
-			attributeName = SchemaElementVerifier.getRef(attribute.getElement());
+			attributeName = XSDUtil.getRef(attribute.getElement());
 		}
 	}	
 
@@ -48,13 +48,13 @@ public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
 
 
 		Element rootCompositor = (Element) referenceComplexType.getElementsByTagNameNS( referenceComplexType.getNamespaceURI(),
-				SchemaElementVerifier.SEQUENCE).item(0);
+				XSDUtil.SEQUENCE).item(0);
 		if(rootCompositor == null)
 			rootCompositor = (Element) referenceComplexType.getElementsByTagNameNS( referenceComplexType.getNamespaceURI(),
-					SchemaElementVerifier.ALL).item(0);
+					XSDUtil.ALL).item(0);
 		if(rootCompositor == null)
 			rootCompositor = (Element) referenceComplexType.getElementsByTagNameNS( referenceComplexType.getNamespaceURI(),
-					SchemaElementVerifier.CHOICE).item(0);
+					XSDUtil.CHOICE).item(0);
 
 		if(rootCompositor != null){
 
@@ -87,7 +87,7 @@ public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
 
 				private TreeItem createNewNode(TreeItem selectedItem){
 					TreeItem newNode;
-					if(!SchemaElementVerifier.isElement((Element) selectedItem.getData())){
+					if(!XSDUtil.isElement((Element) selectedItem.getData())){
 						newNode = new TreeItem(selectedItem,0,0);
 					}
 					else{
@@ -135,13 +135,13 @@ public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
 			Element referenceComplexType2) {
 		StringBuilder topMessage = new StringBuilder();
 		topMessage.append("The type ");
-		if(SchemaElementVerifier.isAnonymous(referenceComplexType)){
+		if(XSDUtil.isAnonymous(referenceComplexType)){
 			topMessage.append("of the element \"");			
-			topMessage.append(SchemaElementVerifier.getName((Element) referenceComplexType.getParentNode()));
+			topMessage.append(XSDUtil.getName((Element) referenceComplexType.getParentNode()));
 			topMessage.append("\"");
 		}
 		else
-			topMessage.append(SchemaElementVerifier.getName(referenceComplexType));
+			topMessage.append(XSDUtil.getName(referenceComplexType));
 		topMessage.append(" don`t have a root compositor, chose one:");
 		Label topLabel = new Label(composite, SWT.NONE);
 		topLabel.setText(topMessage.toString());
@@ -153,13 +153,13 @@ public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
 			Element referenceComplexType2) {
 		StringBuilder topMessage = new StringBuilder();
 		topMessage.append("Select the position of the new element on the type ");
-		if(SchemaElementVerifier.isAnonymous(referenceComplexType)){
+		if(XSDUtil.isAnonymous(referenceComplexType)){
 			topMessage.append("of the element \"");			
-			topMessage.append(SchemaElementVerifier.getName((Element) referenceComplexType.getParentNode()));
+			topMessage.append(XSDUtil.getName((Element) referenceComplexType.getParentNode()));
 			topMessage.append("\"");
 		}
 		else
-			topMessage.append(SchemaElementVerifier.getName(referenceComplexType));
+			topMessage.append(XSDUtil.getName(referenceComplexType));
 		Label topLabel = new Label(composite, SWT.NONE);
 		topLabel.setText(topMessage.toString());
 		topLabel.setSize(600,50);	

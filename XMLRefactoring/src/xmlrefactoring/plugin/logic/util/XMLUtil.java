@@ -35,9 +35,9 @@ public abstract class XMLUtil {
 	
 	public static QName createQName(Element element){
 		String namespace = null;
-		if(SchemaElementVerifier.isGlobal(element))
-			namespace = SchemaElementVerifier.getTargetNamespace(element);
-		return new QName(namespace, SchemaElementVerifier.getName(element));
+		if(XSDUtil.isGlobal(element))
+			namespace = XSDUtil.getTargetNamespace(element);
+		return new QName(namespace, XSDUtil.getName(element));
 	}
 
 	public static String createQName(String prefix, String elementName){
@@ -91,7 +91,7 @@ public abstract class XMLUtil {
 	}
 	
 	public static Element createComplexType(Element root, String name) {
-		String qName = XMLUtil.createQName(root.getPrefix(), SchemaElementVerifier.COMPLEX_TYPE);
+		String qName = XMLUtil.createQName(root.getPrefix(), XSDUtil.COMPLEX_TYPE);
 		Element complexType = root.getOwnerDocument().createElement(qName);
 		Attr nameAttr = complexType.getOwnerDocument().createAttribute("name");
 		nameAttr.setValue(name);

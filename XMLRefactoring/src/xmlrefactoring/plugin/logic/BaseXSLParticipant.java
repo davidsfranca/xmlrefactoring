@@ -22,16 +22,16 @@ import xmlrefactoring.plugin.xslt.FileControl;
 public abstract class BaseXSLParticipant extends BaseParticipant {
 
 	private static final String XSLT_CHANGE_TEXT = "XSLT change";
-	
+
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
-		
+
 		CompositeChange compositeChange = new CompositeChange(XSLT_CHANGE_TEXT);
 		IPath xslPath;
 		IPath xslPathRev;
 		IFile schemaFile = baseArguments.getSchemaFile();
-		
+
 		if(FileControl.isUnderVersionControl(schemaFile)){
 			xslPath = FileControl.getNextPath(schemaFile, false);
 			Change incrementDescriptorLastFile = FileControl.incrementLastFile(schemaFile);
@@ -43,12 +43,15 @@ public abstract class BaseXSLParticipant extends BaseParticipant {
 			xslPath = FileControl.getNextPath(schemaFile, true);
 			xslPathRev = FileControl.getNextReversePath(schemaFile,true);
 		}
-		Change xslChange = new CreateXSLChange(getXMLRefactoring(), xslPath);
-		compositeChange.add(xslChange);
-		
-		Change xslReverseChange = new CreateXSLChange(getXMLRefactoring().getReverseRefactoring(), xslPathRev);
-		compositeChange.add(xslReverseChange);
-		
+
+		XMLRefactoring refactoring = getXMLRefactoring();
+		if(refactoring != null){
+			Change xslChange = new CreateXSLChange(getXMLRefactoring(), xslPath);
+			compositeChange.add(xslChange);
+
+			Change xslReverseChange = new CreateXSLChange(getXMLRefactoring().getReverseRefactoring(), xslPathRev);
+			compositeChange.add(xslReverseChange);
+		}
 
 		return compositeChange;		
 	}

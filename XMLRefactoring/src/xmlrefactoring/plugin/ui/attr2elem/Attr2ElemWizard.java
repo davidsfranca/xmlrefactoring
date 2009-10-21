@@ -8,7 +8,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import xmlrefactoring.plugin.logic.attr2elem.Attr2ElemProcessor;
-import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
 import xmlrefactoring.plugin.ui.BaseRefactoringWizard;
 
@@ -31,7 +31,7 @@ public class Attr2ElemWizard extends BaseRefactoringWizard<Attr2ElemProcessor>{
 						Attr attr = (Attr) node;
 						Element reference = attr.getOwnerElement();
 						Element container = reference;
-						while(!SchemaElementVerifier.isComplexType(container))
+						while(!XSDUtil.isComplexType(container))
 							container = (Element) container.getParentNode();
 						addPage(new ElementPositioningWizardPage(attribute, container));
 					}

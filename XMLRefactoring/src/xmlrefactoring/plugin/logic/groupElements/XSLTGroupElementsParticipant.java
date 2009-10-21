@@ -15,7 +15,7 @@ import org.eclipse.xsd.XSDNamedComponent;
 import org.w3c.dom.Element;
 
 import xmlrefactoring.plugin.logic.BaseXSLParticipant;
-import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
 import xmlrefactoring.plugin.refactoring.GroupElementsRefactoring;
@@ -37,9 +37,14 @@ public class XSLTGroupElementsParticipant extends BaseXSLParticipant {
 			elementsGroup.add(elementQName);
 		}
 		
-		QName groupName = new QName(SchemaElementVerifier.getTargetNamespace(baseElement),
+		QName groupName = new QName(XSDUtil.getTargetNamespace(baseElement),
 				arguments.getGroupName());
-		return new GroupElementsRefactoring(paths, groupName, elementsGroup, true);
+		
+		XMLRefactoring refactoring = null;		
+		if(!paths.isEmpty())
+			refactoring = new GroupElementsRefactoring(paths, groupName, elementsGroup, true);
+		
+		return refactoring;
 	}
 
 	@Override

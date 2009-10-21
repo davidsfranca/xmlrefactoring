@@ -1,8 +1,13 @@
 package xmlrefactoring.plugin.logic.util;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.eclipse.xsd.XSDSchema;
 import org.w3c.dom.Element;
 
-public class SchemaElementVerifier {
+public class XSDUtil {
 	
 	public static final  String SCHEMA = "schema";
 	public static final String ELEMENT = "element";
@@ -64,6 +69,18 @@ public class SchemaElementVerifier {
 
 	public static boolean isSimpleContent(Element derivedContent) {
 		return derivedContent.getLocalName().equals(SIMPLE_CONTENT);
+	}
+	
+	public static String searchTargetNamespacePrefix(XSDSchema schema) {
+		Map<String, String> map = schema.getQNamePrefixToNamespaceMap();
+		String targetNamespace = schema.getTargetNamespace();
+		Iterator<Entry<String, String>> iterator = map.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<String, String> entry = iterator.next();
+			if(entry.getValue().equals(targetNamespace))
+				return entry.getKey();
+		}
+		return null;
 	}
 
 }
