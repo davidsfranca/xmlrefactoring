@@ -55,7 +55,8 @@ public class XSLTransformer {
 		ByteArrayInputStream input = new ByteArrayInputStream(inputBytes); 
 
 		//Set implementations there are going to be used
-		System.setProperty("javax.xml.transform.TransformerFactory",
+		if(!"net.sf.saxon.TransformerFactoryImpl".equals(System.getProperty("javax.xml.transform.TransformerFactory")))
+			System.setProperty("javax.xml.transform.TransformerFactory",
 		"net.sf.saxon.TransformerFactoryImpl");
 		// Create a transform factory instance
 		TransformerFactory tfactory = TransformerFactory.newInstance();

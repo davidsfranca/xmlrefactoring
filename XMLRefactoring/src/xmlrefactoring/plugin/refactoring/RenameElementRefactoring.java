@@ -16,7 +16,7 @@ public class RenameElementRefactoring extends XMLRefactoring{
 	private String newName;
 	private static String RENAMEELEMTEMPLATE = "/template/renameTag.vm";
 
-	public RenameElementRefactoring(List<List<QName>> paths) {
+	protected RenameElementRefactoring(List<List<QName>> paths) {
 		super(paths);
 	}
 	

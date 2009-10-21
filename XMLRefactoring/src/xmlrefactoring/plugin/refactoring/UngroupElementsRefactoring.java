@@ -17,7 +17,7 @@ public class UngroupElementsRefactoring extends XMLRefactoring{
 	private static String UNGROUPELEMENTSTEMPLATE = "/template/ungroupElement.vm";
 	
 
-	public UngroupElementsRefactoring (List<List<QName>> paths) {
+	protected UngroupElementsRefactoring (List<List<QName>> paths) {
 		super(paths);
 		setRootRef(false);
 	}
