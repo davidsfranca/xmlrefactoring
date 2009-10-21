@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
-import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
 
 public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
@@ -46,7 +46,7 @@ public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 		
-		if(SchemaElementVerifier.isGlobal(attribute)){
+		if(XSDUtil.isGlobal(attribute)){
 			
 			TextChangeManager manager = new TextChangeManager();
 			
@@ -112,7 +112,7 @@ public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
 			offset += idomElement.getPrefix().length();
 			offset += ":".length();
 		}
-		return new ReplaceEdit(offset, SchemaElementVerifier.ATTRIBUTE.length(), SchemaElementVerifier.ELEMENT);		
+		return new ReplaceEdit(offset, XSDUtil.ATTRIBUTE.length(), XSDUtil.ELEMENT);		
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
 	protected boolean initialize(Object element) {
 		if(element instanceof XSDNamedComponent){
 			XSDNamedComponent component = (XSDNamedComponent) element;
-			if(SchemaElementVerifier.isAttribute(component.getElement())){
+			if(XSDUtil.isAttribute(component.getElement())){
 				attribute = component.getElement();
 				return true;
 			}

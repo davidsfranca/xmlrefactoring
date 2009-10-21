@@ -55,7 +55,7 @@ public class XPathCreator {
 		Element referenceToBeSearched = null;
 		List<QName> newSuffix;
 
-		if(SchemaElementVerifier.isGlobal(element)){
+		if(XSDUtil.isGlobal(element)){
 			newSuffix = insertGlobalElement(element,suffix);
 			paths.add(newSuffix);
 		}
@@ -68,12 +68,12 @@ public class XPathCreator {
 			Element anonymousContainer = element;
 			newSuffix = suffix;
 			do{						
-				while(SchemaElementVerifier.isAnonymous(anonymousContainer))
+				while(XSDUtil.isAnonymous(anonymousContainer))
 					anonymousContainer = (Element)anonymousContainer.getParentNode();
 				namedContainer = anonymousContainer;
-				if(SchemaElementVerifier.isElementOrAttribute(namedContainer)){
+				if(XSDUtil.isElementOrAttribute(namedContainer)){
 					//The container is an element
-					if(SchemaElementVerifier.isGlobal(namedContainer)){
+					if(XSDUtil.isGlobal(namedContainer)){
 						//If the global container is an element,  adds the path
 						newSuffix = insertGlobalElement(namedContainer, newSuffix);
 						paths.add(newSuffix);
@@ -82,9 +82,9 @@ public class XPathCreator {
 					}							
 				}	
 				anonymousContainer = (Element) namedContainer.getParentNode();
-			}while(!SchemaElementVerifier.isGlobal(namedContainer));
+			}while(!XSDUtil.isGlobal(namedContainer));
 			//If the global container isn`t an element, should search for references
-			if(!SchemaElementVerifier.isElementOrAttribute(namedContainer))
+			if(!XSDUtil.isElementOrAttribute(namedContainer))
 				referenceToBeSearched = namedContainer;
 
 		}		
@@ -108,12 +108,12 @@ public class XPathCreator {
 	
 
 	private static List<QName> insertLocalElement(Element element, List<QName> suffix) {		
-		QName elementQName = new QName(SchemaElementVerifier.getName(element));		
+		QName elementQName = new QName(XSDUtil.getName(element));		
 		return insertElement(elementQName, suffix);		
 	}
 
 	private static List<QName> insertGlobalElement(Element element, List<QName> suffix) {
-		QName elementQName = new QName(SchemaElementVerifier.getTargetNamespace(element), SchemaElementVerifier.getName(element));			
+		QName elementQName = new QName(XSDUtil.getTargetNamespace(element), XSDUtil.getName(element));			
 		return insertElement(elementQName, suffix);
 	}
 	

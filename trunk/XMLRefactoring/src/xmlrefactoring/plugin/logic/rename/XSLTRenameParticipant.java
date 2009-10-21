@@ -29,7 +29,7 @@ import org.eclipse.xsd.XSDNamedComponent;
 import org.eclipse.xsd.XSDSchema;
 
 import xmlrefactoring.plugin.logic.util.CreateXSLChange;
-import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
 import xmlrefactoring.plugin.refactoring.RenameAttributeRefactoring;
@@ -69,7 +69,7 @@ public class XSLTRenameParticipant extends RenameParticipant{
 
 		XMLRefactoring refactoring = null;
 		
-		if(SchemaElementVerifier.isElement(component.getElement())){
+		if(XSDUtil.isElement(component.getElement())){
 			paths = XPathCreator.createElementPaths(component.getElement());
 			refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName(),true);
 		}

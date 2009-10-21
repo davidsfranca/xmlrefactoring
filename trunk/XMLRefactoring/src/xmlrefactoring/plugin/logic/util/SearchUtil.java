@@ -23,8 +23,8 @@ import org.w3c.dom.Element;
 public class SearchUtil {
 
 	public static List<SearchMatch> searchReferences(Element element) throws CoreException {
-		String componentName = SchemaElementVerifier.getName(element);
-		String componentNamespace = SchemaElementVerifier.getTargetNamespace(element);
+		String componentName = XSDUtil.getName(element);
+		String componentNamespace = XSDUtil.getTargetNamespace(element);
 		QualifiedName elementQName = new QualifiedName(componentNamespace, componentName);
 		QualifiedName typeQName = new QualifiedName(element.getNamespaceURI(), element.getLocalName());
 
@@ -50,16 +50,16 @@ public class SearchUtil {
 
 	//TODO Contem erros
 	private static List<SearchMatch> searchTypeDeclaration(Element element, boolean simpleType) throws CoreException {
-		if(SchemaElementVerifier.isElement(element)){
+		if(XSDUtil.isElement(element)){
 
-			String typeName = XMLUtil.getLocalName(SchemaElementVerifier.getType(element));
+			String typeName = XMLUtil.getLocalName(XSDUtil.getType(element));
 			String componentNamespace = element.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
 			QualifiedName elementQName = new QualifiedName(componentNamespace, typeName);
 			QualifiedName typeQName;
 			if(simpleType)
-				typeQName = new QualifiedName(element.getNamespaceURI(), SchemaElementVerifier.SIMPLE_TYPE);
+				typeQName = new QualifiedName(element.getNamespaceURI(), XSDUtil.SIMPLE_TYPE);
 			else
-				typeQName = new QualifiedName(element.getNamespaceURI(), SchemaElementVerifier.COMPLEX_TYPE);
+				typeQName = new QualifiedName(element.getNamespaceURI(), XSDUtil.COMPLEX_TYPE);
 
 			String fileStr = ((IDOMNode) element).getModel().getBaseLocation();
 			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));

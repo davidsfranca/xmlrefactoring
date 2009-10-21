@@ -6,7 +6,7 @@ import org.eclipse.ltk.core.refactoring.participants.ProcessorBasedRefactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 import xmlrefactoring.plugin.logic.attr2elem.Attr2ElemProcessor;
-import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.ui.SingleInputAction;
 
 public class Attr2ElemAction extends SingleInputAction{
@@ -22,7 +22,7 @@ public class Attr2ElemAction extends SingleInputAction{
 	public void selectionChanged(IAction action, ISelection selection){
 		super.selectionChanged(action, selection);
 		if(getSelectedComponent() != null){
-			if(!SchemaElementVerifier.isAttribute(getSelectedComponent().getElement()))
+			if(!XSDUtil.isAttribute(getSelectedComponent().getElement()))
 				action.setEnabled(false);
 		}		
 	}

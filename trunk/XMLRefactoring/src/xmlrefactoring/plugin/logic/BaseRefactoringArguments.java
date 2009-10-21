@@ -76,5 +76,9 @@ public class BaseRefactoringArguments extends RefactoringArguments {
 	public Document getSchemaDocument() {
 		return schemaDocument;
 	}
+
+	public XSDSchema getSchema() {
+		return schema;
+	}
 	
 }
