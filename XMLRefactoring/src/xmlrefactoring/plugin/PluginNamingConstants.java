@@ -35,5 +35,7 @@ public class PluginNamingConstants {
 	public static final String SCHEMA_VERSION = "schemaVersion";
 
 	public static final String SCHEMA_VERSION_ADDITION = "Schema version attribute addition";
+
+	public static final String GROUP_ELEMENT_GROUPING_ELEMENT = "Grouping Element";
 	
 }

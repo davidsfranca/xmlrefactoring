@@ -1,5 +1,6 @@
 package xmlrefactoring.plugin.logic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -8,6 +9,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.xsd.XSDNamedComponent;
+import org.eclipse.xsd.XSDSchema;
 import org.w3c.dom.Document;
 
 
@@ -34,14 +36,21 @@ public class BaseRefactoringArguments extends RefactoringArguments {
 	 */
 	private Document schemaDocument;
 	
+	/**
+	 * The Schema instance
+	 */
+	private XSDSchema schema;
+	
 	public BaseRefactoringArguments(List<XSDNamedComponent> components) {
 		super();
 		this.components = components;
-		XSDNamedComponent component = components.get(0);
-		IDOMElement element = (IDOMElement) component.getElement();
-		String schemaPath = element.getModel().getBaseLocation();
+		elements = new ArrayList<IDOMElement>();
+		for(XSDNamedComponent component : components)
+			elements.add((IDOMElement) component.getElement());
+		String schemaPath = elements.get(0).getModel().getBaseLocation();
 		schemaFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(schemaPath));
-		schemaDocument = element.getOwnerDocument();
+		schemaDocument = elements.get(0).getOwnerDocument();
+		schema = components.get(0).getSchema();
 	}	
 	
 	public List<XSDNamedComponent> getComponents() {

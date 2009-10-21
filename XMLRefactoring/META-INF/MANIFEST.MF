@@ -21,4 +21,5 @@ Bundle-ClassPath: .,
  lib/velocity-1.6.2.jar,
  lib/saxon9.jar,
  lib/velocity-1.6.2-dep.jar,
- lib/saxon9-dom.jar
+ lib/saxon9-dom.jar,
+ lib/saxon9-xpath.jar

@@ -1,5 +1,7 @@
 package xmlrefactoring.plugin.logic.groupElements;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -8,6 +10,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.xsd.XSDNamedComponent;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
@@ -22,9 +25,18 @@ public class GroupElementsProcessor extends BaseProcessor {
 	 * @param components
 	 */
 	public GroupElementsProcessor(List<XSDNamedComponent> components){
+		Collections.sort(components, new Comparator<XSDNamedComponent>(){
+
+			public int compare(XSDNamedComponent arg0, XSDNamedComponent arg1) {
+				IDOMElement element0 = (IDOMElement) arg0.getElement();
+				IDOMElement element1 = (IDOMElement) arg1.getElement();
+				return element0.getStartOffset() - element1.getStartOffset();
+			}
+			
+		});
 		arguments = new GroupElementsRefactoringArguments(components);
 	}
-	
+
 	@Override
 	protected Object getElement() {
 		return arguments.getComponents();

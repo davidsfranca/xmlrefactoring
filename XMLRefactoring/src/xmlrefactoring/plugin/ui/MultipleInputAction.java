@@ -29,7 +29,7 @@ public abstract class MultipleInputAction extends BaseAction {
 			else{
 				action.setEnabled(false);
 				break;
-			}
+			}		
 	}
 
 	protected List<XSDNamedComponent> getSelectedComponents(){

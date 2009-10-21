@@ -40,30 +40,30 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
-		super.createChange(pm);
-		
-		//Gets the TextChange for the file	
-		IDOMElement idomElement = (IDOMElement) arguments.getComponents().get(0).getElement();
-		String fileStr = idomElement.getModel().getBaseLocation();
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));		
-		TextChange change = manager.get(file);
 
-		IDOMElement root = (IDOMElement) idomElement.getOwnerDocument().getDocumentElement();
+
+		//Gets the TextChange for the file		
+		TextChange change = manager.get(arguments.getSchemaFile());
+
+		//Create the new grouping type
+		IDOMElement root = (IDOMElement) arguments.getSchemaDocument().getDocumentElement();
 		Element complexType = XMLUtil.createComplexType(root, arguments.getTypeName());
-
 		Element all = createAllNode(complexType); 			
 		complexType.appendChild(all);
-
-		for(XSDNamedComponent component : arguments.getComponents()){
-			IDOMElement movingElement = (IDOMElement) component.getElement();
+		for(IDOMElement movingElement : arguments.getElements()){
 			all.appendChild(movingElement.cloneNode(true));
 			DeleteEdit deleteElement = new DeleteEdit(movingElement.getStartOffset(), movingElement.getEndOffset() - movingElement.getStartOffset());
 			TextChangeCompatibility.addTextEdit(change, PluginNamingConstants.GROUP_ELEMENT_DELETE, deleteElement);
 		}
-
 		int includeOffset = root.getEndStructuredDocumentRegion().getStartOffset();
 		InsertEdit newType = new InsertEdit(includeOffset, XMLUtil.toString(complexType));
 		TextChangeCompatibility.addTextEdit(change, PluginNamingConstants.GROUP_ELEMENT_TYPE_CREATION, newType);
+
+		//Insert the new element of the created type
+		IDOMElement firstElement = arguments.getElements().get(0);
+		int newElementOffset = firstElement.getStartOffset();
+		InsertEdit newElement = new InsertEdit(newElementOffset, XMLUtil.toString(createNewElement(firstElement)));
+		TextChangeCompatibility.addTextEdit(change, PluginNamingConstants.GROUP_ELEMENT_GROUPING_ELEMENT, newElement);
 
 		//		//Insert a complexType in the end of the document 
 		//		IDOMElement root = (IDOMElement) idomElement.getOwnerDocument().getDocumentElement();		
@@ -92,8 +92,16 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 		//		int newElementOffset = idomElement.getStartOffset();
 		//		InsertEdit newElement = new InsertEdit(newElementOffset, createElement());
 		//		TextChangeCompatibility.addTextEdit(change, "Grouping element", newElement);
-
+		super.createChange(pm);
 		return new CompositeChange(PluginNamingConstants.GROUP_ELEMENT_TRANSF_NAME,manager.getAllChanges());
+	}
+
+	private Element createNewElement(Element firstElement) {
+		String elementQName = XMLUtil.createQName(firstElement.getPrefix(),	SchemaElementVerifier.ELEMENT);
+		Element newElement = arguments.getSchemaDocument().createElement(elementQName);
+		newElement.setAttribute(SchemaElementVerifier.NAME, arguments.getGroupName());
+		newElement.setAttribute(SchemaElementVerifier.TYPE, arguments.getTypeName());		
+		return newElement;
 	}
 
 	private Element createAllNode(Element complexType) {
@@ -128,7 +136,7 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 		return sb.toString();
 	}
 
-	
+
 
 	private String createPrefix(IDOMElement idomElement){
 		String prefix = idomElement.getPrefix();
