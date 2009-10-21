@@ -39,7 +39,7 @@ public class XSLTGroupElementsParticipant extends BaseXSLParticipant {
 		
 		QName groupName = new QName(SchemaElementVerifier.getTargetNamespace(baseElement),
 				arguments.getGroupName());
-		return new GroupElementsRefactoring(paths, groupName, elementsGroup, false);
+		return new GroupElementsRefactoring(paths, groupName, elementsGroup, true);
 	}
 
 	@Override

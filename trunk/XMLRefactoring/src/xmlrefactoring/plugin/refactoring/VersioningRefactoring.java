@@ -17,7 +17,7 @@ public class VersioningRefactoring extends XMLRefactoring{
 
 	
 	
-	public VersioningRefactoring(List<List<QName>> paths) {
+	protected VersioningRefactoring(List<List<QName>> paths) {
 		super(paths);
 		setVersionNumber(0);
 		createReverseRefactoring();
@@ -33,10 +33,10 @@ public class VersioningRefactoring extends XMLRefactoring{
 	
 	@Override
 	public void createReverseRefactoring() {
-		if(versionNumber>0)
+		if(versionNumber>1)
 			setReverseRefactoring(new VersioningRefactoring(null,versionNumber-1, false));
 		else
-			setReverseRefactoring(new RemoveVersioning(null));
+			setReverseRefactoring(new RemoveVersioning());
 	}	
 	
 	@Override

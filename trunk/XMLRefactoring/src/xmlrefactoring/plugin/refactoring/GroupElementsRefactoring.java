@@ -22,14 +22,14 @@ public class GroupElementsRefactoring extends XMLRefactoring{
 	private static String GROUPELEMENTSTEMPLATE = "/template/groupElement.vm";
 	
 
-	public GroupElementsRefactoring(List<List<QName>> paths) {
+	protected GroupElementsRefactoring(List<List<QName>> paths) {
 		super(paths);
 	}
 	
 	public GroupElementsRefactoring(List<List<QName>> paths, QName groupName, List<QName> elementsGroup, boolean isRootRef) {
 		super(paths);
 		setGroupName(groupName);
-		setInGroup(inGroup);
+		setInGroup(elementsGroup);
 		if(isRootRef)
 			createReverseRefactoring();
 		setRootRef(isRootRef);
@@ -42,7 +42,7 @@ public class GroupElementsRefactoring extends XMLRefactoring{
 			List<QName> path = new ArrayList<QName>();
 			List<QName> oldPath = getPaths().get(i);
 			int lastIndex = oldPath.size()-1;
-			for(int j = 0; j<lastIndex;j++)
+			for(int j = 0; j<=lastIndex;j++)
 				path.add(new QName(oldPath.get(j).getNamespaceURI(),oldPath.get(j).getLocalPart()));
 			path.add(new QName(getGroupName().getNamespaceURI(),getGroupName().getLocalPart()));
 			newPaths.add(path);

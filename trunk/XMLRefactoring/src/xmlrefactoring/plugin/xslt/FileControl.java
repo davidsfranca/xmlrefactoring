@@ -68,7 +68,7 @@ public class FileControl {
 	private static final String COMPOSITENAME = "Add to version control";
 	//TODO: mudar para arquivo
 	private static final String INITIAL_DESCRIPTOR = "<" + DESCRIPTORTAG + ">\n<" + AllVERSIONSTAG + ">\n</" + AllVERSIONSTAG + ">\n<" +
-	FILETAG + ">2</" + FILETAG + ">\n<" + VERSIONTAG + ">0</" + VERSIONTAG + ">\n</" +
+	FILETAG + ">2</" + FILETAG + ">\n<" + VERSIONTAG + ">1</" + VERSIONTAG + ">\n</" +
 	DESCRIPTORTAG + ">";
 
 	/**
@@ -92,7 +92,7 @@ public class FileControl {
 
 		IPath fileName=null;
 		if(isInitial)
-			fileName = getFilePath(schemaFile, 0, 2);
+			fileName = getFilePath(schemaFile, 1, 2);
 		else{
 			int[] versionAndFile = readDescriptor(schemaFile);
 			fileName = getFilePath(schemaFile, versionAndFile[0], versionAndFile[1]+1);
@@ -103,7 +103,7 @@ public class FileControl {
 	public static IPath getNextReversePath(IFile schemaFile, boolean isInitial) {
 		IPath path;
 		if(isInitial){
-			path = getFilePath(schemaFile, 0, -2);
+			path = getFilePath(schemaFile, 1, -2);
 		}else{
 			int[] versionAndFile = readDescriptor(schemaFile);
 			path = getFilePath(schemaFile, versionAndFile[0], -versionAndFile[1]-1);
@@ -120,7 +120,6 @@ public class FileControl {
 		CompositeChange allChanges = new CompositeChange(COMPOSITENAME);
 
 		//Create descriptor file
-		IContainer container = schemaFile.getParent();
 		Change descriptorCreation = new CreateFileChange(getDescriptorFilePath(schemaFile), new ByteArrayInputStream(INITIAL_DESCRIPTOR.getBytes()));		
 		allChanges.add(descriptorCreation);
 
@@ -129,11 +128,11 @@ public class FileControl {
 		allChanges.add(refDirCreation);
 
 		//Create version directory
-		allChanges.add(createVersioningDir(schemaFile, 0));
+		allChanges.add(createVersioningDir(schemaFile, 1));
 
 
 		//Create XSL that adds version
-		Change xslChange = createVersioningRefactoring(schemaFile, 0);
+		Change xslChange = createVersioningRefactoring(schemaFile, 1);
 		allChanges.add(xslChange);
 
 		return allChanges;
@@ -187,7 +186,7 @@ public class FileControl {
 	 * @param schemafile
 	 * @return
 	 */
-	public static List<File> getAllXSL(File schemaFile, int initialVersion, int lastVersion){
+	public static List<File> getAllXSL(File schemaFile, int startVersion, int finalVersion){
 
 		List<File> files = new ArrayList<File>();
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -199,14 +198,27 @@ public class FileControl {
 			XPath xpath = XPathFactory.newInstance().newXPath();
 			XPathExpression expr;
 
-			for(int i = initialVersion; i <= lastVersion; i++){
-				expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
-				Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
-				int maxFile = new Integer(file.getFirstChild().getNodeValue());
-				for(int j = 1; j<=maxFile; j++){
-					//TODO:Manipula‹o de arquivo bem feia - mudar
-					files.add(new File(getFilePath(schemaFile, i, j)));
+			if(startVersion<=finalVersion){
+				for(int i = startVersion+1; i <= finalVersion; i++){
+					expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
+					Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+					int maxFile = new Integer(file.getFirstChild().getNodeValue());
+					for(int j = 1; j<=maxFile; j++){
+						//TODO:Manipula‹o de arquivo bem feia - mudar
+						files.add(new File(getFilePath(schemaFile, i, j)));
+					}
 				}
+			}else{
+				for(int i = startVersion; i > finalVersion; i--){
+					expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
+					Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+					int maxFile = new Integer(file.getFirstChild().getNodeValue());
+					for(int j = -maxFile; j<= -1; j++){
+						//TODO:Manipula‹o de arquivo bem feia - mudar
+						files.add(new File(getFilePath(schemaFile, i, j)));
+					}
+				}
+			
 			}
 
 		} catch (ParserConfigurationException e1) {

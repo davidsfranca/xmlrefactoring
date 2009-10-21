@@ -22,7 +22,7 @@ public class RenameAttributeRefactoring extends XMLRefactoring{
 	private static String RENAMEATTRTEMPLATE = "/template/renameAttr.vm";
 	
 
-	public RenameAttributeRefactoring(List<List<QName>> paths) {
+	protected RenameAttributeRefactoring(List<List<QName>> paths) {
 		super(paths);
 	}
 	

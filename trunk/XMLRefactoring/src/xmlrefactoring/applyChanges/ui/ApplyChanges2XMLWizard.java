@@ -25,7 +25,7 @@ public class ApplyChanges2XMLWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		XSLTransformer.changeVersion(schema,page.getSelectedXMLFile(),page.getXmlVersion()+1, page.getSelectedVersion());
+		XSLTransformer.changeVersion(schema,page.getSelectedXMLFile(),page.getXmlVersion(), page.getSelectedVersion());
 		return true;
 	}
 	

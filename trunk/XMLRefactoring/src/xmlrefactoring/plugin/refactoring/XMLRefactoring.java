@@ -33,7 +33,7 @@ public abstract class XMLRefactoring {
 	 * Constructor 
 	 * Transform the array into a unique path
 	 */
-	public XMLRefactoring(List<List<QName>> paths){
+	protected XMLRefactoring(List<List<QName>> paths){
 		this.paths = paths;
 	}
 	

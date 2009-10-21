@@ -11,8 +11,8 @@ public class RemoveVersioning extends XMLRefactoring{
 	private static String REMOVEVERSIONTEMPLATE = "/template/removeVersioning.vm";
 
 
-	public RemoveVersioning(List<List<QName>> paths) {
-		super(paths);
+	public RemoveVersioning() {
+		super(null);
 		setRootRef(false);
 	}
 	
