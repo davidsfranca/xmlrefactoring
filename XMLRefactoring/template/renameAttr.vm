@@ -16,9 +16,9 @@
 	<xsl:template match="/#foreach( $elem in $path )/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end">
 	<xsl:copy>
 	    <xsl:attribute name="$newName" namespace="$attrName.getNamespaceURI()"/>
-	    <xsl:copy-of select="@* [not((namespace-uri()='$attrName.getNamespaceURI()') and (local-name() ='$attrName.getLocalName()'))] />
+	    <xsl:copy-of select="@* [not((namespace-uri()='$attrName.getNamespaceURI()') and (local-name() ='$attrName.getLocalPart()'))]" />
 	    <xsl:attribute name="$newName" namespace="$attrName.getNamespaceURI()">
-		<xsl:value-of select="@* [((local-name(.) =''$attrName.getLocalName()')and(namespace-uri(.)='$attrName.getNamespaceURI()'))]"/>
+		<xsl:value-of select="@* [((local-name(.) ='$attrName.getLocalPart()')and(namespace-uri(.)='$attrName.getNamespaceURI()'))]"/>
 	    </xsl:attribute>
 	    <xsl:for-each select="namespace::*">
 			<xsl:copy />

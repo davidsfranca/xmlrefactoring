@@ -20,7 +20,7 @@
 	<xsl:template match="/#foreach( $elem in $paths.get($count))/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end
 /element()[#set( $maxIndex = $inGroup.size() - 1 ) #foreach($count in [0..$maxIndex])(namespace-uri(.)='$inGroup.get($count).getNamespaceURI()')and(local-name(.)='$inGroup.get($count).getLocalPart()')#if($count!=$maxIndex) or #end#end]">
 		#set($actual = $count + 1)
-		<xsl:if test="set$count[$actual] = current()">
+		<xsl:if test="$set$count[$actual] = current()">
 			<xsl:element name="$groupName.getLocalPart()" namespace="$groupName.getNamespaceURI()">
 			#foreach($elem in $inGroup)
 				<xsl:copy-of select="../element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name()='$elem.getLocalPart()')]"/>
