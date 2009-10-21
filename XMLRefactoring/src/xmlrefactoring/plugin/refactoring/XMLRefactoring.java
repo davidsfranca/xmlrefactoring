@@ -1,5 +1,6 @@
 package xmlrefactoring.plugin.refactoring;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -34,6 +35,8 @@ public abstract class XMLRefactoring {
 	 * Transform the array into a unique path
 	 */
 	protected XMLRefactoring(List<List<QName>> paths){
+		if(paths==null)
+			paths = new ArrayList();
 		this.paths = paths;
 	}
 	
