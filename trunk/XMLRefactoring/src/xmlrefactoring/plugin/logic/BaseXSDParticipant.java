@@ -1,8 +1,5 @@
 package xmlrefactoring.plugin.logic;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -17,7 +14,6 @@ import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.wst.common.core.search.SearchMatch;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.eclipse.wst.xsd.ui.internal.refactor.TextChangeManager;
@@ -30,7 +26,6 @@ import org.w3c.dom.NodeList;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.util.SchemaElementVerifier;
-import xmlrefactoring.plugin.logic.util.SearchUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.xslt.FileControl;
 
@@ -72,6 +67,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 					IDOMElement rootElement = (IDOMElement) nodeList.item(i);
 					addSchemaVersion(rootElement);
 				}
+				
 			} catch (XPathExpressionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -85,7 +81,6 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 	private void addSchemaVersion(IDOMElement rootElement) throws CoreException {
 		
 		String elementTypeName = SchemaElementVerifier.getType(rootElement);
-		
 		if(elementTypeName == null){
 			NodeList simpleTypeList = rootElement.getElementsByTagName(SchemaElementVerifier.SIMPLE_TYPE);
 			//The element type is a local declared Simple Type
@@ -117,10 +112,11 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 	}
 
 	private void extendType(IDOMElement rootElement, String elementType) throws CoreException {		
-		String newTypeName = elementType + "Extended";		
+		String newTypeName = XMLUtil.getLocalName(elementType) + "Extended";
+		String newTypeReference = elementType + "Extended";
 		//Element update to the new type
 		Element newRootElement = (Element) rootElement.cloneNode(true);
-		newRootElement.setAttribute(SchemaElementVerifier.TYPE, newTypeName);
+		newRootElement.setAttribute(SchemaElementVerifier.TYPE, newTypeReference);
 		createReplacement(newRootElement, rootElement);
 		//New type
 		Element extendedType = XMLUtil.createComplexType(root, newTypeName);
@@ -184,7 +180,4 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		attr.setAttributeNode(name);
 		return attr;
 	}
-
-	
-
 }
