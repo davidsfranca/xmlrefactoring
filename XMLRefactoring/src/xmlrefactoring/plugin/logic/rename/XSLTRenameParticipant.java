@@ -131,7 +131,7 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		String newName = getRenameArguments().getNewName();
 		newName = RenameComponentProcessor.quoteString(newName);
 		IDOMAttr attr = (IDOMAttr) idomElement.getAttributeNode("name");
-		int length = attr.getEndOffset() - attr.getValueRegionStartOffset() - 1;
+		int length = attr.getEndOffset() - attr.getValueRegionStartOffset();
 		ReplaceEdit replaceEdit = new ReplaceEdit(attr.getValueRegionStartOffset(), length, newName);
 		String editName = RefactoringMessages.getString("RenameComponentProcessor.Component_Refactoring_update_declatation");
 		TextChangeCompatibility.addTextEdit(textChange, editName, replaceEdit);

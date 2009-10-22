@@ -7,10 +7,15 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.ltk.core.refactoring.Change;
+import org.eclipse.ltk.core.refactoring.CompositeChange;
+import org.junit.After;
 import org.junit.Test;
 
 import xmlrefactoring.plugin.xslt.FileControl;
@@ -28,14 +33,26 @@ public class FileControlTest {
 	private static final String NEXT_XSL_PATH = BASE_PATH + "/.REF_underVersionControlTest/.v_5/.ref_2.xsl";
 	private static final String INITIAL_REVERSE_XSL_PATH = BASE_PATH + "/.REF_underVersionControlTest/.v_1/.ref_-2.xsl";
 	private static final String NEXT_REVERSE_XSL_PATH = BASE_PATH + "/.REF_underVersionControlTest/.v_5/.ref_-2.xsl";
+	private static final String NEW_VERSION_DIR = BASE_REF_PATH + "/.v_6";
+	private static final String NEW_VERSION_REFACTORING = NEW_VERSION_DIR + "/.ref_1.xsl";
+	private static final String NEW_VERSION_REVERSE_REF = NEW_VERSION_DIR + "/.ref_-1.xsl";
 	private static final int[] expectedDescriptor = {5,1};	
 	
 	private IFile underVersionControlFile;
+	private IWorkspaceRoot workspaceRoot;
+	
+	private IFolder newVersionDir;
+	private IFile newVersionRef;
+	private IFile newVersionRevRef;
 	
 	public FileControlTest() throws CoreException{
-		ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
+		workspaceRoot = ResourcesPlugin.getWorkspace().getRoot(); 
+		workspaceRoot.refreshLocal(IResource.DEPTH_INFINITE, null);
 		Path path = new Path(UNDER_VERSION_CONTROL_PATH);
 		underVersionControlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+		newVersionDir = workspaceRoot.getFolder(new Path(NEW_VERSION_DIR));
+		newVersionRef = workspaceRoot.getFile(new Path(NEW_VERSION_REFACTORING));
+		newVersionRevRef = workspaceRoot.getFile(new Path(NEW_VERSION_REVERSE_REF));
 	}
 	
 	@Test
@@ -117,5 +134,32 @@ public class FileControlTest {
 		sb.append(".xsl");
 		return sb.toString();
 	}
-
+	
+	//Tests createVersioningDir too
+	@Test
+	public void createVersioningRefactoringTest() throws CoreException{
+		
+		Assert.assertFalse(newVersionDir.exists());
+		Assert.assertFalse(newVersionRef.exists());
+		Assert.assertFalse(newVersionRevRef.exists());
+		
+		Change versionDirCreation = FileControl.createVersioningDir(underVersionControlFile, 6);
+		versionDirCreation.perform(null);
+		CompositeChange versioningRefactoring = FileControl.createVersioningRefactoring(underVersionControlFile, 6);
+		for(Change change : versioningRefactoring.getChildren())
+			change.perform(null);
+		ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);		
+		
+		Assert.assertTrue(newVersionDir.exists());
+		Assert.assertTrue(newVersionRef.exists());
+		Assert.assertTrue(newVersionRevRef.exists());
+	}
+	
+	@After
+	public void cleanUp() throws CoreException{
+		newVersionRef.delete(true, null);
+		newVersionRevRef.delete(true, null);
+		newVersionDir.delete(true, null);
+	}
+	
 }
