@@ -186,7 +186,7 @@ public class FileControl {
 						files.add(new File(getFilePath(schemaFile, i, j)));
 					}
 				}
-			}else{
+			}else if(startVersion!=finalVersion){
 				for(int i = startVersion; i > finalVersion; i--){
 					expr = xpath.compile(VERSIONXPATH+"[@"+VERSIONATTR+"="+i+"]");
 					Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
@@ -383,7 +383,7 @@ public class FileControl {
 
 	public static Change createVersioningRefactoring(IFile schemaFile,
 			int newVersion) {
-		VersioningRefactoring ref = new VersioningRefactoring(null,newVersion, true);
+		VersioningRefactoring ref = new VersioningRefactoring(newVersion);
 		Change directChange = new CreateXSLChange(ref,getFilePath(schemaFile, newVersion, 1));
 		Change reverseChange = new CreateXSLChange(ref.getReverseRefactoring(),getFilePath(schemaFile, newVersion, -1));
 

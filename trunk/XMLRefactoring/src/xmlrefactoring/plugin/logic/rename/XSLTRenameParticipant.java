@@ -71,12 +71,12 @@ public class XSLTRenameParticipant extends RenameParticipant{
 		
 		if(XSDUtil.isElement(component.getElement())){
 			paths = XPathCreator.createElementPaths(component.getElement());
-			refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName(),true);
+			refactoring = new RenameElementRefactoring(paths, getRenameArguments().getNewName());
 		}
 		else{
 			paths = XPathCreator.createAttributePaths(component.getElement());	
 			QName attr = XMLUtil.createQName(component.getElement());
-			refactoring = new RenameAttributeRefactoring(paths,getRenameArguments().getNewName(), attr, true);
+			refactoring = new RenameAttributeRefactoring(paths,getRenameArguments().getNewName(), attr);
 		}
 			
 		String schemaPath = ((IDOMElement) component.getElement()).getModel().getBaseLocation();

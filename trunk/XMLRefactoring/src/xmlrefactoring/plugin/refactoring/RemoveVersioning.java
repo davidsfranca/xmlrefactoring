@@ -13,6 +13,7 @@ public class RemoveVersioning extends XMLRefactoring{
 
 	public RemoveVersioning() {
 		super(null);
+		//Remove Versioning is never a root refactor
 		setRootRef(false);
 	}
 	
