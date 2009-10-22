@@ -56,6 +56,8 @@ public class XPathCreatorTest {
 	private final QName[][] EXPECTED_ATTRIBUTE_GROUP_PATHS = {
 			{new QName(TEST_NAMESPACE, "globalElement7")}
 	};
+	
+	
 
 	@Test
 	public void testCreateElementPaths() throws CoreException {

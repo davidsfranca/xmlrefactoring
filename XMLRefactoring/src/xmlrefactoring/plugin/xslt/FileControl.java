@@ -71,6 +71,8 @@ public class FileControl {
 	FILETAG + ">2</" + FILETAG + ">\n<" + VERSIONTAG + ">1</" + VERSIONTAG + ">\n</" +
 	DESCRIPTORTAG + ">";
 
+	//Consult data from XSL and XSL control files
+	
 	/**
 	 * Tests if there is already a descriptor and 
 	 * @return
@@ -79,7 +81,6 @@ public class FileControl {
 		IContainer root = schemaFile.getWorkspace().getRoot();
 		return root.exists(getDescriptorFilePath(schemaFile));
 	}
-
 
 	/**
 	 * Return where the next refactoring file should be created
@@ -100,6 +101,13 @@ public class FileControl {
 		return fileName;		
 	}
 
+	/**
+	 * Return where the next reverse refactoring file should be created
+	 * 
+	 * @param schemaFile
+	 * @param isInitial - flag to know if there is already an descriptor for that file or not
+	 * @return
+	 */
 	public static IPath getNextReversePath(IFile schemaFile, boolean isInitial) {
 		IPath path;
 		if(isInitial){
@@ -112,41 +120,12 @@ public class FileControl {
 	}
 
 	/**
-	 * Creates all the required structure to versioning the refactorings in a XSD file
-	 * @param schemaFile
-	 * @return
-	 */
-	public static CompositeChange addToVersionControl(IFile schemaFile){
-		CompositeChange allChanges = new CompositeChange(COMPOSITENAME);
-
-		//Create descriptor file
-		Change descriptorCreation = new CreateFileChange(getDescriptorFilePath(schemaFile), new ByteArrayInputStream(INITIAL_DESCRIPTOR.getBytes()));		
-		allChanges.add(descriptorCreation);
-
-		//Create refactoring directory
-		Change refDirCreation = new CreateFolderChange(getRefactoringDirPath(schemaFile));
-		allChanges.add(refDirCreation);
-
-		//Create version directory
-		allChanges.add(createVersioningDir(schemaFile, 1));
-
-
-		//Create XSL that adds version
-		Change xslChange = createVersioningRefactoring(schemaFile, 1);
-		allChanges.add(xslChange);
-
-		return allChanges;
-	}
-
-
-	/**
 	 * Reads the descriptor file for that Schema 
 	 * Gets the last version and file Number
 	 * Only called when it is known that the descriptor file is available
 	 * @param schemaFile
 	 * @return [0]: version number, [1]: file number
 	 */	
-
 	public static int[] readDescriptor (IFile schemaFile) {
 
 		int[] versionAndFile = new int[2];
@@ -178,8 +157,7 @@ public class FileControl {
 		}
 		return versionAndFile;	
 	}
-
-
+	
 	/**
 	 * Reads the descriptor file for that Schema 
 	 * Gets the last file Number for each version
@@ -236,26 +214,7 @@ public class FileControl {
 		}
 		return files;
 	}
-	// It is called from the RefactoringParticipant and from the versioning participant
-	public static Change createVersioningDir(IFile schemaFile, int version){
-
-		return new CreateFolderChange(getVersionDirPath(schemaFile, version));
-
-	}
-
-	public static Change createVersioningRefactoring(IFile schemaFile,
-			int newVersion) {
-		VersioningRefactoring ref = new VersioningRefactoring(null,newVersion, true);
-		Change directChange = new CreateXSLChange(ref,getFilePath(schemaFile, newVersion, 1));
-		Change reverseChange = new CreateXSLChange(ref.getReverseRefactoring(),getFilePath(schemaFile, newVersion, -1));
-
-		CompositeChange versionChange = new CompositeChange("Version Change");
-		versionChange.add(directChange);
-		versionChange.add(reverseChange);
-
-		return versionChange;
-	}
-
+	
 	public static IPath getDescriptorFilePath(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
 		IPath descPath = container.getFullPath().append(buildDescriptorFilePath(schemaFile));		
@@ -382,6 +341,59 @@ public class FileControl {
 
 		return filePath.toString();
 	}
+
+	
+	
+	//Create changes into the XSL and XSL control files
+	
+	/**
+	 * Creates all the required structure to versioning the refactorings in a XSD file
+	 * @param schemaFile
+	 * @return
+	 */
+	public static CompositeChange addToVersionControl(IFile schemaFile){
+		CompositeChange allChanges = new CompositeChange(COMPOSITENAME);
+
+		//Create descriptor file
+		Change descriptorCreation = new CreateFileChange(getDescriptorFilePath(schemaFile), new ByteArrayInputStream(INITIAL_DESCRIPTOR.getBytes()));		
+		allChanges.add(descriptorCreation);
+
+		//Create refactoring directory
+		Change refDirCreation = new CreateFolderChange(getRefactoringDirPath(schemaFile));
+		allChanges.add(refDirCreation);
+
+		//Create version directory
+		allChanges.add(createVersioningDir(schemaFile, 1));
+
+
+		//Create XSL that adds version
+		Change xslChange = createVersioningRefactoring(schemaFile, 1);
+		allChanges.add(xslChange);
+
+		return allChanges;
+	}
+
+	
+	// It is called from the RefactoringParticipant and from the versioning participant
+	public static Change createVersioningDir(IFile schemaFile, int version){
+
+		return new CreateFolderChange(getVersionDirPath(schemaFile, version));
+
+	}
+
+	public static Change createVersioningRefactoring(IFile schemaFile,
+			int newVersion) {
+		VersioningRefactoring ref = new VersioningRefactoring(null,newVersion, true);
+		Change directChange = new CreateXSLChange(ref,getFilePath(schemaFile, newVersion, 1));
+		Change reverseChange = new CreateXSLChange(ref.getReverseRefactoring(),getFilePath(schemaFile, newVersion, -1));
+
+		CompositeChange versionChange = new CompositeChange("Version Change");
+		versionChange.add(directChange);
+		versionChange.add(reverseChange);
+
+		return versionChange;
+	}
+
 
 	public static Change incrementLastFile(IFile schemaFile) throws CoreException{
 		try{
