@@ -42,7 +42,6 @@ import xmlrefactoring.plugin.logic.util.CreateFolderChange;
 import xmlrefactoring.plugin.logic.util.CreateXSLChange;
 import xmlrefactoring.plugin.refactoring.VersioningRefactoring;
 
-
 public class FileControl {
 
 	//CONSTANTS - PREFIX
@@ -342,8 +341,6 @@ public class FileControl {
 		return filePath.toString();
 	}
 
-	
-	
 	//Create changes into the XSL and XSL control files
 	
 	/**
@@ -372,16 +369,16 @@ public class FileControl {
 
 		return allChanges;
 	}
-
 	
-	// It is called from the RefactoringParticipant and from the versioning participant
+	// It is called from the versioning participant
 	public static Change createVersioningDir(IFile schemaFile, int version){
 
 		return new CreateFolderChange(getVersionDirPath(schemaFile, version));
 
 	}
 
-	public static Change createVersioningRefactoring(IFile schemaFile,
+	// It is called from the versioning participant
+	public static CompositeChange createVersioningRefactoring(IFile schemaFile,
 			int newVersion) {
 		VersioningRefactoring ref = new VersioningRefactoring(newVersion);
 		Change directChange = new CreateXSLChange(ref,getFilePath(schemaFile, newVersion, 1));

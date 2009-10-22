@@ -1,9 +1,6 @@
 package xmlrefactoring.plugin.logic;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,6 +10,7 @@ import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
 import org.eclipse.wst.xsd.ui.internal.refactor.TextChangeManager;
@@ -26,19 +24,18 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
-import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.xslt.FileControl;
 
 public abstract class BaseXSDParticipant extends BaseParticipant{
-	
+
 	private static final String ROOT_ELEMENT_XPATH = "/element()[(namespace-uri(.)='http://www.w3.org/2001/XMLSchema')and(local-name(.)='schema')]/element()[(namespace-uri(.)='http://www.w3.org/2001/XMLSchema')and(local-name(.)='element')]";
 	protected Document schemaDocument;
 	protected TextChangeManager manager;
 	private TextChange schemaFileChange;
 	private IDOMElement root;
-	
-	
+
 	@Override
 	public void initialize(RefactoringArguments arguments){
 		super.initialize(arguments);
@@ -46,7 +43,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		manager = new TextChangeManager();
 		schemaFileChange = manager.get(baseArguments.getSchemaFile());
 	}
-	
+
 	/**
 	 * Base method that adds the schemaVersion attribute to the root elements
 	 * of the XML Schema
@@ -56,25 +53,25 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 	OperationCanceledException {
-		
+
 		if(!FileControl.isUnderVersionControl(baseArguments.getSchemaFile())){			
-			
+
 			root = (IDOMElement) baseArguments.getSchemaDocument().getDocumentElement();
 			List<XSDElementDeclaration> rootElements = baseArguments.getSchema().getElementDeclarations();
 			for(XSDElementDeclaration element : rootElements){
 				addSchemaVersion(element);
 			}
-						
+
 		}
-				
+
 		return null;
 	}
 
 	private void addSchemaVersion(XSDElementDeclaration element) throws CoreException {
-		
+
 		IDOMElement rootElement = (IDOMElement) element.getElement();
 		XSDTypeDefinition elementType = element.getType();
-		
+
 		String elementTypeName = XSDUtil.getType(rootElement);
 		if(elementType.getName() == null){
 			NodeList simpleTypeList = rootElement.getElementsByTagName(XSDUtil.SIMPLE_TYPE);
@@ -103,20 +100,23 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 			//TODO: Talvez seria melhor n‹o extender em alguns casos
 			extendType(rootElement, elementType);
 		}
-			
+
 	}
 
 	private void extendType(IDOMElement rootElement, XSDTypeDefinition elementType) throws CoreException {		
 		String newTypeName = elementType.getName() + "Extended";
 		String newTypeQName = XMLUtil.createQName(XSDUtil.searchTargetNamespacePrefix(baseArguments.getSchema()), elementType.getName()) + "Extended";
+
+		//Element update to the new type		
+		IDOMAttr attr = (IDOMAttr) rootElement.getAttributeNode(XSDUtil.TYPE);
+		int offset = attr.getValueRegionStartOffset();
+		int length = attr.getEndOffset() - attr.getValueRegionStartOffset();
+		ReplaceEdit replace = new ReplaceEdit(offset, length, XMLUtil.quoteString(newTypeQName));
+		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, replace);
 		
-		//Element update to the new type
-		Element newRootElement = (Element) rootElement.cloneNode(true);
-		newRootElement.setAttribute(XSDUtil.TYPE, newTypeQName);
-		createReplacement(newRootElement, rootElement);
 		//New type
 		Element extendedType = XMLUtil.createComplexType(root, newTypeName);
-		
+
 		String contentQName;
 		if(elementType.getSimpleType() == null)
 			contentQName = XMLUtil.createQName(extendedType.getPrefix(), XSDUtil.COMPLEX_CONTENT);
@@ -124,7 +124,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 			contentQName = XMLUtil.createQName(extendedType.getPrefix(), XSDUtil.SIMPLE_CONTENT);
 		Element contentElement = schemaDocument.createElement(contentQName);
 		extendedType.appendChild(contentElement);
-		
+
 		String extensionQName = XMLUtil.createQName(extendedType.getPrefix(), XSDUtil.EXTENSION);		
 		Element extension = schemaDocument.createElement(extensionQName);
 		extension.setAttribute(XSDUtil.BASE, elementType.getQName(baseArguments.getSchema()));
@@ -133,13 +133,12 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		InsertEdit extendedTypeInsert = new InsertEdit(root.getEndStartOffset(), XMLUtil.toString(extendedType));
 		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, extendedTypeInsert);		
 	}
-
 	
-
 	private void addAttributeComplexType(Element rootElement, IDOMElement complexType) {
-		Element newComplexType = (Element) complexType.cloneNode(true);
-		newComplexType.appendChild(createSchemaAttribute(rootElement.getPrefix()));
-		createReplacement(newComplexType, complexType);
+		int offset = complexType.getEndStartOffset();
+		Element schemaAttribute = createSchemaAttribute(rootElement.getPrefix());
+		InsertEdit insert = new InsertEdit(offset, XMLUtil.toString(schemaAttribute));
+		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, insert);		
 	}
 
 	private void createReplacement(Node newElement, IDOMNode oldElement) {		
@@ -173,7 +172,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		complexType.appendChild(createSchemaAttribute(rootElement.getPrefix()));
 		return complexType;
 	}
-	
+
 	private Element createSchemaAttribute(String prefix){
 		String attrQName = XMLUtil.createQName(prefix, XSDUtil.ATTRIBUTE);
 		Element attr = schemaDocument.createElement(attrQName);

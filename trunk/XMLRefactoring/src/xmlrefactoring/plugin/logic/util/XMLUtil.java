@@ -98,5 +98,14 @@ public abstract class XMLUtil {
 		complexType.setAttributeNode(nameAttr);
 		return complexType;
 	}
+	
+	public static String quoteString(String value){
+		StringBuffer sb = new StringBuffer();
+		sb.append("\"");
+		if(value != null)
+			sb.append(value);
+		sb.append("\"");		
+		return sb.toString();
+	}
 
 }
