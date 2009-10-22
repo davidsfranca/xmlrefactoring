@@ -42,7 +42,7 @@ public class XSLTGroupElementsParticipant extends BaseXSLParticipant {
 		
 		XMLRefactoring refactoring = null;		
 		if(!paths.isEmpty())
-			refactoring = new GroupElementsRefactoring(paths, groupName, elementsGroup, true);
+			refactoring = new GroupElementsRefactoring(paths, groupName, elementsGroup);
 		
 		return refactoring;
 	}

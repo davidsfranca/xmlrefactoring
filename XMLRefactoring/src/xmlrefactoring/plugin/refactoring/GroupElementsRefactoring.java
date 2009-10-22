@@ -25,8 +25,10 @@ public class GroupElementsRefactoring extends XMLRefactoring{
 	protected GroupElementsRefactoring(List<List<QName>> paths) {
 		super(paths);
 	}
-	
-	public GroupElementsRefactoring(List<List<QName>> paths, QName groupName, List<QName> elementsGroup, boolean isRootRef) {
+	public GroupElementsRefactoring(List<List<QName>> paths, QName groupName, List<QName> elementsGroup) {
+		this(paths,groupName, elementsGroup,true);
+	}
+	protected GroupElementsRefactoring(List<List<QName>> paths, QName groupName, List<QName> elementsGroup, boolean isRootRef) {
 		super(paths);
 		setGroupName(groupName);
 		setInGroup(elementsGroup);

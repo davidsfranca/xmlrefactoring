@@ -35,9 +35,18 @@ public abstract class XMLRefactoring {
 	 * Transform the array into a unique path
 	 */
 	protected XMLRefactoring(List<List<QName>> paths){
+		this(paths, true);
+	}
+	
+	/**
+	 * Constructor 
+	 * Transform the array into a unique path
+	 */
+	protected XMLRefactoring(List<List<QName>> paths, boolean isRoot){
 		if(paths==null)
 			paths = new ArrayList();
 		this.paths = paths;
+		setRootRef(isRootRef);
 	}
 	
 	/**

@@ -25,8 +25,10 @@ public class RenameAttributeRefactoring extends XMLRefactoring{
 	protected RenameAttributeRefactoring(List<List<QName>> paths) {
 		super(paths);
 	}
-	
-	public RenameAttributeRefactoring(List<List<QName>> paths, String newName, QName attr, boolean isRootRef) {
+	public  RenameAttributeRefactoring(List<List<QName>> paths, String newName, QName attr) {
+		this(paths,newName,attr, true);
+	}
+	protected RenameAttributeRefactoring(List<List<QName>> paths, String newName, QName attr, boolean isRootRef) {
 		super(paths);
 		setNewName(newName);
 		setAttrName(attr);

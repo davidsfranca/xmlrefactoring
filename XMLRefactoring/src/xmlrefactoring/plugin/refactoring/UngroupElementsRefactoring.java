@@ -21,8 +21,10 @@ public class UngroupElementsRefactoring extends XMLRefactoring{
 		super(paths);
 		setRootRef(false);
 	}
-	
-	public UngroupElementsRefactoring(List<List<QName>> paths, List<QName> inGroup, boolean isRootRef) {
+	public UngroupElementsRefactoring(List<List<QName>> paths, List<QName> inGroup) {
+		this(paths, inGroup, true);
+	}
+	protected UngroupElementsRefactoring(List<List<QName>> paths, List<QName> inGroup, boolean isRootRef) {
 		super(paths);
 		setInGroup(inGroup);
 		if(isRootRef)
@@ -32,7 +34,7 @@ public class UngroupElementsRefactoring extends XMLRefactoring{
 
 	@Override
 	public void createReverseRefactoring() {
-		QName groupName = getPaths().get(0).get(getPaths().get(0).size());
+		QName groupName = getPaths().get(0).get(getPaths().get(0).size()-1);
 		List<List<QName>> newPaths =  new ArrayList();
 		for(int i= 0; i<getPaths().size();i++){
 			List<QName> path = new ArrayList<QName>();
@@ -42,7 +44,7 @@ public class UngroupElementsRefactoring extends XMLRefactoring{
 				path.add(new QName(oldPath.get(j).getNamespaceURI(),oldPath.get(j).getLocalPart()));
 			newPaths.add(path);
 		}
-		setReverseRefactoring(new UngroupElementsRefactoring(newPaths,getInGroup(),false));
+		setReverseRefactoring(new GroupElementsRefactoring(newPaths,groupName,getInGroup(),false));
 	}
 
 	@Override

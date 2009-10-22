@@ -16,11 +16,10 @@ public class RenameElementRefactoring extends XMLRefactoring{
 	private String newName;
 	private static String RENAMEELEMTEMPLATE = "/template/renameTag.vm";
 
-	protected RenameElementRefactoring(List<List<QName>> paths) {
-		super(paths);
+	public RenameElementRefactoring(List<List<QName>> paths, String newName) {
+		this(paths,newName,true);
 	}
-	
-	public RenameElementRefactoring(List<List<QName>> paths, String newName, boolean isRootRef) {
+	protected RenameElementRefactoring(List<List<QName>> paths, String newName, boolean isRootRef) {
 		super(paths);
 		setNewName(newName);
 		if(isRootRef)
@@ -31,7 +30,7 @@ public class RenameElementRefactoring extends XMLRefactoring{
 	@Override
 	public void createReverseRefactoring() {
 		List<List<QName>> newPaths =  new ArrayList();
-		String newName = getPaths().get(0).get(0).getLocalPart();
+		String newName = getPaths().get(0).get(getPaths().get(0).size()-1).getLocalPart();
 		
 		for(int i= 0; i<getPaths().size();i++){
 			
