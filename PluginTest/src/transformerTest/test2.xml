@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<a:bbb xmlns:a="http://www.example.org/a" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1">
+	<ccc attr="attrTest">
+		<ddd> test </ddd>
+		<eee1>
+			<fff attr="otherAttr">
+				<ggg>deep test</ggg>
+			</fff>
+		</eee1>
+	</ccc>
+	<ccc attr="attrTest2">
+		<ddd> test2 </ddd>
+		<test:eee xmlns:test="http://www.example.org/test" >
+			<fff test:attr2="otherAttr">
+				<ggg>deep test2</ggg>
+			</fff>
+		</test:eee>
+	</ccc>
+	<ccc attr="attrTest3">
+		<ddd> test </ddd>
+		<eee1>
+			<fff attr="otherAttr">
+				<ggg>deep test</ggg>
+			</fff>
+		</eee1>
+		<hhh>test group</hhh>
+		<eee1>test</eee1>
+		<fff>just more test</fff>
+		<iii/>
+		<eee1>other one</eee1>
+	</ccc>	
+</a:bbb>
