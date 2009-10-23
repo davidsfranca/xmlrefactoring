@@ -1,6 +1,8 @@
 package xmlrefactoring.plugin.logic;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.ParticipantExtensionPoint;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
@@ -39,6 +41,14 @@ public abstract class BaseProcessor extends RefactoringProcessor{
 	@Override
 	public Object[] getElements(){
 		return new Object[]{getElement()};
+	}
+	
+	/**
+	 * The default processor doesn`t create any change
+	 */
+	@Override
+	public Change createChange(IProgressMonitor pm) throws CoreException{
+		return null;
 	}
 	
 	

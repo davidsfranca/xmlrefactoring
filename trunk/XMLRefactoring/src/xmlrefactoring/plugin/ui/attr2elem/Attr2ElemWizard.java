@@ -2,14 +2,15 @@ package xmlrefactoring.plugin.ui.attr2elem;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.core.search.SearchMatch;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import xmlrefactoring.plugin.logic.attr2elem.Attr2ElemProcessor;
-import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.ui.BaseRefactoringWizard;
 
 public class Attr2ElemWizard extends BaseRefactoringWizard<Attr2ElemProcessor>{
@@ -24,7 +25,7 @@ public class Attr2ElemWizard extends BaseRefactoringWizard<Attr2ElemProcessor>{
 	@Override
 	protected void addUserInputPages() {
 		try {
-			for(SearchMatch match : SearchUtil.searchReferences(attribute.getElement())){
+			for(SearchMatch match : SearchUtil.searchReferences((IDOMElement) attribute.getElement())){
 				if(match.getObject() instanceof Node){
 					Node node = (Node)match.getObject();
 					if(node instanceof Attr){

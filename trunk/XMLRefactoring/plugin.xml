@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-   <extension-point id="GroupElemenetParticipant" name="Group element participant" schema="schema/GroupElemenetParticipant.exsd"/>
+   <extension-point id="GroupElemenetParticipant" name="Group element participant" schema="schema/GroupElementParticipant.exsd"/>
    <extension-point id="Attr2ElemParticipant" name="Attribute into element transformation participant" schema="schema/Attr2ElemRefactoringParticipant.exsd"/>
+   <extension-point id="RenameParticipant" name="Rename participant" schema="schema/RenameParticipant.exsd"/>
    <extension
          id="XMLRefactoringMenu"
          name="XML Refactoring Menu"
@@ -67,15 +68,6 @@
       </objectContribution>
    </extension>
    <extension
-         point="org.eclipse.ltk.core.refactoring.renameParticipants">
-      <renameParticipant
-            class="xmlrefactoring.plugin.logic.rename.XSLTRenameParticipant"
-            id="XMLRefactoring.XSLTRenameParticipant"
-            name="XSLT Rename Participant">
-         <enablement></enablement>
-      </renameParticipant>
-   </extension>
-   <extension
          point="XMLRefactoring.GroupElemenetParticipant">
       <Participant
             class="xmlrefactoring.plugin.logic.groupElements.XSDGroupElementsParticipant"
@@ -101,6 +93,25 @@
             class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
             id="XSDAttr2ElemParticipant"
             name="Attribute transformation into element refactoring schema participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.RenameParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.rename.XSDRenameParticipant"
+            id="XSDRenameParticipant"
+            name="XSD rename participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.rename.XSLTRenameParticipant"
+            id="XSLTRenameParticipant"
+            name="XSLT rename participant">
          <enablement>
             enablement body text
          </enablement>
