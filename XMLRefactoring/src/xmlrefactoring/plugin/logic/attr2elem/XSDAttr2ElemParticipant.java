@@ -73,7 +73,7 @@ public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
 	}
 
 	private void transformReferences(TextChangeManager manager) throws CoreException {
-		for(SearchMatch match : SearchUtil.searchReferences(attribute)){
+		for(SearchMatch match : SearchUtil.searchReferences((IDOMElement) attribute)){
 			TextChange change = manager.get(match.getFile());
 			if(match.getObject() instanceof Node){
 				Node node = (Node)match.getObject();

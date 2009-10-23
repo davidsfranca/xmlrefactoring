@@ -3,7 +3,7 @@
 <schema targetNamespace="XMLRefactoring" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="XMLRefactoring" id="GroupElemenetParticipant" name="Group element participant"/>
+         <meta.schema plugin="XMLRefactoring" id="RenameParticpant" name="Rename participant"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]

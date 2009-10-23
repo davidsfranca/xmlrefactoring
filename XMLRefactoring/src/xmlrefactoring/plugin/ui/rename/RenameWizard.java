@@ -1,22 +1,19 @@
 package xmlrefactoring.plugin.ui.rename;
 
-import org.eclipse.ltk.core.refactoring.participants.RenameRefactoring;
-import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
-import org.eclipse.wst.xsd.ui.internal.refactor.INameUpdating;
+import xmlrefactoring.plugin.logic.rename.RenameProcessor;
+import xmlrefactoring.plugin.ui.BaseRefactoringWizard;
 
-public class RenameWizard extends RefactoringWizard{
+public class RenameWizard extends BaseRefactoringWizard<RenameProcessor>{
 
-	public RenameWizard(RenameRefactoring refactoring){
-		super(refactoring, DIALOG_BASED_USER_INTERFACE);
+	public RenameWizard(RenameProcessor processor) {
+		super(processor, DIALOG_BASED_USER_INTERFACE);
 	}
 
 	@Override
 	protected void addUserInputPages() {
-		addPage(new RenameWizardPage(this));		
+		addPage(new RenameWizardPage(this));
 	}
+
 	
-	protected INameUpdating getProcessor() {		
-		return (INameUpdating)getRefactoring().getAdapter(INameUpdating.class);	
-	}
 
 }

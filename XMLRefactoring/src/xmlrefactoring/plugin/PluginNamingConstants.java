@@ -37,5 +37,11 @@ public class PluginNamingConstants {
 	public static final String SCHEMA_VERSION_ADDITION = "Schema version attribute addition";
 
 	public static final String GROUP_ELEMENT_GROUPING_ELEMENT = "Grouping Element";
+
+	public static final String RENAME_TRANSF_NAME = "Rename component";
+
+	public static final String RENAME_PARTICIPANT_EXTENSION_POINT_ID = "RenameParticipant";
+
+	public static final String RENAME_PARTICIPANT_RENAME_REFERENCE = "Rename reference";
 	
 }

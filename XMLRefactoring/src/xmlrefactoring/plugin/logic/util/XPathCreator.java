@@ -8,6 +8,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.core.search.SearchMatch;
+import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -90,7 +91,7 @@ public class XPathCreator {
 		}		
 
 		if(referenceToBeSearched != null){
-			List<SearchMatch> results = SearchUtil.searchReferences(referenceToBeSearched);
+			List<SearchMatch> results = SearchUtil.searchReferences((IDOMElement)referenceToBeSearched);
 
 			for(SearchMatch match : results){
 				if(match.getObject() instanceof Node){
