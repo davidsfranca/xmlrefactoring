@@ -65,10 +65,6 @@ public class BaseRefactoringArguments extends RefactoringArguments {
 		return elements;
 	}
 
-	public void setElements(List<IDOMElement> elements) {
-		this.elements = elements;
-	}
-
 	public IFile getSchemaFile() {
 		return schemaFile;
 	}

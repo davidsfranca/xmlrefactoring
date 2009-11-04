@@ -99,7 +99,7 @@ public class XSDRenameParticipant extends BaseXSDParticipant{
 	}
 
 	@Override
-	protected boolean initialize(Object element) {
+	public boolean initialize(Object element) {
 		//TODO Verificar se Ž element/atributo
 		if(element instanceof XSDNamedComponent){
 			this.component = (XSDNamedComponent) element;

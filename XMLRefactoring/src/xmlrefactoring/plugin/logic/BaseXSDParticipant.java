@@ -10,6 +10,7 @@ import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.text.edits.TextEdit;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMNode;
@@ -109,10 +110,26 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 
 		//Element update to the new type		
 		IDOMAttr attr = (IDOMAttr) rootElement.getAttributeNode(XSDUtil.TYPE);
-		int offset = attr.getValueRegionStartOffset();
-		int length = attr.getEndOffset() - attr.getValueRegionStartOffset();
-		ReplaceEdit replace = new ReplaceEdit(offset, length, XMLUtil.quoteString(newTypeQName));
-		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, replace);
+		int offset;
+		TextEdit edit;
+		String newTypeQuoted = XMLUtil.quoteString(newTypeQName);
+		if(attr != null){ //Type explicitly declared
+			offset = attr.getValueRegionStartOffset();
+			int length = attr.getEndOffset() - attr.getValueRegionStartOffset();
+			edit = new ReplaceEdit(offset, length, newTypeQuoted);
+		}
+		else{
+			//Add the type right after the name
+			IDOMAttr nameAttr = (IDOMAttr) rootElement.getAttributeNode(XSDUtil.NAME);
+			offset = nameAttr.getEndOffset();
+			StringBuffer typeInclusion = new StringBuffer();
+			typeInclusion.append(XSDUtil.TYPE);
+			typeInclusion.append("=");
+			typeInclusion.append(newTypeQuoted);			
+			edit = new InsertEdit(offset, typeInclusion.toString());
+		}
+		
+		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, edit);
 		
 		//New type
 		Element extendedType = XMLUtil.createComplexType(root, newTypeName);
