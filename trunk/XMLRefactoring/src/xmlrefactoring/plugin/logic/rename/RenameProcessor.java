@@ -10,6 +10,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.xsd.XSDNamedComponent;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseProcessor;
 import xmlrefactoring.plugin.logic.BaseRefactoringArguments;
@@ -25,7 +26,7 @@ public class RenameProcessor extends BaseProcessor{
 	}
 	
 	@Override
-	protected Object getElement() {
+	protected XSDNamedComponent getElement() {
 		return arguments.getComponents().get(0);
 	}
 
@@ -49,7 +50,11 @@ public class RenameProcessor extends BaseProcessor{
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		return new RefactoringStatus();
+		
+		RefactoringStatus status = new RefactoringStatus();
+		if(getElement().getName() == null)
+			status.addFatalError(XMLRefactoringMessages.getString("RenameProcessor.ReferenceRenameAttempt"));
+		return status;
 	}
 
 	@Override
