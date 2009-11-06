@@ -72,17 +72,19 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 
 		IDOMElement rootElement = (IDOMElement) element.getElement();
 		XSDTypeDefinition elementType = element.getType();
+		String schemaNamespace = rootElement.getNamespaceURI();
 
 		String elementTypeName = XSDUtil.getType(rootElement);
 		if(elementType.getName() == null){
-			NodeList simpleTypeList = rootElement.getElementsByTagName(XSDUtil.SIMPLE_TYPE);
+			
+			NodeList simpleTypeList = rootElement.getElementsByTagNameNS(schemaNamespace, XSDUtil.SIMPLE_TYPE);
 			//The element type is a local declared Simple Type
 			if(simpleTypeList.getLength() != 0){
 				Element simpleType = (Element) simpleTypeList.item(0);
 				//TODO
 			}
 			else{
-				NodeList complexTypeList = rootElement.getElementsByTagName(XSDUtil.COMPLEX_TYPE);
+				NodeList complexTypeList = rootElement.getElementsByTagNameNS(schemaNamespace, XSDUtil.COMPLEX_TYPE);
 				//The element type is a local declared Complex Type
 				if(complexTypeList.getLength() != 0){
 					IDOMElement complexType = (IDOMElement) complexTypeList.item(0);
@@ -123,6 +125,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 			IDOMAttr nameAttr = (IDOMAttr) rootElement.getAttributeNode(XSDUtil.NAME);
 			offset = nameAttr.getEndOffset();
 			StringBuffer typeInclusion = new StringBuffer();
+			typeInclusion.append(" ");
 			typeInclusion.append(XSDUtil.TYPE);
 			typeInclusion.append("=");
 			typeInclusion.append(newTypeQuoted);			
