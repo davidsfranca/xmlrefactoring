@@ -27,10 +27,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
-import xmlrefactoring.plugin.logic.util.XSDUtil;
+import xmlrefactoring.plugin.logic.BaseXSDParticipant;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 
-public class XSDAttr2ElemParticipant extends Attr2ElemParticipant {
+public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 
 	private Element attribute;
 	private Attr2ElemRefactoringArguments arguments;

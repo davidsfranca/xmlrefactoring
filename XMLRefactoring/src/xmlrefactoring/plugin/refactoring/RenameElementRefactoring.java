@@ -30,22 +30,26 @@ public class RenameElementRefactoring extends XMLRefactoring{
 	@Override
 	public void createReverseRefactoring() {
 		List<List<QName>> newPaths =  new ArrayList();
-		String newName = getPaths().get(0).get(getPaths().get(0).size()-1).getLocalPart();
+		if(getPaths().size()>0){
+			String newName = getPaths().get(0).get(getPaths().get(0).size()-1).getLocalPart();
 		
-		for(int i= 0; i<getPaths().size();i++){
+				for(int i= 0; i<getPaths().size();i++){
 			
-			List<QName> path = new ArrayList<QName>();
+				List<QName> path = new ArrayList<QName>();
 			
-			List<QName> oldPath = getPaths().get(i);
-			int lastIndex = oldPath.size()-1;
-			for(int j = 0; j<lastIndex;j++)
+				List<QName> oldPath = getPaths().get(i);
+				int lastIndex = oldPath.size()-1;
+				for(int j = 0; j<lastIndex;j++)
 				path.add(new QName(oldPath.get(j).getNamespaceURI(),oldPath.get(j).getLocalPart()));
 			
-			//QName elementName = newPaths.get(i).get(lastIndex);
-			path.add(new QName(oldPath.get(lastIndex).getNamespaceURI(),getNewName()));
-			newPaths.add(path);
+				//QName elementName = newPaths.get(i).get(lastIndex);
+				path.add(new QName(oldPath.get(lastIndex).getNamespaceURI(),getNewName()));
+				newPaths.add(path);
+			}
+			setReverseRefactoring(new RenameElementRefactoring(newPaths,newName,false));
+		}else{
+			setReverseRefactoring(new RenameElementRefactoring(null,"",false));
 		}
-		setReverseRefactoring(new RenameElementRefactoring(newPaths,newName,false));
 	}
 
 	@Override
