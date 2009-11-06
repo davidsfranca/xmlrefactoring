@@ -1,8 +1,23 @@
 package xmlrefactoring.plugin.logic.util.test;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.stream.FileImageInputStream;
+import javax.swing.ProgressMonitor;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import junit.framework.Assert;
 
@@ -17,6 +32,10 @@ import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.junit.After;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.xslt.FileControl;
 
@@ -36,6 +55,8 @@ public class FileControlTest {
 	private static final String NEW_VERSION_DIR = BASE_REF_PATH + "/.v_6";
 	private static final String NEW_VERSION_REFACTORING = NEW_VERSION_DIR + "/.ref_1.xsl";
 	private static final String NEW_VERSION_REVERSE_REF = NEW_VERSION_DIR + "/.ref_-1.xsl";
+	private static final String DESC_PATH = BASE_PATH + "/.desc_underVersionControlTest.xml";
+	private static final String FILETAGXPATH = "//lastFileNumber";
 	private static final int[] expectedDescriptor = {5,1};	
 	
 	private IFile underVersionControlFile;
@@ -155,6 +176,26 @@ public class FileControlTest {
 		Assert.assertTrue(newVersionRevRef.exists());
 	}
 	
+	@Test
+	public void incrementLastFileTest() throws CoreException, SAXException, IOException, ParserConfigurationException, XPathExpressionException{
+		Path path = new Path(UNDER_VERSION_CONTROL_PATH);
+		IFile underVersionControlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+		
+		Change  changeLastFile = FileControl.incrementLastFile(underVersionControlFile);	
+		//TODO: investigar como fazer esse perform
+		//changeLastFile.perform();
+		FileInputStream descriptor = new FileInputStream(new File(ABSOLUTE_ROOT_PATH+DESC_PATH));
+
+		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse (descriptor);
+
+		XPath xpath = XPathFactory.newInstance().newXPath();
+		XPathExpression expr = xpath.compile(FILETAGXPATH);
+		Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
+		//Assert.assertEquals("2",file.getTextContent());
+		
+		changeLastFile.dispose();
+		
+	}
 	@After
 	public void cleanUp() throws CoreException{
 		newVersionRef.delete(true, null);
