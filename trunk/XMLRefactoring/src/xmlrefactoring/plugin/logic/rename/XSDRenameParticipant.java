@@ -64,10 +64,10 @@ public class XSDRenameParticipant extends BaseXSDParticipant{
 
 		TextChange textChange = manager.get(file);
 		String newName = arguments.getNewName();
-		newName = RenameComponentProcessor.quoteString(newName);
 		IDOMAttr attr = (IDOMAttr) idomElement.getAttributeNode("name");
-		int length = attr.getEndOffset() - attr.getValueRegionStartOffset();
-		ReplaceEdit replaceEdit = new ReplaceEdit(attr.getValueRegionStartOffset(), length, newName);
+		int offset = attr.getValueRegionStartOffset() + 1;
+		int length = attr.getValue().length();
+		ReplaceEdit replaceEdit = new ReplaceEdit(offset, length, newName);
 		String editName = RefactoringMessages.getString("RenameComponentProcessor.Component_Refactoring_update_declatation");
 		TextChangeCompatibility.addTextEdit(textChange, editName, replaceEdit);
 	}
