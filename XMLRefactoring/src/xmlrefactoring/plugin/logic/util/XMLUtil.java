@@ -42,7 +42,7 @@ public abstract class XMLUtil {
 
 	public static String createQName(String prefix, String elementName){
 		StringBuilder qName = new StringBuilder();
-		if(prefix != null){
+		if(prefix != null && !prefix.equals("")){
 			qName.append(prefix);
 			qName.append(":");
 		}
