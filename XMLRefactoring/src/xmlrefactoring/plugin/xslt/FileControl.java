@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.TextChange;
@@ -36,7 +37,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
+import xmlrefactoring.plugin.XMLRefactoringPlugin;
 import xmlrefactoring.plugin.logic.util.CreateFileChange;
 import xmlrefactoring.plugin.logic.util.CreateFolderChange;
 import xmlrefactoring.plugin.logic.util.CreateXSLChange;
@@ -71,7 +74,7 @@ public class FileControl {
 	DESCRIPTORTAG + ">";
 
 	//Consult data from XSL and XSL control files
-	
+
 	/**
 	 * Tests if there is already a descriptor and 
 	 * @return
@@ -156,14 +159,15 @@ public class FileControl {
 		}
 		return versionAndFile;	
 	}
-	
+
 	/**
 	 * Reads the descriptor file for that Schema 
 	 * Gets the last file Number for each version
 	 * @param schemafile
 	 * @return
+	 * @throws CoreException 
 	 */
-	public static List<File> getAllXSL(File schemaFile, int startVersion, int finalVersion){
+	public static List<File> getAllXSL(File schemaFile, int startVersion, int finalVersion) throws CoreException{
 
 		List<File> files = new ArrayList<File>();
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -195,25 +199,18 @@ public class FileControl {
 						files.add(new File(getFilePath(schemaFile, i, j)));
 					}
 				}
-			
+
 			}
 
-		} catch (ParserConfigurationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			Status status = new Status(Status.CANCEL, 
+					XMLRefactoringPlugin.PLUGIN_ID, 
+					XMLRefactoringMessages.getString("FileControl.XSLRecover"), e);
+			throw new CoreException(status);			
 		}
 		return files;
 	}
-	
+
 	public static IPath getDescriptorFilePath(IFile schemaFile){
 		IContainer container = schemaFile.getParent();
 		IPath descPath = container.getFullPath().append(buildDescriptorFilePath(schemaFile));		
@@ -342,7 +339,7 @@ public class FileControl {
 	}
 
 	//Create changes into the XSL and XSL control files
-	
+
 	/**
 	 * Creates all the required structure to versioning the refactorings in a XSD file
 	 * @param schemaFile
@@ -369,7 +366,7 @@ public class FileControl {
 
 		return allChanges;
 	}
-	
+
 	// It is called from the versioning participant
 	public static Change createVersioningDir(IFile schemaFile, int version){
 
@@ -393,24 +390,20 @@ public class FileControl {
 
 
 	public static Change incrementLastFile(IFile schemaFile) throws CoreException{
-		try{
-			IFile descriptorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getDescriptorFilePath(schemaFile));
-			IDOMModel model =  (IDOMModel) StructuredModelManager.getModelManager().getModelForEdit(descriptorFile);
-			IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(FILETAG).item(0);
 
-			TextChange change = new TextFileChange("Last File Increase", descriptorFile);
-			int textContentOffset = lastFileTag.getStartEndOffset();
-			Integer lastFileNewValue = Integer.parseInt(lastFileTag.getFirstChild().getNodeValue()) + 1;
-			int length = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
-			TextEdit edit = new ReplaceEdit(textContentOffset, length, lastFileNewValue.toString());
-			change.setEdit(edit);
-			return change;	
-		}
-		catch(IOException e){
-			e.printStackTrace();
-			//TODO Exceção
-		}
-		return null;
+		IFile descriptorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getDescriptorFilePath(schemaFile));
+		IDOMModel model =  getDescriptorFileModel(descriptorFile);
+
+		IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(FILETAG).item(0);
+
+		TextChange change = new TextFileChange("Last File Increase", descriptorFile);
+		int textContentOffset = lastFileTag.getStartEndOffset();
+		Integer lastFileNewValue = Integer.parseInt(lastFileTag.getFirstChild().getNodeValue()) + 1;
+		int length = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
+		TextEdit edit = new ReplaceEdit(textContentOffset, length, lastFileNewValue.toString());
+		change.setEdit(edit);
+		return change;	
+
 	}
 
 	//TODO: Quebrar em dois métodos ou preservar um?
@@ -420,50 +413,57 @@ public class FileControl {
 	 * change the lastFile number to 0
 	 */
 	public static Change updateDescriptor(IFile schemaFile) throws CoreException {
-		try{
-			IFile descriptorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getDescriptorFilePath(schemaFile));
-			IDOMModel model =  (IDOMModel) StructuredModelManager.getModelManager().getModelForEdit(descriptorFile);
 
-			IDOMElement lastVersionTag = (IDOMElement) model.getDocument().getElementsByTagName(VERSIONTAG).item(0);
-			IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(FILETAG).item(0);
-			IDOMElement versions = (IDOMElement) model.getDocument().getElementsByTagName(AllVERSIONSTAG).item(0);
+		IFile descriptorFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getDescriptorFilePath(schemaFile));
+		IDOMModel model = getDescriptorFileModel(descriptorFile);
+
+		IDOMElement lastVersionTag = (IDOMElement) model.getDocument().getElementsByTagName(VERSIONTAG).item(0);
+		IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(FILETAG).item(0);
+		IDOMElement versions = (IDOMElement) model.getDocument().getElementsByTagName(AllVERSIONSTAG).item(0);
 
 
-			TextChange change = new TextFileChange("Version Increase", descriptorFile);
-			int textContentOffset = lastVersionTag.getStartEndOffset();
-			Integer lastVersionValue = Integer.parseInt(lastVersionTag.getFirstChild().getNodeValue());
-			Integer lastFileValue = Integer.parseInt(lastFileTag.getFirstChild().getNodeValue());
+		TextChange change = new TextFileChange("Version Increase", descriptorFile);
+		int textContentOffset = lastVersionTag.getStartEndOffset();
+		Integer lastVersionValue = Integer.parseInt(lastVersionTag.getFirstChild().getNodeValue());
+		Integer lastFileValue = Integer.parseInt(lastFileTag.getFirstChild().getNodeValue());
 
-			int length = lastVersionTag.getEndStartOffset() - lastVersionTag.getStartEndOffset();
-			TextEdit edit = new ReplaceEdit(textContentOffset, length, (new Integer(lastVersionValue+1)).toString());
-			change.setEdit(edit);
+		int length = lastVersionTag.getEndStartOffset() - lastVersionTag.getStartEndOffset();
+		TextEdit edit = new ReplaceEdit(textContentOffset, length, (new Integer(lastVersionValue+1)).toString());
+		change.setEdit(edit);
 
-			TextChange fileChange = new TextFileChange("Restart the file number counting", descriptorFile);
-			int fileTextContentOffset = lastFileTag.getStartEndOffset();
-			int fileLength = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
-			TextEdit fileEdit = new ReplaceEdit(fileTextContentOffset, fileLength, "1");
-			fileChange.setEdit(fileEdit);
+		TextChange fileChange = new TextFileChange("Restart the file number counting", descriptorFile);
+		int fileTextContentOffset = lastFileTag.getStartEndOffset();
+		int fileLength = lastFileTag.getEndStartOffset() - lastFileTag.getStartEndOffset();
+		TextEdit fileEdit = new ReplaceEdit(fileTextContentOffset, fileLength, "1");
+		fileChange.setEdit(fileEdit);
 
-			//Version information to be saved
-			//TODO: FEIO!!!
-			String versionInfo = "<"+VERSIONINFOTAG+" " + VERSIONATTR+"=\""+lastVersionValue+"\" >"+ lastFileValue +
-			"</"+ VERSIONINFOTAG + " >\n";
-			InsertEdit insertLast = new InsertEdit(versions.getEndStartOffset(),versionInfo);
-			TextChange change2 = new TextFileChange("Save last version Info", descriptorFile);
-			change2.setEdit(insertLast);
+		//Version information to be saved
+		//TODO: FEIO!!!
+		String versionInfo = "<"+VERSIONINFOTAG+" " + VERSIONATTR+"=\""+lastVersionValue+"\" >"+ lastFileValue +
+		"</"+ VERSIONINFOTAG + " >\n";
+		InsertEdit insertLast = new InsertEdit(versions.getEndStartOffset(),versionInfo);
+		TextChange change2 = new TextFileChange("Save last version Info", descriptorFile);
+		change2.setEdit(insertLast);
 
-			CompositeChange changes = new CompositeChange(COMPOSITENAME);
-			changes.add(change);
-			changes.add(fileChange);
-			changes.add(change2);
+		CompositeChange changes = new CompositeChange(COMPOSITENAME);
+		changes.add(change);
+		changes.add(fileChange);
+		changes.add(change2);
 
-			return changes;	
+		return changes;	
+
+	}
+
+	private static IDOMModel getDescriptorFileModel(IFile descriptorFile) throws CoreException{
+		try{			
+			return (IDOMModel) StructuredModelManager.getModelManager().getModelForEdit(descriptorFile);
 		}
 		catch(IOException e){
-			e.printStackTrace();
-			//TODO Exceção
+			Status status = new Status(Status.CANCEL, 
+					XMLRefactoringPlugin.PLUGIN_ID, 
+					XMLRefactoringMessages.getString("FileControl.DescriptorModel"), e);
+			throw new CoreException(status);
 		}
-		return null;
 	}
 
 	//TODO: É responsabilidade do FileControl?
@@ -477,6 +477,4 @@ public class FileControl {
 		else
 			return Integer.parseInt(versionString);
 	}
-
-
 }

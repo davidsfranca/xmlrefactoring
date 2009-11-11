@@ -15,6 +15,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -43,7 +44,7 @@ public class XSLTransformerTest {
 	}
 	
 	@Test
-	public void changeVersion() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException{
+	public void changeVersion() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, CoreException{
 		String dirPath = ABSOLUTE_ROOT_PATH+BASE_PATH;
 		File schema = new File(dirPath+SCHEMA_NAME);
 		InputStream xml = new FileInputStream(new File(dirPath+XML_INITIAL));

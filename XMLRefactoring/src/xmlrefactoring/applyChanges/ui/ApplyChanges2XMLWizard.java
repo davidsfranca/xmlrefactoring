@@ -25,7 +25,13 @@ public class ApplyChanges2XMLWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		XSLTransformer.changeVersion(schema,page.getSelectedXMLFile(),page.getXmlVersion(), page.getSelectedVersion());
+		try {
+			XSLTransformer.changeVersion(schema,page.getSelectedXMLFile(),page.getXmlVersion(), page.getSelectedVersion());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 	

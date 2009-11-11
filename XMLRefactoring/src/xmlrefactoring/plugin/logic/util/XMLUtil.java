@@ -14,22 +14,28 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
 import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import xmlrefactoring.XMLRefactoringMessages;
+import xmlrefactoring.plugin.XMLRefactoringPlugin;
+
 public abstract class XMLUtil {
 
-	public static Element createElement(String elementName){		
+	public static Element createElement(String elementName) throws DOMException, CoreException{		
 		return createNewDocument().createElement(elementName);
 	}
 
-	public static Element createElementNS(String nameSpaceURI, String qualifiedName){
+	public static Element createElementNS(String nameSpaceURI, String qualifiedName) throws DOMException, CoreException{
 		return createNewDocument().createElementNS(nameSpaceURI, qualifiedName);
 	}
 
-	public static Element createElementNS(String nameSpaceURI, String prefix, String elementName){
+	public static Element createElementNS(String nameSpaceURI, String prefix, String elementName) throws DOMException, CoreException{
 		return createElementNS(nameSpaceURI, createQName(prefix, elementName));		
 	}
 	
@@ -54,23 +60,22 @@ public abstract class XMLUtil {
 		return name.substring(name.indexOf(":") + 1, name.length());
 	}
 
-	private static Document createNewDocument(){
+	private static Document createNewDocument() throws CoreException{
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = factory.newDocumentBuilder();
 			return docBuilder.newDocument();
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Status status = new Status(Status.CANCEL, 
+					XMLRefactoringPlugin.PLUGIN_ID, 
+					XMLRefactoringMessages.getString("XMLUtil.DocumentCreationError"), e);
+			throw new CoreException(status);			
 		}
-		return null;
 	}
 
-	public static String toString(Node node) {
+	public static String toString(Node node) throws CoreException {
 		try {
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			//TODO: Pq parou de funcionar?
-			//transformerFactory.setAttribute("indent-number", 4);
 			Transformer trans = transformerFactory.newTransformer();
 			trans.setOutputProperty(OutputKeys.INDENT, "yes");
 			trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -80,14 +85,12 @@ public abstract class XMLUtil {
 			trans.transform(source, streamResult);
 			String result = os.getBuffer().toString();
 			return result;
-		} catch (TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;		
+			Status status = new Status(Status.CANCEL, 
+					XMLRefactoringPlugin.PLUGIN_ID, 
+					XMLRefactoringMessages.getString("XMLUtil.XML2StringError"), e);
+			throw new CoreException(status);
+		}	
 	}
 	
 	public static Element createComplexType(Element root, String name) {

@@ -8,6 +8,7 @@ import java.io.InputStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.xml.sax.SAXException;
 
 import xmlrefactoring.applyChanges.logic.XSLTransformer;
@@ -24,11 +25,11 @@ public class XMLConverter {
 		this.schema = schema;
 	}
 	
-	public InputStream getXML(InputStream baseXML, int targetVersion) throws IOException, ParserConfigurationException, SAXException{
+	public InputStream getXML(InputStream baseXML, int targetVersion) throws IOException, ParserConfigurationException, SAXException, CoreException{
 		return getXML(baseXML, FileControl.getSchemaVersion(baseXML), targetVersion);
 	}
 	
-	public InputStream getXML(InputStream baseXML, int version, int targetVersion) throws IOException, ParserConfigurationException, SAXException{
+	public InputStream getXML(InputStream baseXML, int version, int targetVersion) throws IOException, ParserConfigurationException, SAXException, CoreException{
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		XSLTransformer.changeVersion(schema, baseXML, output, version, targetVersion);
 		return new ByteArrayInputStream(output.toByteArray());

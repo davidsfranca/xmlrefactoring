@@ -58,7 +58,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 		//Schema name
 		Text selectedSchemaText = new Text(composite, SWT.SIMPLE);
 		selectedSchemaText.setEditable(false);
-		//TODO Verificar como ficar‡ l—gica, colocado para manter compatibilidade com Handler
+
 		if(selectedSchema != null){
 			String schemaName = selectedSchema.getName();
 			selectedSchemaText.setText(schemaName);
