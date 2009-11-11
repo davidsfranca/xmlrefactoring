@@ -154,14 +154,14 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, extendedTypeInsert);		
 	}
 	
-	private void addAttributeComplexType(Element rootElement, IDOMElement complexType) {
+	private void addAttributeComplexType(Element rootElement, IDOMElement complexType) throws CoreException {
 		int offset = complexType.getEndStartOffset();
 		Element schemaAttribute = createSchemaAttribute(rootElement.getPrefix());
 		InsertEdit insert = new InsertEdit(offset, XMLUtil.toString(schemaAttribute));
 		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, insert);		
 	}
 
-	private void createReplacement(Node newElement, IDOMNode oldElement) {		
+	private void createReplacement(Node newElement, IDOMNode oldElement) throws CoreException {		
 		String newElementText = XMLUtil.toString(newElement);
 		int offset = oldElement.getStartOffset();
 		int length = oldElement.getEndOffset() - offset; 
@@ -179,7 +179,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		return content;
 	}
 
-	private void addAttributeNoType(IDOMElement rootElement) {
+	private void addAttributeNoType(IDOMElement rootElement) throws CoreException {
 		Element complexType = createLocalComplexType(rootElement);
 		Node newRootElement = rootElement.cloneNode(false);
 		newRootElement.appendChild(complexType);

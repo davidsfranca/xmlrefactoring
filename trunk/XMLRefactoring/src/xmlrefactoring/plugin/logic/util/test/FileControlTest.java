@@ -115,7 +115,7 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void getAllXSTest(){
+	public void getAllXSTest() throws CoreException{
 		
 		int oldVersion = 1;
 		int newVersion = 4;
