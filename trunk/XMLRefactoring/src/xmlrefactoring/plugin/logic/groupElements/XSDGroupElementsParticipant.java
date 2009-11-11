@@ -1,5 +1,7 @@
 package xmlrefactoring.plugin.logic.groupElements;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -13,16 +15,19 @@ import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
+import org.eclipse.xsd.ecore.EcoreXMLSchemaBuilder.QNameMap;
 import org.w3c.dom.Element;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseXSDParticipant;
-import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
+import xmlrefactoring.plugin.logic.util.XSDUtil;
 
 public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 
 	private GroupElementsRefactoringArguments arguments;
+	private static final String TNS_PREFIX = "tns";
+	private static final String ALTERNATIVE_PREFIX = "tn";
 
 	@Override
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
@@ -66,7 +71,27 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 		String elementQName = XMLUtil.createQName(firstElement.getPrefix(),	XSDUtil.ELEMENT);
 		Element newElement = arguments.getSchemaDocument().createElement(elementQName);
 		newElement.setAttribute(XSDUtil.NAME, arguments.getGroupName());
-		String typeQName = XMLUtil.createQName(XSDUtil.searchTargetNamespacePrefix(arguments.getSchema()), arguments.getTypeName());
+		String typeQName;
+		
+		if(arguments.getSchema().getTargetNamespace() == null)
+			typeQName = arguments.getTypeName();
+		else{
+			String prefix = XSDUtil.searchTargetNamespacePrefix(arguments.getSchema());
+			if(prefix == null){
+				//There is a declared targetNamespace but no prefix was made to that namespace
+				//Uses the "tns" prefix, except if it`s being used by http://www.w3.org/2001/XMLSchema.
+				//In this case, uses "tn".
+				Map<String, String> QNameMap = arguments.getSchema().getQNamePrefixToNamespaceMap();
+				String tnsPrefixNamespace = QNameMap.get(TNS_PREFIX);
+				if(tnsPrefixNamespace == null || !tnsPrefixNamespace.equals(XSDUtil.SCHEMA_NAMESPACE))
+					prefix = TNS_PREFIX;
+				else
+					prefix = ALTERNATIVE_PREFIX;					
+				String namespacePrefixDeclaration = XMLUtil.createQName(XSDUtil.XMLNS, prefix);
+				newElement.setAttribute(namespacePrefixDeclaration, arguments.getSchema().getTargetNamespace());				
+			}
+			typeQName = XMLUtil.createQName(prefix, arguments.getTypeName());
+		}			
 		newElement.setAttribute(XSDUtil.TYPE, typeQName);		
 		return newElement;
 	}
