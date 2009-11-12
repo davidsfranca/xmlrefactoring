@@ -46,10 +46,10 @@ public abstract class BaseXSLParticipant extends BaseParticipant {
 
 		XMLRefactoring refactoring = getXMLRefactoring();
 		if(refactoring != null){
-			Change xslChange = new CreateXSLChange(getXMLRefactoring(), xslPath);
+			Change xslChange = new CreateXSLChange(refactoring, xslPath);
 			compositeChange.add(xslChange);
 
-			Change xslReverseChange = new CreateXSLChange(getXMLRefactoring().getReverseRefactoring(), xslPathRev);
+			Change xslReverseChange = new CreateXSLChange(refactoring.getReverseRefactoring(), xslPathRev);
 			compositeChange.add(xslReverseChange);
 		}
 

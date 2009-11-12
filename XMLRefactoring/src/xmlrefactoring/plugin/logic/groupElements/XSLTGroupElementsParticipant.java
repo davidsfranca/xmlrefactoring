@@ -27,8 +27,14 @@ public class XSLTGroupElementsParticipant extends BaseXSLParticipant {
 
 	@Override
 	protected XMLRefactoring getXMLRefactoring() throws CoreException {
-		Element baseElement =  arguments.getComponents().get(0).getElement();		
-		List<List<QName>> paths = XPathCreator.createParentPaths(baseElement);
+		Element baseElement =  arguments.getComponents().get(0).getElement();	
+		List<List<QName>> paths;
+		if(XSDUtil.isGlobal(baseElement)){
+			paths = new ArrayList<List<QName>>();
+			paths.add(new ArrayList<QName>());
+		}
+		else
+			paths = XPathCreator.createElementPaths((Element) baseElement.getParentNode());
 		
 		List<QName> elementsGroup = new ArrayList<QName>();
 		for(XSDNamedComponent component : arguments.getComponents()){
@@ -37,8 +43,8 @@ public class XSLTGroupElementsParticipant extends BaseXSLParticipant {
 			elementsGroup.add(elementQName);
 		}
 		
-		QName groupName = new QName(XSDUtil.getTargetNamespace(baseElement),
-				arguments.getGroupName());
+		//The new element is local
+		QName groupName = new QName(null, arguments.getGroupName());
 		
 		XMLRefactoring refactoring = null;		
 		if(!paths.isEmpty())
