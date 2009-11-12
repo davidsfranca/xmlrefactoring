@@ -15,7 +15,7 @@ import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
-import org.eclipse.xsd.ecore.EcoreXMLSchemaBuilder.QNameMap;
+import org.eclipse.xsd.XSDNamedComponent;
 import org.w3c.dom.Element;
 
 import xmlrefactoring.plugin.PluginNamingConstants;
@@ -46,10 +46,12 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 		//Create the new grouping type
 		IDOMElement root = (IDOMElement) arguments.getSchemaDocument().getDocumentElement();
 		Element complexType = XMLUtil.createComplexType(root, arguments.getTypeName());
-		Element all = createAllNode(complexType); 			
-		complexType.appendChild(all);
+		
+		Element compositor = createCompositorNode(complexType); 			
+		complexType.appendChild(compositor);
+		
 		for(IDOMElement movingElement : arguments.getElements()){
-			all.appendChild(movingElement.cloneNode(true));
+			compositor.appendChild(movingElement.cloneNode(true));
 			DeleteEdit deleteElement = new DeleteEdit(movingElement.getStartOffset(), movingElement.getEndOffset() - movingElement.getStartOffset());
 			TextChangeCompatibility.addTextEdit(change, PluginNamingConstants.GROUP_ELEMENT_DELETE, deleteElement);
 		}
@@ -96,8 +98,15 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 		return newElement;
 	}
 
-	private Element createAllNode(Element complexType) {
-		return complexType.getOwnerDocument().createElement(XMLUtil.createQName(complexType.getPrefix(), XSDUtil.ALL));
+	private Element createCompositorNode(Element complexType) {
+		IDOMElement firstElement = arguments.getElements().get(0); 		
+		String compositor;
+		//If the element being grouped is global uses the SEQUENCE compositor, else uses its parent compositor.
+		if(XSDUtil.isGlobal(firstElement))
+			compositor = XSDUtil.SEQUENCE;
+		else
+			compositor = firstElement.getParentNode().getLocalName();		
+		return complexType.getOwnerDocument().createElement(XMLUtil.createQName(complexType.getPrefix(), compositor));
 	}
 
 	@Override
