@@ -40,16 +40,6 @@ public class XPathCreator {
 			path.remove(path.size() - 1);		
 		return elementList;
 	}
-	
-	/**
-	 * Create paths to the parent of a given element
-	 * @param element
-	 * @return
-	 * @throws CoreException
-	 */
-	public static List<List<QName>> createParentPaths(Element element) throws CoreException{
-		return createAttributePaths(element);
-	}
 
 	private static List<List<QName>> createPaths(Element element, List<QName> suffix, List<List<QName>> paths) throws CoreException{
 
