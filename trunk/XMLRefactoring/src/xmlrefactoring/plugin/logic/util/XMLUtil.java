@@ -66,7 +66,7 @@ public abstract class XMLUtil {
 			DocumentBuilder docBuilder = factory.newDocumentBuilder();
 			return docBuilder.newDocument();
 		} catch (ParserConfigurationException e) {
-			Status status = new Status(Status.CANCEL, 
+			Status status = new Status(Status.ERROR, 
 					XMLRefactoringPlugin.PLUGIN_ID, 
 					XMLRefactoringMessages.getString("XMLUtil.DocumentCreationError"), e);
 			throw new CoreException(status);			
@@ -86,7 +86,7 @@ public abstract class XMLUtil {
 			String result = os.getBuffer().toString();
 			return result;
 		} catch (TransformerException e) {
-			Status status = new Status(Status.CANCEL, 
+			Status status = new Status(Status.ERROR, 
 					XMLRefactoringPlugin.PLUGIN_ID, 
 					XMLRefactoringMessages.getString("XMLUtil.XML2StringError"), e);
 			throw new CoreException(status);

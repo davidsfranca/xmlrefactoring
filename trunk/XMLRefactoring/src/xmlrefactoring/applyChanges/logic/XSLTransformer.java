@@ -61,7 +61,7 @@ public class XSLTransformer {
 				}
 				destination.write(output.toByteArray());
 			} catch (TransformerException e) {
-				Status status = new Status(Status.CANCEL, 
+				Status status = new Status(Status.ERROR, 
 						XMLRefactoringPlugin.PLUGIN_ID, 
 						XMLRefactoringMessages.getString("XSLTTransformer.TransformerException"), e);
 				throw new CoreException(status);
