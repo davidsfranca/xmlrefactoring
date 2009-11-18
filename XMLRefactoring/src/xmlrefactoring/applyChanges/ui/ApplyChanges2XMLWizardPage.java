@@ -1,5 +1,6 @@
 package xmlrefactoring.applyChanges.ui;
 
+import java.awt.Dialog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,6 +8,8 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,6 +23,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.xml.sax.SAXException;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.XMLRefactoringPlugin;
 import xmlrefactoring.plugin.xslt.FileControl;
 
@@ -42,7 +46,14 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 	public ApplyChanges2XMLWizardPage(IFile selectedSchema) {
 		super(PAGE_NAME, PAGE_TITLE, null);
 		this.selectedSchema = selectedSchema;
-		this.schemaMaxVersion = FileControl.readDescriptor(selectedSchema)[0];
+		try {
+			this.schemaMaxVersion = FileControl.readDescriptor(selectedSchema)[0];
+		} catch (CoreException e) {
+			MessageDialog.openError(XMLRefactoringPlugin.getShell(), 
+					XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.InvalidSchemaFileTitle"), 
+					e.getMessage());
+			e.printStackTrace();
+		}
 	}
 
 	public void createControl(Composite parent) {
@@ -87,14 +98,10 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 					xmlVersion = FileControl.getSchemaVersion(new FileInputStream(selectedXMLFile));
 					updateXMLTargetVersion();
 					getContainer().updateButtons();
-				} catch (SAXException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ParserConfigurationException e1) {
-					// TODO Auto-generated catch block
+				} catch (Exception e1) {
+					MessageDialog.openError(XMLRefactoringPlugin.getShell(), 
+							XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.InvalidXMLFileTitle"), 
+							XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.InvalidXMLFileMessage"));
 					e1.printStackTrace();
 				}
 			}			

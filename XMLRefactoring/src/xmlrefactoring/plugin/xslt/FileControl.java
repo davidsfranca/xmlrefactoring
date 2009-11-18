@@ -90,8 +90,9 @@ public class FileControl {
 	 * @param schemaFile
 	 * @param isInitial - flag to know if there is already an descriptor for that file or not
 	 * @return
+	 * @throws CoreException 
 	 */
-	public static IPath getNextPath(IFile schemaFile, boolean isInitial){
+	public static IPath getNextPath(IFile schemaFile, boolean isInitial) throws CoreException{
 
 		IPath fileName=null;
 		if(isInitial)
@@ -109,8 +110,9 @@ public class FileControl {
 	 * @param schemaFile
 	 * @param isInitial - flag to know if there is already an descriptor for that file or not
 	 * @return
+	 * @throws CoreException 
 	 */
-	public static IPath getNextReversePath(IFile schemaFile, boolean isInitial) {
+	public static IPath getNextReversePath(IFile schemaFile, boolean isInitial) throws CoreException {
 		IPath path;
 		if(isInitial){
 			path = getFilePath(schemaFile, 1, -2);
@@ -127,8 +129,9 @@ public class FileControl {
 	 * Only called when it is known that the descriptor file is available
 	 * @param schemaFile
 	 * @return [0]: version number, [1]: file number
+	 * @throws CoreException 
 	 */	
-	public static int[] readDescriptor (IFile schemaFile) {
+	public static int[] readDescriptor (IFile schemaFile) throws CoreException {
 
 		int[] versionAndFile = new int[2];
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -137,25 +140,33 @@ public class FileControl {
 			Document doc = docBuilder.parse (getDescriptorFileAbsolutePath(schemaFile).toFile());
 
 			NodeList versionNode = doc.getElementsByTagName(VERSIONTAG);
-
-			if(versionNode.getLength()!=1){
-				//TODO:error
-				System.out.println("Arquivo descritor Invalido");
-			}else{
-				versionAndFile[0] = (new Integer(versionNode.item(0).getTextContent())).intValue();
-			}
-
 			NodeList fileNode = doc.getElementsByTagName(FILETAG);
 
-			if(fileNode.getLength()!=1){
-				//TODO:error - trocar por excecao
-				System.out.println("Arquivo descritor Invalido");
-			}else{
-				versionAndFile[1] = (new Integer(fileNode.item(0).getTextContent())).intValue();
+			if(versionNode.getLength()!=1 || fileNode.getLength()!=1){
+				Status status = new Status(Status.ERROR, 
+						XMLRefactoringPlugin.PLUGIN_ID, 
+						XMLRefactoringMessages.getString("FileControl.InvalidDescriptorFile"));
+				throw new CoreException(status);
 			}
-		}catch(Exception e){
-			//TODO: treat Exception
-			e.printStackTrace();
+			
+			versionAndFile[0] = (new Integer(versionNode.item(0).getTextContent())).intValue();
+			versionAndFile[1] = (new Integer(fileNode.item(0).getTextContent())).intValue();
+
+		}catch (SAXException e) {
+			Status status = new Status(Status.ERROR, 
+					XMLRefactoringPlugin.PLUGIN_ID, 
+					XMLRefactoringMessages.getString("FileControl.DescriptorFileProblem"), e);
+			throw new CoreException(status);
+		} catch (IOException e) {
+			Status status = new Status(Status.ERROR, 
+					XMLRefactoringPlugin.PLUGIN_ID, 
+					XMLRefactoringMessages.getString("FileControl.DescriptorFileInaccessible"), e);
+			throw new CoreException(status);
+		} catch (ParserConfigurationException e) {
+			Status status = new Status(Status.ERROR, 
+					XMLRefactoringPlugin.PLUGIN_ID, 
+					XMLRefactoringMessages.getString("FileControl.DescriptorFileProblem"), e);
+			throw new CoreException(status);
 		}
 		return versionAndFile;	
 	}
@@ -203,7 +214,7 @@ public class FileControl {
 			}
 
 		} catch (Exception e) {
-			Status status = new Status(Status.CANCEL, 
+			Status status = new Status(Status.ERROR, 
 					XMLRefactoringPlugin.PLUGIN_ID, 
 					XMLRefactoringMessages.getString("FileControl.XSLRecover"), e);
 			throw new CoreException(status);			
@@ -459,7 +470,7 @@ public class FileControl {
 			return (IDOMModel) StructuredModelManager.getModelManager().getModelForEdit(descriptorFile);
 		}
 		catch(IOException e){
-			Status status = new Status(Status.CANCEL, 
+			Status status = new Status(Status.ERROR, 
 					XMLRefactoringPlugin.PLUGIN_ID, 
 					XMLRefactoringMessages.getString("FileControl.DescriptorModel"), e);
 			throw new CoreException(status);

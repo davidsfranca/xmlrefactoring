@@ -85,7 +85,7 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void getNextPathTest(){
+	public void getNextPathTest() throws CoreException{
 		//isInitial = true
 		String actualPath = FileControl.getNextPath(underVersionControlFile, true).toString();
 		Assert.assertEquals(INITIAL_XSL_PATH, actualPath);
@@ -97,7 +97,7 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void getNextReversePathTest(){
+	public void getNextReversePathTest() throws CoreException{
 		//isInitial = true
 		String actualPath = FileControl.getNextReversePath(underVersionControlFile, true).toString();
 		Assert.assertEquals(INITIAL_REVERSE_XSL_PATH, actualPath);
@@ -108,7 +108,7 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void readDescriptorTest(){
+	public void readDescriptorTest() throws CoreException{
 		int[] actualDescriptor =  FileControl.readDescriptor(underVersionControlFile);
 		Assert.assertEquals(expectedDescriptor[0], actualDescriptor[0]);
 		Assert.assertEquals(expectedDescriptor[1], actualDescriptor[1]);

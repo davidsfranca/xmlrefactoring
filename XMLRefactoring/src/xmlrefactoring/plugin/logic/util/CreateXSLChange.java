@@ -56,7 +56,7 @@ public class CreateXSLChange extends ResourceChange{
 			writer.close();
 			return new DeleteResourceChange(xslFile.getFullPath(),true);
 		} catch (Exception e) {
-			Status status = new Status(Status.CANCEL, 
+			Status status = new Status(Status.ERROR, 
 					XMLRefactoringPlugin.PLUGIN_ID, 
 					XMLRefactoringMessages.getString("CreateXSLChange.XSLCreationError"), e);
 			throw new CoreException(status);		
