@@ -15,13 +15,11 @@ import xmlrefactoring.plugin.xslt.FileControl;
 
 public class ChangeVersionWizardPage extends UserInputWizardPage {
 
-	private static final String PAGE_NAME = "Change Version Wizard Page";
-	private static final String CONFIRMATION_MESSAGE = "Do you really want to change to version ";
 	private IFile selectedSchema;
 	private int newVersion;
 	
 	public ChangeVersionWizardPage(IFile selectedSchema, int newVesion) {
-		super(PAGE_NAME);
+		super(XMLRefactoringMessages.getString("ChangeVersionWizardPage.Name"));
 		this.selectedSchema = selectedSchema;
 		this.newVersion = newVesion;
 	}
@@ -31,7 +29,7 @@ public class ChangeVersionWizardPage extends UserInputWizardPage {
 		setControl(composite);
 		//TODO Trocar pelo layout simples
 		composite.setLayout(new GridLayout());
-		new Label(composite, SWT.NONE).setText(CONFIRMATION_MESSAGE + newVersion + "?");
+		new Label(composite, SWT.NONE).setText(XMLRefactoringMessages.getString("ChangeVersionWizardPage.Confirmation") + newVersion + "?");
 	}
 
 }

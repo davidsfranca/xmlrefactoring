@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.logic.BaseXSLParticipant;
 import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 
@@ -19,7 +20,7 @@ public class XSLTAttr2ElemParticipant extends BaseXSLParticipant{
 
 	@Override
 	public String getName() {
-		return "Transform into element xslt refactoring participant";
+		return XMLRefactoringMessages.getString("XSLTAttr2ElemParticipant.Name");
 	}
 
 	@Override

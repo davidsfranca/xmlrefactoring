@@ -113,8 +113,7 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 
 	@Override
 	public String getName() {
-		//TODO Padronizar msg
-		return "Group elements XSD participant";
+		return XMLRefactoringMessages.getString("XSDGroupElementsParticipant.Name");
 	}
 
 	@Override
