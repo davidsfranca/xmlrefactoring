@@ -9,6 +9,7 @@ import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 
 public abstract class BaseProcessor extends RefactoringProcessor{
@@ -26,7 +27,7 @@ public abstract class BaseProcessor extends RefactoringProcessor{
 	@Override
 	public RefactoringParticipant[] loadParticipants(RefactoringStatus status,
 			SharableParticipants sharedParticipants) throws CoreException {
-		ParticipantExtensionPoint pep = new ParticipantExtensionPoint(PluginNamingConstants.pluginID,
+		ParticipantExtensionPoint pep = new ParticipantExtensionPoint(XMLRefactoringMessages.getString("pluginID"),
 				getParticipantExtensionPoint(), BaseParticipant.class);
 		
 		return pep.getParticipants(new RefactoringStatus(), this, 

@@ -24,12 +24,6 @@ import xmlrefactoring.plugin.xslt.FileControl;
 
 public class ApplyChanges2XMLWizardPage extends WizardPage{
 
-	private static final String PAGE_NAME = "Apply changes to XML input";
-	private static final String BROWSE_BUTTON_TEXT = "Browse...";
-	private static final String ORIGINAL_VERSION_LABEL = "Enter with the current version for the XML:";
-	private static final String TARGET_VERSION_LABEL = "Enter with the desired version for the XML:";
-	private static final String SCHEMA_LABEL = "Selected Schema:";
-	private static final String PAGE_TITLE = "Apply changes to XML";
 	private Combo xmlOriginalVersion;
 	private Combo xmlTargetVersion;
 	private Combo xmlPath;
@@ -41,7 +35,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 	private final int XSD_NAME_WIDTH = 400, XSD_NAME_HEIGHT = 20, XML_PATH_WIDTH = 270, XML_PATH_HEIGHT = 20;
 
 	public ApplyChanges2XMLWizardPage(IFile selectedSchema) throws CoreException {
-		super(PAGE_NAME, PAGE_TITLE, null);
+		super(XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.PageName"), XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.PageTitle"), null);
 		this.selectedSchema = selectedSchema;
 		this.schemaMaxVersion = FileControl.readDescriptor(selectedSchema)[0];
 	}
@@ -54,7 +48,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 		composite.setLayout(grid);
 
 		//Schema name label		
-		new Label(composite, SWT.None).setText(SCHEMA_LABEL);
+		new Label(composite, SWT.None).setText(XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.SchemaLabel"));
 
 		//Schema name
 		Text selectedSchemaText = new Text(composite, SWT.SIMPLE);
@@ -73,7 +67,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 
 		//Browse button
 		Button browseButton = new Button(composite, SWT.PUSH);
-		browseButton.setText(BROWSE_BUTTON_TEXT);
+		browseButton.setText(XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.BrowseButtonText"));
 		browseButton.addSelectionListener(new SelectionAdapter(){
 
 			@Override
@@ -107,7 +101,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 		});
 
 		//Original version label
-		new Label(composite, SWT.None).setText(ORIGINAL_VERSION_LABEL);
+		new Label(composite, SWT.None).setText(XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.OriginalVersionLabel"));
 
 		//Original Version Combo
 		xmlOriginalVersion = new Combo(composite, SWT.DROP_DOWN);
@@ -123,7 +117,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 		xmlOriginalVersion.setEnabled(false);
 
 		//Target Version label
-		new Label(composite, SWT.None).setText(TARGET_VERSION_LABEL);
+		new Label(composite, SWT.None).setText(XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.TargetVersionLabel"));
 
 		//Target Version Combo
 		xmlTargetVersion = new Combo(composite, SWT.DROP_DOWN);

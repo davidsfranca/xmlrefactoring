@@ -32,7 +32,7 @@ public class RenameProcessor extends BaseProcessor{
 
 	@Override
 	protected String getParticipantExtensionPoint() {
-		return PluginNamingConstants.RENAME_PARTICIPANT_EXTENSION_POINT_ID;
+		return XMLRefactoringMessages.getString("RenameParticipant.ExtensionPointID");
 	}
 
 	@Override
@@ -59,12 +59,12 @@ public class RenameProcessor extends BaseProcessor{
 
 	@Override
 	public String getIdentifier() {
-		return PluginNamingConstants.RENAME_PROCESSOR_IDENTIFIER;
+		return XMLRefactoringMessages.getString("RenameProcessor.Identifier");
 	}
 
 	@Override
 	public String getProcessorName() {
-		return PluginNamingConstants.RENAME_PROCESSOR_NAME;
+		return XMLRefactoringMessages.getString("RenameProcessor.Name");
 	}
 
 	@Override

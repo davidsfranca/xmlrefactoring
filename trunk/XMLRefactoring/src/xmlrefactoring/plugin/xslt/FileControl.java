@@ -67,9 +67,6 @@ public class FileControl {
 	//CONSTANT - XPATH EXPRESSION
 	private static final String VERSIONXPATH = "descriptor/versions/version";
 
-	//CONSTANT - OTHERS
-	private static final String COMPOSITENAME = "Add to version control";
-	//TODO: mudar para arquivo
 	private static String INITIAL_DESCRIPTOR; 
 
 	//Consult data from XSL and XSL control files
@@ -380,7 +377,7 @@ public class FileControl {
 	 * @throws CoreException 
 	 */
 	public static CompositeChange addToVersionControl(IFile schemaFile) throws CoreException{
-		CompositeChange allChanges = new CompositeChange(COMPOSITENAME);
+		CompositeChange allChanges = new CompositeChange(XMLRefactoringMessages.getString("FileControl.CompositeName"));
 
 		//Create descriptor file
 		Change descriptorCreation = new CreateFileChange(getDescriptorFilePath(schemaFile), new ByteArrayInputStream(getInitialDescriptor().getBytes()));		
@@ -478,7 +475,7 @@ public class FileControl {
 		TextChange change2 = new TextFileChange("Save last version Info", descriptorFile);
 		change2.setEdit(insertLast);
 
-		CompositeChange changes = new CompositeChange(COMPOSITENAME);
+		CompositeChange changes = new CompositeChange(XMLRefactoringMessages.getString("FileControl.CompositeName"));
 		changes.add(change);
 		changes.add(fileChange);
 		changes.add(change2);
@@ -504,7 +501,7 @@ public class FileControl {
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();				
 		Document doc = docBuilder.parse (selectedXMLFile);
-		String versionString = doc.getDocumentElement().getAttribute(PluginNamingConstants.SCHEMA_VERSION);
+		String versionString = doc.getDocumentElement().getAttribute(XMLRefactoringMessages.getString("schemaVersion"));
 		if(versionString.equals(""))
 			return 0;
 		else

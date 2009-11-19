@@ -11,15 +11,12 @@ import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.refactoring.VersioningRefactoring;
 import xmlrefactoring.plugin.xslt.FileControl;
 
 public class ChangeVersionRefactoring extends Refactoring {
 
-	private static final String REFACTORING_NAME = "Version change refactoring";
-	private static final String CHANGE_NAME = "Version change";
-	private static final String SCHEMA_FILE_OUT_SYNC = "The schema file is not synchronized with the file system";
-	private static final String DESCRIPTOR_FILE_OUT_SYNC = "The descriptor file is not synchronized with the file system";
 	private int newVersion;
 	private IFile schemaFile;
 	
@@ -40,16 +37,16 @@ public class ChangeVersionRefactoring extends Refactoring {
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();		
 		if(!schemaFile.isSynchronized(IResource.DEPTH_ZERO))
-			status.addFatalError(SCHEMA_FILE_OUT_SYNC);
+			status.addFatalError(XMLRefactoringMessages.getString("ChangeVersionRefactoring.SchemaFileOutSync"));
 		if(!FileControl.getDescriptorFile(schemaFile).isSynchronized(IResource.DEPTH_ZERO))
-			status.addFatalError(DESCRIPTOR_FILE_OUT_SYNC);
+			status.addFatalError(XMLRefactoringMessages.getString("ChangeVersionRefactoring.DescriptorFileOutSync"));
 		return status;
 	}
 
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
-		CompositeChange composite = new CompositeChange(CHANGE_NAME);
+		CompositeChange composite = new CompositeChange(XMLRefactoringMessages.getString("ChangeVersionRefactoring.ChangeName"));
 		Change versionDirCreation = FileControl.createVersioningDir(schemaFile, newVersion);
 		Change versionRefactoring = FileControl.createVersioningRefactoring(schemaFile, newVersion);
 		Change descriptorUpdate = FileControl.updateDescriptor(schemaFile);
@@ -61,7 +58,7 @@ public class ChangeVersionRefactoring extends Refactoring {
 
 	@Override
 	public String getName() {
-		return REFACTORING_NAME;
+		return XMLRefactoringMessages.getString("ChangeVersionRefactoring.RefactoringName");
 	}
 
 	public void setNewVersion(int newVersion) {
