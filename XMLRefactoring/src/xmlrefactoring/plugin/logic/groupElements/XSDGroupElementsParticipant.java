@@ -18,10 +18,12 @@ import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.w3c.dom.Element;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseXSDParticipant;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
+import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 
 public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 
@@ -53,20 +55,20 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 		for(IDOMElement movingElement : arguments.getElements()){
 			compositor.appendChild(movingElement.cloneNode(true));
 			DeleteEdit deleteElement = new DeleteEdit(movingElement.getStartOffset(), movingElement.getEndOffset() - movingElement.getStartOffset());
-			TextChangeCompatibility.addTextEdit(change, PluginNamingConstants.GROUP_ELEMENT_DELETE, deleteElement);
+			TextChangeCompatibility.addTextEdit(change, XMLRefactoringMessages.getString("XSDGroupElementsParticipant.GroupElementDelete"), deleteElement);
 		}
 		int includeOffset = root.getEndStructuredDocumentRegion().getStartOffset();
 		InsertEdit newType = new InsertEdit(includeOffset, XMLUtil.toString(complexType));
-		TextChangeCompatibility.addTextEdit(change, PluginNamingConstants.GROUP_ELEMENT_TYPE_CREATION, newType);
+		TextChangeCompatibility.addTextEdit(change, XMLRefactoringMessages.getString("XSDGroupElementsParticipant.GroupElementTypeCreation"), newType);
 
 		//Insert the new element of the created type
 		IDOMElement firstElement = arguments.getElements().get(0);
 		int newElementOffset = firstElement.getStartOffset();
 		InsertEdit newElement = new InsertEdit(newElementOffset, XMLUtil.toString(createNewElement(firstElement)));
-		TextChangeCompatibility.addTextEdit(change, PluginNamingConstants.GROUP_ELEMENT_GROUPING_ELEMENT, newElement);
+		TextChangeCompatibility.addTextEdit(change, XMLRefactoringMessages.getString("XSDGroupElementsParticipant.GroupingElement"), newElement);
 		
 		super.createChange(pm);
-		return new CompositeChange(PluginNamingConstants.GROUP_ELEMENT_TRANSF_NAME,manager.getAllChanges());
+		return new CompositeChange(XMLRefactoringMessages.getString("XSDGroupElementsParticipant.Transf"),manager.getAllChanges());
 	}
 
 	private Element createNewElement(Element firstElement) {

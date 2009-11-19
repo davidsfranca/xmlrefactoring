@@ -11,6 +11,7 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.xsd.XSDNamedComponent;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseParticipant;
 import xmlrefactoring.plugin.logic.BaseProcessor;
@@ -59,12 +60,12 @@ public class Attr2ElemProcessor extends BaseProcessor{
 
 	@Override
 	public String getIdentifier() {
-		return PluginNamingConstants.ATTR_2_ELEM_PROCESSOR_IDENTIFIER;
+		return XMLRefactoringMessages.getString("Attr2ElemProcessor.Identifier");
 	}
 
 	@Override
 	public String getProcessorName() {
-		return PluginNamingConstants.ATTR_2_ELEM_PROCESSOR_NAME;
+		return XMLRefactoringMessages.getString("Attr2ElemProcessor.Name");
 	}
 
 	@Override
@@ -75,7 +76,7 @@ public class Attr2ElemProcessor extends BaseProcessor{
 
 	@Override
 	protected String getParticipantExtensionPoint() {
-		return PluginNamingConstants.ATTR_2_ELEM_PARTICIPANT_EXTENSION_POINT_ID;
+		return XMLRefactoringMessages.getString("Attr2ElemParticipant.ExtensionPointID");
 	}
 
 }

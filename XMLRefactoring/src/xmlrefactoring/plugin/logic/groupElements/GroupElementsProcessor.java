@@ -13,6 +13,7 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.xsd.XSDNamedComponent;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseProcessor;
 
@@ -68,12 +69,12 @@ public class GroupElementsProcessor extends BaseProcessor {
 
 	@Override
 	public String getIdentifier() {
-		return PluginNamingConstants.GROUP_ELEMENTS_PROCESSOR_IDENTIFIER;
+		return XMLRefactoringMessages.getString("GroupElementsProcessor.Identifier");
 	}
 
 	@Override
 	public String getProcessorName() {
-		return PluginNamingConstants.GROUP_ELEMENTS_PROCESSOR_NAME;
+		return XMLRefactoringMessages.getString("GroupElementsProcessor.Name");
 	}
 
 	@Override
@@ -88,7 +89,7 @@ public class GroupElementsProcessor extends BaseProcessor {
 
 	@Override
 	protected String getParticipantExtensionPoint() {
-		return PluginNamingConstants.GROUP_ELEMENT_PARTICIPANT_EXTENSION_POINT_ID;
+		return XMLRefactoringMessages.getString("GroupElementsPartcipant.ExtensionPointID");
 	}
 
 }

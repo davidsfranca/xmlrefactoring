@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
@@ -132,7 +133,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 			edit = new InsertEdit(offset, typeInclusion.toString());
 		}
 		
-		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, edit);
+		TextChangeCompatibility.addTextEdit(schemaFileChange, XMLRefactoringMessages.getString("BaseXSDParticipant.SchemaVersionAddition"), edit);
 		
 		//New type
 		Element extendedType = XMLUtil.createComplexType(root, newTypeName);
@@ -151,14 +152,14 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		contentElement.appendChild(extension);
 		extension.appendChild(createSchemaAttribute(root.getPrefix()));
 		InsertEdit extendedTypeInsert = new InsertEdit(root.getEndStartOffset(), XMLUtil.toString(extendedType));
-		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, extendedTypeInsert);		
+		TextChangeCompatibility.addTextEdit(schemaFileChange, XMLRefactoringMessages.getString("BaseXSDParticipant.SchemaVersionAddition"), extendedTypeInsert);		
 	}
 	
 	private void addAttributeComplexType(Element rootElement, IDOMElement complexType) throws CoreException {
 		int offset = complexType.getEndStartOffset();
 		Element schemaAttribute = createSchemaAttribute(rootElement.getPrefix());
 		InsertEdit insert = new InsertEdit(offset, XMLUtil.toString(schemaAttribute));
-		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, insert);		
+		TextChangeCompatibility.addTextEdit(schemaFileChange, XMLRefactoringMessages.getString("BaseXSDParticipant.SchemaVersionAddition"), insert);		
 	}
 
 	private void createReplacement(Node newElement, IDOMNode oldElement) throws CoreException {		
@@ -166,7 +167,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		int offset = oldElement.getStartOffset();
 		int length = oldElement.getEndOffset() - offset; 
 		ReplaceEdit replaceElement = new ReplaceEdit(offset, length, newElementText);
-		TextChangeCompatibility.addTextEdit(schemaFileChange, PluginNamingConstants.SCHEMA_VERSION_ADDITION, replaceElement);		
+		TextChangeCompatibility.addTextEdit(schemaFileChange, XMLRefactoringMessages.getString("BaseXSDParticipant.SchemaVersionAddition"), replaceElement);		
 	}
 
 	private Element getDerivedContent(Element complexType) {
@@ -197,7 +198,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		String attrQName = XMLUtil.createQName(prefix, XSDUtil.ATTRIBUTE);
 		Element attr = schemaDocument.createElement(attrQName);
 		Attr name = schemaDocument.createAttribute(XSDUtil.NAME);
-		name.setValue(PluginNamingConstants.SCHEMA_VERSION);
+		name.setValue(XMLRefactoringMessages.getString("schemaVersion"));
 		attr.setAttributeNode(name);
 		return attr;
 	}

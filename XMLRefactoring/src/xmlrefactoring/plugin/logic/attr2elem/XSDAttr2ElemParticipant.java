@@ -26,6 +26,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseXSDParticipant;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
@@ -54,7 +55,7 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 			transformDeclaration(manager);
 			transformReferences(manager);			
 			
-			return new CompositeChange(PluginNamingConstants.ATTR_2_ELEM_TRANSF_NAME, 
+			return new CompositeChange(XMLRefactoringMessages.getString("XSDAttr2ElemParticipant.Name"), 
 					manager.getAllChanges());
 		}
 		return null;
@@ -70,7 +71,7 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 		TextEdit[] attr2elemTransformation = attr2elem(attribute);
 		
 		TextChangeCompatibility.addTextEdit(textChange, 
-				PluginNamingConstants.ATTR_2_ELEM_DEC_TRANSF_NAME , attr2elemTransformation);
+				XMLRefactoringMessages.getString("XSDAttr2ElemParticipant.DecName"), attr2elemTransformation);
 	}
 
 	private void transformReferences(TextChangeManager manager) throws CoreException {
@@ -82,7 +83,7 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 					Attr attr = (Attr) node;
 					TextEdit[] transformation = attr2elem(attr.getOwnerElement());
 					TextChangeCompatibility.addTextEdit(change, 
-							PluginNamingConstants.ATTR_2_ELEM_REF_TRANSF_NAME, transformation);
+							XMLRefactoringMessages.getString("XSDAttr2ElemParticipant.RefName"), transformation);
 				}	
 			}
 		}		

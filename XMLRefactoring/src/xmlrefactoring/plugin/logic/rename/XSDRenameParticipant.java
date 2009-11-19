@@ -25,11 +25,13 @@ import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.w3c.dom.Node;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseXSDParticipant;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
+import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 
 public class XSDRenameParticipant extends BaseXSDParticipant{
 
@@ -53,7 +55,7 @@ public class XSDRenameParticipant extends BaseXSDParticipant{
 			renameReferences();
 		}			
 		super.createChange(pm);
-		return new CompositeChange(PluginNamingConstants.RENAME_TRANSF_NAME,manager.getAllChanges());
+		return new CompositeChange(XMLRefactoringMessages.getString("XSDRenameParticipant.RenameReference"),manager.getAllChanges());
 	}
 	
 	private void renameDeclaration(){
