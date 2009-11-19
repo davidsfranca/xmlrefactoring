@@ -1,11 +1,9 @@
 package xmlrefactoring.changeVersion.ui;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
-import org.eclipse.wst.xsd.ui.internal.editor.XSDEditorPlugin;
-import org.eclipse.wst.xsd.ui.internal.refactor.wizard.RefactoringWizardMessages;
 
 import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.applyChanges.ui.SchemaFileAction;
@@ -19,6 +17,11 @@ public class ChangeVersionAction extends SchemaFileAction {
 			RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(wizard);
 			operation.run(XMLRefactoringPlugin.getShell(), "Refatoracao Teste Title");
 		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch(CoreException e){
+			MessageDialog.openError(XMLRefactoringPlugin.getShell(), 
+					XMLRefactoringMessages.getString("ChangeVersionWizardPage.InvalidSchemaFileTitle"), 
+					e.getMessage());
 			e.printStackTrace();
 		}
 	}

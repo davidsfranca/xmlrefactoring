@@ -15,10 +15,13 @@ public class ChangeVersionWizard extends RefactoringWizard {
 
 	private static final String CHANGE_VERSION_WIZARD_TITLE = "Change XSD version";
 	private IFile selectedSchema;
-	
-	public ChangeVersionWizard(IFile selectedSchema){
+	private int newVersion;
+
+	public ChangeVersionWizard(IFile selectedSchema) throws CoreException{
 		super(new ChangeVersionRefactoring(selectedSchema), DIALOG_BASED_USER_INTERFACE | CHECK_INITIAL_CONDITIONS_ON_OPEN);
 		this.selectedSchema = selectedSchema;
+		this.newVersion = FileControl.readDescriptor(selectedSchema)[0] + 1;
+		((ChangeVersionRefactoring)getRefactoring()).setNewVersion(newVersion);
 		setWindowTitle(CHANGE_VERSION_WIZARD_TITLE);
 		ImageDescriptor defaultImageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
 				XMLRefactoringPlugin.PLUGIN_ID, "icons/applychanges.png");
@@ -26,17 +29,9 @@ public class ChangeVersionWizard extends RefactoringWizard {
 	}
 
 	@Override
-	protected void addUserInputPages() {		
-		try {			
-			int newVersion = FileControl.readDescriptor(selectedSchema)[0] + 1;
-			ChangeVersionWizardPage page = new ChangeVersionWizardPage(selectedSchema, newVersion);
-			addPage(page);
-		} catch (CoreException e) {
-			MessageDialog.openError(XMLRefactoringPlugin.getShell(), 
-					XMLRefactoringMessages.getString("ChangeVersionWizardPage.InvalidSchemaFileTitle"), 
-					e.getMessage());
-			e.printStackTrace();
-		}			
+	protected void addUserInputPages() {			 
+		ChangeVersionWizardPage page = new ChangeVersionWizardPage(selectedSchema, newVersion);
+		addPage(page);	
 	}
 
 }
