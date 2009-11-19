@@ -47,7 +47,7 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 			this.schemaMaxVersion = FileControl.readDescriptor(selectedSchema)[0];
 		} catch (CoreException e) {
 			MessageDialog.openError(XMLRefactoringPlugin.getShell(), 
-					XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.InvalidSchemaFileTitle"), 
+					XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.ReadDescriptorError"), 
 					e.getMessage());
 			e.printStackTrace();
 		}

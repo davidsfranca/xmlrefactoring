@@ -167,6 +167,11 @@ public class FileControl {
 					XMLRefactoringPlugin.PLUGIN_ID, 
 					XMLRefactoringMessages.getString("FileControl.DescriptorFileProblem"), e);
 			throw new CoreException(status);
+		} catch(Exception e){
+			Status status = new Status(Status.ERROR, 
+					XMLRefactoringPlugin.PLUGIN_ID, 
+					XMLRefactoringMessages.getString("FileControl.DescriptorFileProblem"), e);
+			throw new CoreException(status);
 		}
 		return versionAndFile;	
 	}
@@ -196,7 +201,6 @@ public class FileControl {
 					Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
 					int maxFile = new Integer(file.getFirstChild().getNodeValue());
 					for(int j = 1; j<=maxFile; j++){
-						//TODO:Manipula‹o de arquivo bem feia - mudar
 						files.add(new File(getFilePath(schemaFile, i, j)));
 					}
 				}
@@ -206,7 +210,6 @@ public class FileControl {
 					Node file = ((NodeList)expr.evaluate(doc, XPathConstants.NODESET)).item(0);
 					int maxFile = new Integer(file.getFirstChild().getNodeValue());
 					for(int j = -maxFile; j<= -1; j++){
-						//TODO:Manipula‹o de arquivo bem feia - mudar
 						files.add(new File(getFilePath(schemaFile, i, j)));
 					}
 				}
@@ -417,7 +420,6 @@ public class FileControl {
 
 	}
 
-	//TODO: Quebrar em dois mŽtodos ou preservar um?
 	/**
 	 * Method used to update the descriptor file when the version changes
 	 * It's responsible for save the last version information, increment the last version number,
@@ -449,7 +451,7 @@ public class FileControl {
 		fileChange.setEdit(fileEdit);
 
 		//Version information to be saved
-		//TODO: FEIO!!!
+		//TODO:Isso n‹o deveria usar os utilitarios q vc criou?
 		String versionInfo = "<"+VERSIONINFOTAG+" " + VERSIONATTR+"=\""+lastVersionValue+"\" >"+ lastFileValue +
 		"</"+ VERSIONINFOTAG + " >\n";
 		InsertEdit insertLast = new InsertEdit(versions.getEndStartOffset(),versionInfo);

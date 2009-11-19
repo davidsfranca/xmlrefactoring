@@ -61,7 +61,6 @@ public class XSLTRenameParticipant extends BaseXSLParticipant{
 
 	@Override
 	protected boolean initialize(Object element) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 	
