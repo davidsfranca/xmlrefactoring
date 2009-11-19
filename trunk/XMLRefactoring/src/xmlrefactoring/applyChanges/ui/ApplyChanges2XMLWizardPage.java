@@ -1,11 +1,7 @@
 package xmlrefactoring.applyChanges.ui;
 
-import java.awt.Dialog;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -21,7 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.xml.sax.SAXException;
 
 import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.XMLRefactoringPlugin;
@@ -31,16 +26,18 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 
 	private static final String PAGE_NAME = "Apply changes to XML input";
 	private static final String BROWSE_BUTTON_TEXT = "Browse...";
-	private static final String VERSION_LABEL = "Enter with the desired version for the XML:";
+	private static final String ORIGINAL_VERSION_LABEL = "Enter with the current version for the XML:";
+	private static final String TARGET_VERSION_LABEL = "Enter with the desired version for the XML:";
 	private static final String SCHEMA_LABEL = "Selected Schema:";
 	private static final String PAGE_TITLE = "Apply changes to XML";
+	private Combo xmlOriginalVersion;
 	private Combo xmlTargetVersion;
 	private Combo xmlPath;
 	private File selectedXMLFile;
 	private IFile selectedSchema;
 	private int schemaMaxVersion;
 	private int xmlVersion;
-	
+
 	private final int XSD_NAME_WIDTH = 400, XSD_NAME_HEIGHT = 20, XML_PATH_WIDTH = 270, XML_PATH_HEIGHT = 20;
 
 	public ApplyChanges2XMLWizardPage(IFile selectedSchema) {
@@ -62,10 +59,10 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 		GridLayout grid = new GridLayout();
 		grid.numColumns = 2;
 		composite.setLayout(grid);
-		
+
 		//Schema name label		
 		new Label(composite, SWT.None).setText(SCHEMA_LABEL);
-		
+
 		//Schema name
 		Text selectedSchemaText = new Text(composite, SWT.SIMPLE);
 		selectedSchemaText.setEditable(false);
@@ -75,12 +72,12 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 			selectedSchemaText.setText(schemaName);
 			selectedSchemaText.setSize(XSD_NAME_WIDTH, XSD_NAME_HEIGHT);
 		}
-		
+
 		//XML Path
 		xmlPath = new Combo(composite, SWT.DROP_DOWN);
 		xmlPath.setText("Choose a XML to refactor               ");
 		xmlPath.setSize(XML_PATH_WIDTH, XML_PATH_HEIGHT);
-		
+
 		//Browse button
 		Button browseButton = new Button(composite, SWT.PUSH);
 		browseButton.setText(BROWSE_BUTTON_TEXT);
@@ -88,6 +85,8 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				xmlTargetVersion.setEnabled(false);
+				xmlOriginalVersion.setEnabled(false);
 				FileDialog dialog = new FileDialog(XMLRefactoringPlugin.getShell());
 				String fileString = dialog.open(); 
 				xmlPath.add(fileString);
@@ -96,7 +95,14 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 				selectedXMLFile = new File(fileString);
 				try {
 					xmlVersion = FileControl.getSchemaVersion(new FileInputStream(selectedXMLFile));
-					updateXMLTargetVersion();
+					updateXMLVersion();
+					if(xmlVersion == 0){
+						xmlOriginalVersion.select(0);
+						xmlOriginalVersion.setEnabled(true);
+					}
+					else
+						xmlOriginalVersion.setEnabled(false);
+					xmlTargetVersion.setEnabled(true);
 					getContainer().updateButtons();
 				} catch (Exception e1) {
 					MessageDialog.openError(XMLRefactoringPlugin.getShell(), 
@@ -106,29 +112,49 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 				}
 			}			
 		});
-		
-		//Version label
-		new Label(composite, SWT.None).setText(VERSION_LABEL);
-		
-		//Version Combo
-		xmlTargetVersion = new Combo(composite, SWT.DROP_DOWN);
-		xmlTargetVersion.setText("--");
-		xmlTargetVersion.addSelectionListener(new SelectionAdapter(){
-			
+
+		//Original version label
+		new Label(composite, SWT.None).setText(ORIGINAL_VERSION_LABEL);
+
+		//Original Version Combo
+		xmlOriginalVersion = new Combo(composite, SWT.DROP_DOWN);
+		xmlOriginalVersion.setText("--");
+		xmlOriginalVersion.addSelectionListener(new SelectionAdapter(){
+
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				getContainer().updateButtons();
 			}
-			
+
 		});
+		xmlOriginalVersion.setEnabled(false);
+
+		//Target Version label
+		new Label(composite, SWT.None).setText(TARGET_VERSION_LABEL);
+
+		//Target Version Combo
+		xmlTargetVersion = new Combo(composite, SWT.DROP_DOWN);
+		xmlTargetVersion.setText("--");
+		xmlTargetVersion.addSelectionListener(new SelectionAdapter(){
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				getContainer().updateButtons();
+			}
+
+		});
+		xmlTargetVersion.setEnabled(false);
 	}
-	
-	private void updateXMLTargetVersion() {
+
+	private void updateXMLVersion() {
 		xmlTargetVersion.removeAll();
 		for(Integer i = 0; i < schemaMaxVersion; i++)
-				xmlTargetVersion.add(i.toString());
+			xmlTargetVersion.add(i.toString());
+		xmlOriginalVersion.removeAll();
+		for(Integer i = 0; i < schemaMaxVersion; i++)
+			xmlOriginalVersion.add(i.toString());
 	}
-	
+
 	/**
 	 * Returns the Selected version to apply into the XML. If no selection was made return -1.
 	 */
@@ -138,25 +164,32 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 		else	
 			return -1;
 	}
-	
+
 	public File getSelectedXMLFile(){
 		return selectedXMLFile;
 	}
-	
+
 	@Override
 	public boolean isPageComplete(){
 		if(!super.isPageComplete() ||
-			selectedSchema == null ||
-			getSelectedVersion() == -1 ||
-			!getSelectedXMLFile().exists()
-			)
+				selectedSchema == null ||
+				getSelectedVersion() == -1 ||
+				getXmlVersion() == -1 ||
+				!getSelectedXMLFile().exists()
+		)
 			return false;
 		else			
 			return true;
 	}
 
 	public int getXmlVersion() {
-		return xmlVersion;
+		if(xmlOriginalVersion.isEnabled())
+			if(xmlOriginalVersion.getSelectionIndex() != -1)
+				return Integer.parseInt(xmlOriginalVersion.getItem(xmlOriginalVersion.getSelectionIndex()));
+			else	
+				return -1;
+		else
+			return xmlVersion;
 	}
 
 }
