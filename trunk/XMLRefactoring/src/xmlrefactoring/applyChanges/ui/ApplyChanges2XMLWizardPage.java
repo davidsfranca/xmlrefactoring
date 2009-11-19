@@ -40,17 +40,10 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 
 	private final int XSD_NAME_WIDTH = 400, XSD_NAME_HEIGHT = 20, XML_PATH_WIDTH = 270, XML_PATH_HEIGHT = 20;
 
-	public ApplyChanges2XMLWizardPage(IFile selectedSchema) {
+	public ApplyChanges2XMLWizardPage(IFile selectedSchema) throws CoreException {
 		super(PAGE_NAME, PAGE_TITLE, null);
 		this.selectedSchema = selectedSchema;
-		try {
-			this.schemaMaxVersion = FileControl.readDescriptor(selectedSchema)[0];
-		} catch (CoreException e) {
-			MessageDialog.openError(XMLRefactoringPlugin.getShell(), 
-					XMLRefactoringMessages.getString("ApplyChanges2XMLWizardPage.ReadDescriptorError"), 
-					e.getMessage());
-			e.printStackTrace();
-		}
+		this.schemaMaxVersion = FileControl.readDescriptor(selectedSchema)[0];
 	}
 
 	public void createControl(Composite parent) {

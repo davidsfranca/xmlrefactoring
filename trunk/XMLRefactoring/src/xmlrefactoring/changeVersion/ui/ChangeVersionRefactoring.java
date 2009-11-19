@@ -43,11 +43,6 @@ public class ChangeVersionRefactoring extends Refactoring {
 			status.addFatalError(SCHEMA_FILE_OUT_SYNC);
 		if(!FileControl.getDescriptorFile(schemaFile).isSynchronized(IResource.DEPTH_ZERO))
 			status.addFatalError(DESCRIPTOR_FILE_OUT_SYNC);
-		try{
-			newVersion = FileControl.readDescriptor(schemaFile)[0] + 1;
-		}catch(CoreException e){
-			status.addFatalError(e.getMessage());
-		}
 		return status;
 	}
 

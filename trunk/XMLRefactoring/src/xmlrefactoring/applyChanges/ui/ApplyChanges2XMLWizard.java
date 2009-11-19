@@ -1,6 +1,5 @@
 package xmlrefactoring.applyChanges.ui;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IFile;
@@ -8,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.internal.quickaccess.WizardElement;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import xmlrefactoring.XMLRefactoringMessages;
@@ -20,7 +20,7 @@ public class ApplyChanges2XMLWizard extends Wizard {
 	private ApplyChanges2XMLWizardPage page;
 	private IFile schema;
 
-	public ApplyChanges2XMLWizard(IFile selectedSchema) {
+	public ApplyChanges2XMLWizard(IFile selectedSchema) throws CoreException {
 		page = new ApplyChanges2XMLWizardPage(selectedSchema);
 		schema = selectedSchema;
 		setWindowTitle(APPLY_CHANGES_WIZARD_TITLE);
