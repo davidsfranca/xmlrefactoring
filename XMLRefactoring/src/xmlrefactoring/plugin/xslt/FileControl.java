@@ -13,7 +13,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.eclipse.core.resources.IContainer;
@@ -33,6 +32,7 @@ import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMModel;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -43,6 +43,7 @@ import xmlrefactoring.plugin.XMLRefactoringPlugin;
 import xmlrefactoring.plugin.logic.util.CreateFileChange;
 import xmlrefactoring.plugin.logic.util.CreateFolderChange;
 import xmlrefactoring.plugin.logic.util.CreateXSLChange;
+import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.refactoring.VersioningRefactoring;
 
 public class FileControl {
@@ -69,9 +70,7 @@ public class FileControl {
 	//CONSTANT - OTHERS
 	private static final String COMPOSITENAME = "Add to version control";
 	//TODO: mudar para arquivo
-	private static final String INITIAL_DESCRIPTOR = "<" + DESCRIPTORTAG + ">\n<" + AllVERSIONSTAG + ">\n</" + AllVERSIONSTAG + ">\n<" +
-	FILETAG + ">2</" + FILETAG + ">\n<" + VERSIONTAG + ">1</" + VERSIONTAG + ">\n</" +
-	DESCRIPTORTAG + ">";
+	private static String INITIAL_DESCRIPTOR; 
 
 	//Consult data from XSL and XSL control files
 
@@ -82,6 +81,26 @@ public class FileControl {
 	public static boolean isUnderVersionControl(IFile schemaFile){
 		IContainer root = schemaFile.getWorkspace().getRoot();
 		return root.exists(getDescriptorFilePath(schemaFile));
+	}
+
+	private static String getInitialDescriptor() throws CoreException{
+		if(INITIAL_DESCRIPTOR == null)
+			INITIAL_DESCRIPTOR = createInitialDescriptor();
+		return INITIAL_DESCRIPTOR;
+	}
+	
+	private static String createInitialDescriptor() throws CoreException{
+		Element descriptor = XMLUtil.createElement(DESCRIPTORTAG);
+		Element allVersions = descriptor.getOwnerDocument().createElement(AllVERSIONSTAG);
+		allVersions.setTextContent("");
+		descriptor.appendChild(allVersions);
+		Element lastFile = descriptor.getOwnerDocument().createElement(FILETAG);
+		lastFile.setTextContent("2");
+		descriptor.appendChild(lastFile);
+		Element lastVersion = descriptor.getOwnerDocument().createElement(VERSIONTAG);
+		lastVersion.setTextContent("1");
+		descriptor.appendChild(lastVersion);		
+		return XMLUtil.toString(descriptor);
 	}
 
 	/**
@@ -358,12 +377,13 @@ public class FileControl {
 	 * Creates all the required structure to versioning the refactorings in a XSD file
 	 * @param schemaFile
 	 * @return
+	 * @throws CoreException 
 	 */
-	public static CompositeChange addToVersionControl(IFile schemaFile){
+	public static CompositeChange addToVersionControl(IFile schemaFile) throws CoreException{
 		CompositeChange allChanges = new CompositeChange(COMPOSITENAME);
 
 		//Create descriptor file
-		Change descriptorCreation = new CreateFileChange(getDescriptorFilePath(schemaFile), new ByteArrayInputStream(INITIAL_DESCRIPTOR.getBytes()));		
+		Change descriptorCreation = new CreateFileChange(getDescriptorFilePath(schemaFile), new ByteArrayInputStream(getInitialDescriptor().getBytes()));		
 		allChanges.add(descriptorCreation);
 
 		//Create refactoring directory
@@ -434,7 +454,6 @@ public class FileControl {
 		IDOMElement lastFileTag = (IDOMElement) model.getDocument().getElementsByTagName(FILETAG).item(0);
 		IDOMElement versions = (IDOMElement) model.getDocument().getElementsByTagName(AllVERSIONSTAG).item(0);
 
-
 		TextChange change = new TextFileChange("Version Increase", descriptorFile);
 		int textContentOffset = lastVersionTag.getStartEndOffset();
 		Integer lastVersionValue = Integer.parseInt(lastVersionTag.getFirstChild().getNodeValue());
@@ -450,11 +469,12 @@ public class FileControl {
 		TextEdit fileEdit = new ReplaceEdit(fileTextContentOffset, fileLength, "1");
 		fileChange.setEdit(fileEdit);
 
-		//Version information to be saved
-		//TODO:Isso n‹o deveria usar os utilitarios q vc criou?
-		String versionInfo = "<"+VERSIONINFOTAG+" " + VERSIONATTR+"=\""+lastVersionValue+"\" >"+ lastFileValue +
-		"</"+ VERSIONINFOTAG + " >\n";
-		InsertEdit insertLast = new InsertEdit(versions.getEndStartOffset(),versionInfo);
+		//Version information to be saved		
+		Element versionInfo = XMLUtil.createElement(VERSIONINFOTAG);
+		versionInfo.setAttribute(VERSIONATTR, lastVersionValue.toString());
+		versionInfo.setTextContent(lastFileValue.toString());
+		
+		InsertEdit insertLast = new InsertEdit(versions.getEndStartOffset(), XMLUtil.toString(versionInfo));
 		TextChange change2 = new TextFileChange("Save last version Info", descriptorFile);
 		change2.setEdit(insertLast);
 
