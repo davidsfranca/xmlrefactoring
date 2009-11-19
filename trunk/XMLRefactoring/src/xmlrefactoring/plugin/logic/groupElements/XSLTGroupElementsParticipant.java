@@ -14,6 +14,7 @@ import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
 import org.eclipse.xsd.XSDNamedComponent;
 import org.w3c.dom.Element;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.logic.BaseXSLParticipant;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
@@ -62,8 +63,8 @@ public class XSLTGroupElementsParticipant extends BaseXSLParticipant {
 
 	@Override
 	public String getName() {
-		//TODO Padronizar msg
-		return "Group elements XSLT participant";
+
+		return XMLRefactoringMessages.getString("XSLTGroupElementsParticipant.Name");
 	}
 
 	@Override

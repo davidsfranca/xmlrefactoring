@@ -12,6 +12,7 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
 import org.w3c.dom.Element;
 
+import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.logic.BaseXSLParticipant;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
@@ -38,7 +39,7 @@ public class XSLTRenameParticipant extends BaseXSLParticipant{
 
 	@Override
 	public String getName() {
-		return "XSLTRenameParticipant";
+		return XMLRefactoringMessages.getString("XSLTRenameParticipant.Name");
 	}
 
 	@Override

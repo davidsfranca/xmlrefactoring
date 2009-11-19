@@ -13,7 +13,6 @@ import xmlrefactoring.plugin.xslt.FileControl;
 
 public class ChangeVersionWizard extends RefactoringWizard {
 
-	private static final String CHANGE_VERSION_WIZARD_TITLE = "Change XSD version";
 	private IFile selectedSchema;
 	private int newVersion;
 
@@ -22,7 +21,7 @@ public class ChangeVersionWizard extends RefactoringWizard {
 		this.selectedSchema = selectedSchema;
 		this.newVersion = FileControl.readDescriptor(selectedSchema)[0] + 1;
 		((ChangeVersionRefactoring)getRefactoring()).setNewVersion(newVersion);
-		setWindowTitle(CHANGE_VERSION_WIZARD_TITLE);
+		setWindowTitle(XMLRefactoringMessages.getString("ChangeVersionWizard.Title"));
 		ImageDescriptor defaultImageDescriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
 				XMLRefactoringPlugin.PLUGIN_ID, "icons/applychanges.png");
 		setDefaultPageImageDescriptor(defaultImageDescriptor);

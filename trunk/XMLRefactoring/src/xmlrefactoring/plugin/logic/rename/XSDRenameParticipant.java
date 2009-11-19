@@ -96,8 +96,7 @@ public class XSDRenameParticipant extends BaseXSDParticipant{
 
 	@Override
 	public String getName() {
-		//TODO Padronizar msg
-		return "XSD Rename Participant";
+		return XMLRefactoringMessages.getString("XSDRenameParticipant.Name");
 	}
 
 	@Override
