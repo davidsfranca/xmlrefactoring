@@ -27,13 +27,6 @@
                menubarPath="XMLRefactoring.RefactoringMenu/group1">
          </action>
          <action
-               class="xmlrefactoring.plugin.ui.attr2elem.Attr2ElemAction"
-               enablesFor="1"
-               id="XMLRefactoring.Attr2ElemAction"
-               label="Transform into element"
-               menubarPath="XMLRefactoring.RefactoringMenu/group1">
-         </action>
-         <action
                class="xmlrefactoring.plugin.ui.groupElements.GroupElementsAction"
                id="XMLRefactoring.GroupElements"
                label="Group elements"

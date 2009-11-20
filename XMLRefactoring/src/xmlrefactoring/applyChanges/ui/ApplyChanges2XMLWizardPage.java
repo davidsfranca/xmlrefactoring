@@ -83,12 +83,11 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 				try {
 					xmlVersion = FileControl.getSchemaVersion(new FileInputStream(selectedXMLFile));
 					updateXMLVersion();
-					if(xmlVersion == 0){
-						xmlOriginalVersion.select(0);
+					if(xmlVersion == 0)						
 						xmlOriginalVersion.setEnabled(true);
-					}
 					else
 						xmlOriginalVersion.setEnabled(false);
+					xmlOriginalVersion.select(xmlVersion);
 					xmlTargetVersion.setEnabled(true);
 					getContainer().updateButtons();
 				} catch (Exception e1) {
@@ -135,11 +134,11 @@ public class ApplyChanges2XMLWizardPage extends WizardPage{
 
 	private void updateXMLVersion() {
 		xmlTargetVersion.removeAll();
-		for(Integer i = 0; i < schemaMaxVersion; i++)
-			xmlTargetVersion.add(i.toString());
 		xmlOriginalVersion.removeAll();
-		for(Integer i = 0; i < schemaMaxVersion; i++)
+		for(Integer i = 0; i < schemaMaxVersion; i++){
+			xmlTargetVersion.add(i.toString());
 			xmlOriginalVersion.add(i.toString());
+		}			
 	}
 
 	/**
