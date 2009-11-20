@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="GroupElemenetParticipant" name="Group element participant" schema="schema/GroupElementParticipant.exsd"/>
+   <extension-point id="Attr2ElemParticipant" name="Attribute into element transformation participant" schema="schema/Attr2ElemRefactoringParticipant.exsd"/>
+   <extension-point id="RenameParticipant" name="Rename participant" schema="schema/RenameParticipant.exsd"/>
+   <extension
+         id="XMLRefactoringMenu"
+         name="XML Refactoring Menu"
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            id="XMLRefactoring.XSDEditor"
+            targetID="org.eclipse.wst.xsd.ui.popup.graph">
+         <menu
+               id="XMLRefactoring.RefactoringMenu"
+               label="XML Refactor"
+               path="refactoring-slot">
+            <groupMarker
+                  name="XMLRefactoring.group1">
+            </groupMarker>
+         </menu>
+         <action
+               class="xmlrefactoring.plugin.ui.rename.RenameAction"
+               enablesFor="1"
+               id="XMLRefactoring.RenameAction"
+               label="Rename"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.groupElements.GroupElementsAction"
+               id="XMLRefactoring.GroupElements"
+               label="Group elements"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+      </viewerContribution>
+      <objectContribution
+            adaptable="false"
+            id="XMLRefactoring.ApplyChanges"
+            nameFilter="*.xsd"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="xmlrefactoring.applyChanges.ui.ApplyChanges2XMLAction"
+               enablesFor="1"
+               id="XMLRefactoring.AppyChanges2XMLAction"
+               label="Apply Changes to XML"
+               menubarPath="refactor-slot">
+         </action>
+      </objectContribution>
+      <objectContribution
+            adaptable="false"
+            id="XMLRefactoring.ChangeVersion"
+            nameFilter="*.xsd"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="xmlrefactoring.changeVersion.ui.ChangeVersionAction"
+               enablesFor="1"
+               id="XMLRefactoring.ChangeVersionAction"
+               label="Change Version"
+               menubarPath="refactor-slot">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         point="XMLRefactoring.GroupElemenetParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.groupElements.XSDGroupElementsParticipant"
+            id="XSDGroupElementsParticipant"
+            name="Element grouping XSD refactoring">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.groupElements.XSLTGroupElementsParticipant"
+            id="XSLTGroupElementsParticipant"
+            name="Element grouping XSLT refactoring">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.Attr2ElemParticipant">
+      <Participant
+            Class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
+            class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
+            id="XSDAttr2ElemParticipant"
+            name="Attribute transformation into element refactoring schema participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.RenameParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.rename.XSDRenameParticipant"
+            id="XSDRenameParticipant"
+            name="XSD rename participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.rename.XSLTRenameParticipant"
+            id="XSLTRenameParticipant"
+            name="XSLT rename participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+
+</plugin>
