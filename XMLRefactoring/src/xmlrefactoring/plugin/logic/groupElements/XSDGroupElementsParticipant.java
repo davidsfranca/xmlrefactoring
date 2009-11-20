@@ -5,6 +5,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -16,6 +17,7 @@ import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
 import org.eclipse.xsd.XSDNamedComponent;
+import org.eclipse.xsd.XSDTypeDefinition;
 import org.w3c.dom.Element;
 
 import xmlrefactoring.XMLRefactoringMessages;
@@ -34,8 +36,13 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 	@Override
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws OperationCanceledException {
-		// TODO Auto-generated method stub
-		return new RefactoringStatus();
+		RefactoringStatus status = super.checkConditions(pm, context);
+		EList<XSDTypeDefinition> declaredTypes = arguments.getSchema().getTypeDefinitions();
+		for(int i = 0; i < declaredTypes.size(); i++){
+			if(arguments.getTypeName().equals(declaredTypes.get(i).getName()))
+				status.addFatalError(XMLRefactoringMessages.getString("XSDGroupElementsParticipant.TypeNameAlreadyUsed"));
+		}		
+		return status;
 	}
 
 	@Override

@@ -1,16 +1,26 @@
 package xmlrefactoring.plugin.logic;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
+import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.ParticipantExtensionPoint;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringParticipant;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
 import org.eclipse.ltk.core.refactoring.participants.SharableParticipants;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.util.XSDParser;
 
 import xmlrefactoring.XMLRefactoringMessages;
-import xmlrefactoring.plugin.PluginNamingConstants;
 
 public abstract class BaseProcessor extends RefactoringProcessor{
 	
@@ -59,6 +69,24 @@ public abstract class BaseProcessor extends RefactoringProcessor{
 		return new String[] {"org.eclipse.jdt.core.javanature"};
 	}
 	
+	/**
+	 * Checks the workspace consistency
+	 */
+	@Override
+	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
+		throws CoreException, OperationCanceledException {
+		RefactoringStatus status = new RefactoringStatus();
+		IFile schemaFile = getRefactoringArguments().getSchemaFile();
+		if(!schemaFile.isSynchronized(IResource.DEPTH_ZERO))
+			status.addFatalError(XMLRefactoringMessages.getString("BaseProcessor.SchemaFileOutSync"));
+		return status;
+	}
 	
+	@Override
+	public RefactoringStatus checkFinalConditions(IProgressMonitor pm, CheckConditionsContext context)
+		throws CoreException, OperationCanceledException {
+		RefactoringStatus status = new RefactoringStatus();	
+		return status;
+	}
 	
 }

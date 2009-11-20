@@ -6,7 +6,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
+import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
 import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
@@ -44,6 +46,12 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		schemaDocument = baseArguments.getSchemaDocument();
 		manager = new TextChangeManager();
 		schemaFileChange = manager.get(baseArguments.getSchemaFile());
+	}
+	
+	@Override
+	public RefactoringStatus checkConditions(IProgressMonitor pm,
+			CheckConditionsContext context) throws OperationCanceledException {
+		return new RefactoringStatus();
 	}
 
 	/**

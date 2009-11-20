@@ -44,14 +44,14 @@ public class RenameProcessor extends BaseProcessor{
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws CoreException,
 			OperationCanceledException {
-		return new RefactoringStatus();
+		RefactoringStatus status = super.checkFinalConditions(pm, context);
+		return status;
 	}
 
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
-			throws CoreException, OperationCanceledException {
-		
-		RefactoringStatus status = new RefactoringStatus();
+			throws CoreException, OperationCanceledException {		
+		RefactoringStatus status = super.checkInitialConditions(pm);
 		if(getElement().getName() == null)
 			status.addFatalError(XMLRefactoringMessages.getString("RenameProcessor.ReferenceRenameAttempt"));
 		return status;
