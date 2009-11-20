@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -19,11 +20,10 @@ import org.eclipse.wst.common.core.search.SearchMatch;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMAttr;
 import org.eclipse.wst.xml.core.internal.provisional.document.IDOMElement;
 import org.eclipse.wst.xsd.ui.internal.refactor.RefactoringMessages;
-import org.eclipse.wst.xsd.ui.internal.refactor.rename.ComponentRenameArguments;
-import org.eclipse.wst.xsd.ui.internal.refactor.rename.RenameComponentProcessor;
 import org.eclipse.wst.xsd.ui.internal.refactor.util.TextChangeCompatibility;
+import org.eclipse.xsd.XSDAttributeDeclaration;
+import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDNamedComponent;
-import org.w3c.dom.Node;
 
 import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
@@ -37,13 +37,29 @@ public class XSDRenameParticipant extends BaseXSDParticipant{
 
 	private RenameRefactoringArguments arguments;
 	private XSDNamedComponent component;
-	private IDOMElement element;
+	private IDOMElement renamingElement;
 
 	@Override
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws OperationCanceledException {
-		// TODO Auto-generated method stub
-		return new RefactoringStatus();
+		RefactoringStatus status = super.checkConditions(pm, context);
+		
+		if(arguments.isElement()){
+			EList<XSDElementDeclaration> componentDeclarations = arguments.getSchema().getElementDeclarations();
+			for(int i = 0; i < componentDeclarations.size(); i++){
+				if(arguments.getNewName().equals(componentDeclarations.get(i).getName()))
+					status.addFatalError(XMLRefactoringMessages.getString("XSDRenameParticipant.ElementNameAlreadyUsed"));
+			}
+		}
+		if(arguments.isAttribute()){
+			EList<XSDAttributeDeclaration> componentDeclarations = arguments.getSchema().getAttributeDeclarations();
+			for(int i = 0; i < componentDeclarations.size(); i++){
+				if(arguments.getNewName().equals(componentDeclarations.get(i).getName()))
+					status.addError(XMLRefactoringMessages.getString("XSDRenameParticipant.AttributeNameAlreadyUsed"));
+			}
+		}
+		
+		return status;
 	}
 
 	@Override
@@ -51,7 +67,7 @@ public class XSDRenameParticipant extends BaseXSDParticipant{
 	OperationCanceledException {
 
 		renameDeclaration();		
-		if(XSDUtil.isGlobal(element)){
+		if(XSDUtil.isGlobal(renamingElement)){
 			renameReferences();
 		}			
 		super.createChange(pm);
@@ -75,7 +91,7 @@ public class XSDRenameParticipant extends BaseXSDParticipant{
 	}
 
 	private void renameReferences() throws CoreException {
-		List<SearchMatch> matches = SearchUtil.searchReferences(element);
+		List<SearchMatch> matches = SearchUtil.searchReferences(renamingElement);
 		for(SearchMatch match : matches){
 			TextChange textChange = manager.get(match.getFile());
 			String newName = arguments.getNewName();
@@ -104,7 +120,7 @@ public class XSDRenameParticipant extends BaseXSDParticipant{
 		//TODO Verificar se Ž element/atributo
 		if(element instanceof XSDNamedComponent){
 			this.component = (XSDNamedComponent) element;
-			this.element = (IDOMElement) component.getElement();
+			this.renamingElement = (IDOMElement) component.getElement();
 			return true;
 		}
 		return false;

@@ -89,7 +89,7 @@ public class FileControl {
 	private static String createInitialDescriptor() throws CoreException{
 		Element descriptor = XMLUtil.createElement(DESCRIPTORTAG);
 		Element allVersions = descriptor.getOwnerDocument().createElement(AllVERSIONSTAG);
-		allVersions.setTextContent("");
+		allVersions.setTextContent("\n\t");
 		descriptor.appendChild(allVersions);
 		Element lastFile = descriptor.getOwnerDocument().createElement(FILETAG);
 		lastFile.setTextContent("2");

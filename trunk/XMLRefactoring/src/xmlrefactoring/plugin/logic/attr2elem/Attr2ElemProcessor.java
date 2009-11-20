@@ -43,7 +43,7 @@ public class Attr2ElemProcessor extends BaseProcessor{
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		// TODO Auto-generated method stub
-		return new RefactoringStatus();
+		return super.checkInitialConditions(pm);
 	}
 
 	@Override

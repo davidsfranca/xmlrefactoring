@@ -58,7 +58,7 @@ public class GroupElementsProcessor extends BaseProcessor {
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		return new RefactoringStatus();
+		return super.checkInitialConditions(pm);
 	}
 
 	@Override
