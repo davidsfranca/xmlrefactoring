@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 
 import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.logic.BaseXSLParticipant;
+import xmlrefactoring.plugin.logic.groupElements.external.GroupElementsRefactoringArguments;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XPathCreator;

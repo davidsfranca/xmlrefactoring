@@ -21,10 +21,7 @@ public class GroupElementsWizardPage extends BaseUserInputWizardPage {
 		this.wizard = wizard;
 	}
 
-	@Override
-	public void createControl(Composite parent){
-		super.createControl(parent);
-		
+	public void createControl(Composite parent){		
 		Composite composite = new Composite(parent, SWT.NONE);
 		setControl(composite);
 		GridLayout grid = new GridLayout();

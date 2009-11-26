@@ -34,10 +34,7 @@ public class ElementPositioningWizardPage extends BaseUserInputWizardPage {
 		}
 	}	
 
-	@Override
 	public void createControl(Composite parent){
-		super.createControl(parent);
-
 		getShell().setSize(600,400);
 
 		Composite composite = new Composite(parent, SWT.NONE);

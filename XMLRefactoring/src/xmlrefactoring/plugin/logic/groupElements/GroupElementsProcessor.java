@@ -16,6 +16,7 @@ import org.eclipse.xsd.XSDNamedComponent;
 import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseProcessor;
+import xmlrefactoring.plugin.logic.groupElements.external.GroupElementsRefactoringArguments;
 
 public class GroupElementsProcessor extends BaseProcessor {
 

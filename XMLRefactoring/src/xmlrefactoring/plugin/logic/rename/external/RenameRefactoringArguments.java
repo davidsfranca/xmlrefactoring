@@ -1,4 +1,4 @@
-package xmlrefactoring.plugin.logic.rename;
+package xmlrefactoring.plugin.logic.rename.external;
 
 import java.util.List;
 
