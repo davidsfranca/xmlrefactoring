@@ -1,4 +1,4 @@
-package xmlrefactoring.plugin.logic.groupElements;
+package xmlrefactoring.plugin.logic.groupElements.external;
 
 import java.util.List;
 

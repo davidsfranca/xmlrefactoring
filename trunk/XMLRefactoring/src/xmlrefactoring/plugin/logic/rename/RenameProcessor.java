@@ -14,6 +14,7 @@ import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseProcessor;
 import xmlrefactoring.plugin.logic.BaseRefactoringArguments;
+import xmlrefactoring.plugin.logic.rename.external.RenameRefactoringArguments;
 
 public class RenameProcessor extends BaseProcessor{
 

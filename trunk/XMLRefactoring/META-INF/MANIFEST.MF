@@ -23,4 +23,10 @@ Bundle-ClassPath: .,
  lib/velocity-1.6.2-dep.jar,
  lib/saxon9-dom.jar,
  lib/saxon9-xpath.jar
-Export-Package: xmlrefactoring.applyChanges.external
+Export-Package: org.apache.velocity,
+ xmlrefactoring.applyChanges.external,
+ xmlrefactoring.plugin.logic,
+ xmlrefactoring.plugin.logic.groupElements.external,
+ xmlrefactoring.plugin.logic.rename.external,
+ xmlrefactoring.plugin.refactoring,
+ xmlrefactoring.plugin.ui

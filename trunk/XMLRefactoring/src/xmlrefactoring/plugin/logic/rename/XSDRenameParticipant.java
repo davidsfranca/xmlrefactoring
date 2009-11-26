@@ -28,6 +28,7 @@ import org.eclipse.xsd.XSDNamedComponent;
 import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseXSDParticipant;
+import xmlrefactoring.plugin.logic.rename.external.RenameRefactoringArguments;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XSDUtil;

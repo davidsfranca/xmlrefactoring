@@ -8,10 +8,5 @@ public abstract class BaseUserInputWizardPage extends UserInputWizardPage{
 	public BaseUserInputWizardPage(String name) {
 		super(name);
 	}
-	
-	public void createControl(Composite parent){
-		//TODO Controle comum a todas as p‡ginas
-		
-	}
 
 }

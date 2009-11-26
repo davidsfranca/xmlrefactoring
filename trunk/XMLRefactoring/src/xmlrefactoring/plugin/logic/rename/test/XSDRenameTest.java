@@ -28,8 +28,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import xmlrefactoring.plugin.logic.rename.RenameRefactoringArguments;
 import xmlrefactoring.plugin.logic.rename.XSDRenameParticipant;
+import xmlrefactoring.plugin.logic.rename.external.RenameRefactoringArguments;
 
 public class XSDRenameTest {
 	

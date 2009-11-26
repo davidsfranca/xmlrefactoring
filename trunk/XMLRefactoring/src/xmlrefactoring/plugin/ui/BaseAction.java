@@ -1,7 +1,6 @@
 package xmlrefactoring.plugin.ui;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
@@ -10,7 +9,7 @@ import xmlrefactoring.plugin.XMLRefactoringPlugin;
 
 public abstract class BaseAction implements IEditorActionDelegate {
 
-	protected abstract RefactoringWizard getWizard();
+	protected abstract BaseRefactoringWizard getWizard();
 	
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 		// TODO Auto-generated method stub
