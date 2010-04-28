@@ -40,7 +40,7 @@ public abstract class XMLUtil {
 	
 	public static QName createQName(Element element){
 		String namespace = null;
-		if(XSDUtil.isGlobal(element))
+		if(XSDUtil.isQualified(element))
 			namespace = XSDUtil.getTargetNamespace(element);
 		return new QName(namespace, XSDUtil.getName(element));
 	}

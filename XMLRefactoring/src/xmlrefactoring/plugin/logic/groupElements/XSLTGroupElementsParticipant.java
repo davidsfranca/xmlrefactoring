@@ -45,9 +45,12 @@ public class XSLTGroupElementsParticipant extends BaseXSLParticipant {
 			elementsGroup.add(elementQName);
 		}
 		
-		//The new element is local
-		QName groupName = new QName(null, arguments.getGroupName());
-		
+		//If the base element is qualified, so the group element is
+		QName groupName;
+		if(XSDUtil.isQualified(baseElement))
+			groupName = new QName(XSDUtil.getTargetNamespace(baseElement), arguments.getGroupName());
+		else
+			groupName = new QName(null, arguments.getGroupName());
 		XMLRefactoring refactoring = null;		
 		if(!paths.isEmpty())
 			refactoring = new GroupElementsRefactoring(paths, groupName, elementsGroup);
