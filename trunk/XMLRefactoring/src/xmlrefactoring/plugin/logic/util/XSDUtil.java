@@ -25,6 +25,8 @@ public class XSDUtil {
 	public static final String BASE = "base";
 	public static final String SCHEMA_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 	public static final String XMLNS = "xmlns";
+	public static final String ELEMENT_FORM_DEFAULT = "elementFormDefault";
+	public static final String QUALIFIED = "qualified";
 
 	public static boolean isElement(Element element) {
 		return ELEMENT.equals(element.getLocalName());
@@ -63,9 +65,13 @@ public class XSDUtil {
 	}
 
 	public static String getTargetNamespace(Element element) {
-		Element schemaElement = (Element) element.getOwnerDocument().
-		getElementsByTagNameNS(element.getNamespaceURI(), "schema").item(0);		
+		Element schemaElement = getSchemaElement(element);
 		return schemaElement.getAttribute("targetNamespace");
+	}
+	
+	private static Element getSchemaElement(Element element){
+		return (Element) element.getOwnerDocument().
+		getElementsByTagNameNS(element.getNamespaceURI(), "schema").item(0);
 	}
 
 	public static boolean isSimpleContent(Element derivedContent) {
@@ -94,6 +100,19 @@ public class XSDUtil {
 			}
 		}
 		return null;
+	}
+
+	public static boolean isQualified(Element element) {
+		if(isElement(element)){
+			if(isGlobal(element))
+				return true;
+			else{
+				Element schemaElement = getSchemaElement(element);
+				if(QUALIFIED.equals(schemaElement.getAttribute(ELEMENT_FORM_DEFAULT)))
+					return true;
+			}
+		}
+		return false;
 	}
 
 }

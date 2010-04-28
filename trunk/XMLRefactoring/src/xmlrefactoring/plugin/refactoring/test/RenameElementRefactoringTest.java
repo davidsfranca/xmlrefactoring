@@ -5,14 +5,15 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import xmlrefactoring.plugin.refactoring.RenameElementRefactoring;
-import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 
-public class RenameElementRefactoringTest {
+public class RenameElementRefactoringTest extends TestCase{
 	
 	@Test
 	public void testRenameElementRefactoring() throws CoreException {

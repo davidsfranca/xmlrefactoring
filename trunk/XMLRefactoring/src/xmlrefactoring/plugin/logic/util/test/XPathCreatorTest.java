@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -28,7 +29,7 @@ import org.w3c.dom.Node;
 
 import xmlrefactoring.plugin.logic.util.XPathCreator;
 
-public class XPathCreatorTest {
+public class XPathCreatorTest extends TestCase {
 
 	private final String TEST_TYPE = "baseType";
 	private final String TEST_ATTRIBUTE_GROUP = "baseGroup";

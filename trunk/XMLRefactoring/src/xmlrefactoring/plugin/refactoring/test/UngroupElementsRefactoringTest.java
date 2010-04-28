@@ -5,17 +5,19 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.TestCase;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import xmlrefactoring.plugin.refactoring.GroupElementsRefactoring;
 import xmlrefactoring.plugin.refactoring.UngroupElementsRefactoring;
 
-public class UngroupElementsRefactoringTest {
+public class UngroupElementsRefactoringTest extends TestCase{
 	
 
 	@Test
-	public void GroupElementsRefactoring(){
+	public void testUngroupElementsRefactoring(){
 		
 		QName group = new QName("http://uriGroup", "group");
 		

@@ -10,21 +10,21 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import junit.framework.TestCase;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 import org.junit.Test;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import xmlrefactoring.applyChanges.logic.XSLTransformer;
 
 
-public class XSLTransformerTest {
+public class XSLTransformerTest extends TestCase{
 	
 	private DocumentBuilder docBuilder;
 	private XPath xpath;
@@ -44,7 +44,7 @@ public class XSLTransformerTest {
 	}
 	
 	@Test
-	public void changeVersion() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, CoreException{
+	public void testChangeVersion() throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, CoreException{
 		String dirPath = ABSOLUTE_ROOT_PATH+BASE_PATH;
 		File schema = new File(dirPath+SCHEMA_NAME);
 		InputStream xml = new FileInputStream(new File(dirPath+XML_INITIAL));

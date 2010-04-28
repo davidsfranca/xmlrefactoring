@@ -10,8 +10,8 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 
-import org.apache.velocity.runtime.resource.Resource;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -25,13 +25,12 @@ import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.util.XSDParser;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.logic.rename.XSDRenameParticipant;
 import xmlrefactoring.plugin.logic.rename.external.RenameRefactoringArguments;
 
-public class XSDRenameTest {
+public class XSDRenameTest{
 	
 	private static final String newElementName = "elementNewName";
 	private static final String TARGET_FILE_PATH = "/PluginTest/src/renameTest/target.xsd";
