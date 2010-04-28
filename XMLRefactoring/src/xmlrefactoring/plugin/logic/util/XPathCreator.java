@@ -46,8 +46,8 @@ public class XPathCreator {
 		Element referenceToBeSearched = null;
 		List<QName> newSuffix;
 
-		if(XSDUtil.isGlobal(element)){
-			newSuffix = insertGlobalElement(element,suffix);
+		if(XSDUtil.isQualified(element)){
+			newSuffix = insertQualifiedElement(element,suffix);
 			paths.add(newSuffix);
 		}
 		else{
@@ -64,9 +64,9 @@ public class XPathCreator {
 				namedContainer = anonymousContainer;
 				if(XSDUtil.isElementOrAttribute(namedContainer)){
 					//The container is an element
-					if(XSDUtil.isGlobal(namedContainer)){
+					if(XSDUtil.isQualified(namedContainer)){
 						//If the global container is an element,  adds the path
-						newSuffix = insertGlobalElement(namedContainer, newSuffix);
+						newSuffix = insertQualifiedElement(namedContainer, newSuffix);
 						paths.add(newSuffix);
 					}else{
 						newSuffix = insertLocalElement(namedContainer, newSuffix);							
@@ -103,7 +103,7 @@ public class XPathCreator {
 		return insertElement(elementQName, suffix);		
 	}
 
-	private static List<QName> insertGlobalElement(Element element, List<QName> suffix) {
+	private static List<QName> insertQualifiedElement(Element element, List<QName> suffix) {
 		QName elementQName = new QName(XSDUtil.getTargetNamespace(element), XSDUtil.getName(element));			
 		return insertElement(elementQName, suffix);
 	}

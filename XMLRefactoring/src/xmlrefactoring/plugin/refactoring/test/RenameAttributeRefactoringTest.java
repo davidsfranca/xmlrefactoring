@@ -5,14 +5,15 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.CoreException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import xmlrefactoring.plugin.refactoring.RenameAttributeRefactoring;
-import xmlrefactoring.plugin.refactoring.RenameElementRefactoring;
 
-public class RenameAttributeRefactoringTest {
+public class RenameAttributeRefactoringTest extends TestCase{
 	@Test
 	public void testRenameElementRefactoring() throws CoreException {
 		String newAt = "newAt";

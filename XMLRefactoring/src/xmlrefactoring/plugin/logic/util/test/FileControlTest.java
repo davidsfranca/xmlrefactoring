@@ -2,15 +2,10 @@ package xmlrefactoring.plugin.logic.util.test;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.stream.FileImageInputStream;
-import javax.swing.ProgressMonitor;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
@@ -20,6 +15,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -39,7 +35,7 @@ import org.xml.sax.SAXException;
 
 import xmlrefactoring.plugin.xslt.FileControl;
 
-public class FileControlTest {
+public class FileControlTest extends TestCase {
 	
 	private static final String ABSOLUTE_ROOT_PATH = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 	private static final String BASE_PATH = "/PluginTest/src/fileControl";
@@ -77,7 +73,7 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void isUnderVersionControlTest(){		
+	public void testIsUnderVersionControl(){		
 		Assert.assertTrue("The file expected to be under version control is not", FileControl.isUnderVersionControl(underVersionControlFile));
 		Path path = new Path(NOT_UNDER_VERSION_CONTROL_PATH);
 		IFile notUnderVersionControlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
@@ -85,7 +81,7 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void getNextPathTest() throws CoreException{
+	public void testGetNextPath() throws CoreException{
 		//isInitial = true
 		String actualPath = FileControl.getNextPath(underVersionControlFile, true).toString();
 		Assert.assertEquals(INITIAL_XSL_PATH, actualPath);
@@ -97,7 +93,7 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void getNextReversePathTest() throws CoreException{
+	public void testGetNextReversePath() throws CoreException{
 		//isInitial = true
 		String actualPath = FileControl.getNextReversePath(underVersionControlFile, true).toString();
 		Assert.assertEquals(INITIAL_REVERSE_XSL_PATH, actualPath);
@@ -108,14 +104,14 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void readDescriptorTest() throws CoreException{
+	public void testReadDescriptor() throws CoreException{
 		int[] actualDescriptor =  FileControl.readDescriptor(underVersionControlFile);
 		Assert.assertEquals(expectedDescriptor[0], actualDescriptor[0]);
 		Assert.assertEquals(expectedDescriptor[1], actualDescriptor[1]);
 	}
 	
 	@Test
-	public void getAllXSTest() throws CoreException{
+	public void testGetAllXSL() throws CoreException{
 		
 		int oldVersion = 1;
 		int newVersion = 4;
@@ -158,7 +154,7 @@ public class FileControlTest {
 	
 	//Tests createVersioningDir too
 	@Test
-	public void createVersioningRefactoringTest() throws CoreException{
+	public void testCreateVersioningRefactoring() throws CoreException{
 		
 		Assert.assertFalse(newVersionDir.exists());
 		Assert.assertFalse(newVersionRef.exists());
@@ -177,7 +173,7 @@ public class FileControlTest {
 	}
 	
 	@Test
-	public void incrementLastFileTest() throws CoreException, SAXException, IOException, ParserConfigurationException, XPathExpressionException{
+	public void testIncrementLastFile() throws CoreException, SAXException, IOException, ParserConfigurationException, XPathExpressionException{
 		Path path = new Path(UNDER_VERSION_CONTROL_PATH);
 		IFile underVersionControlFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 		
