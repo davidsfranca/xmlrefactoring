@@ -1,4 +1,5 @@
 #summary Descrição geral sobre XML Refactoring.
+#labels XMLRefactoring
 
 = Introdução =
 
