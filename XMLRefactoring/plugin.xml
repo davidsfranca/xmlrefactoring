@@ -4,6 +4,7 @@
    <extension-point id="GroupElemenetParticipant" name="Group element participant" schema="schema/GroupElementParticipant.exsd"/>
    <extension-point id="Attr2ElemParticipant" name="Attribute into element transformation participant" schema="schema/Attr2ElemRefactoringParticipant.exsd"/>
    <extension-point id="RenameParticipant" name="Rename participant" schema="schema/RenameParticipant.exsd"/>
+   <extension-point id="UngroupElementParticipant" name="Ungroup element participant" schema="schema/UngroupElementParticipant.exsd"/>
    <extension
          id="XMLRefactoringMenu"
          name="XML Refactoring Menu"
@@ -30,6 +31,12 @@
                class="xmlrefactoring.plugin.ui.groupElements.GroupElementsAction"
                id="XMLRefactoring.GroupElements"
                label="Group elements"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.ungroupElements.UngroupElementsAction"
+               id="XMLRefactoring.UngroupElements"
+               label="Ungroup elements"
                menubarPath="XMLRefactoring.RefactoringMenu/group1">
          </action>
       </viewerContribution>
@@ -82,7 +89,6 @@
    <extension
          point="XMLRefactoring.Attr2ElemParticipant">
       <Participant
-            Class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
             class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
             id="XSDAttr2ElemParticipant"
             name="Attribute transformation into element refactoring schema participant">
@@ -105,6 +111,25 @@
             class="xmlrefactoring.plugin.logic.rename.XSLTRenameParticipant"
             id="XSLTRenameParticipant"
             name="XSLT rename participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.UngroupElementParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.ungroupElements.XSDUngroupElementsParticipant"
+            id="XSDUngroupElementsParticipant"
+            name="Element ungrouping XSD refactoring">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.ungroupElements.XSLTUngroupElementsParticipant"
+            id="XSLTUngroupElementsParticipant"
+            name="Element ungrouping XSLT refactoring">
          <enablement>
             enablement body text
          </enablement>
