@@ -48,8 +48,7 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
-	OperationCanceledException {
-		
+	OperationCanceledException {		
 		//Gets the TextChange for the file		
 		TextChange change = manager.get(arguments.getSchemaFile());
 
