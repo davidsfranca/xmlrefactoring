@@ -1,5 +1,6 @@
 package xmlrefactoring.plugin.logic.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class SearchUtil {
 		String componentNamespace = XSDUtil.getTargetNamespace(element);
 		QualifiedName elementQName = new QualifiedName(componentNamespace, componentName);
 		QualifiedName typeQName = new QualifiedName(element.getNamespaceURI(), element.getLocalName());
-
+		
 		String fileStr = element.getModel().getBaseLocation();
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
 
@@ -76,7 +77,4 @@ public class SearchUtil {
 		else 
 			return null;
 	}
-
-
-
 }

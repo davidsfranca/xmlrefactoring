@@ -54,7 +54,7 @@ public class XSDGroupElementsParticipant extends BaseXSDParticipant {
 
 		//Create the new grouping type
 		IDOMElement root = (IDOMElement) arguments.getSchemaDocument().getDocumentElement();
-		Element complexType = XMLUtil.createComplexType(root, arguments.getTypeName());
+		Element complexType = XSDUtil.createComplexType(root, arguments.getTypeName());
 		
 		Element compositor = createCompositorNode(complexType); 			
 		complexType.appendChild(compositor);

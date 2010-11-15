@@ -2,9 +2,13 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="GroupElemenetParticipant" name="Group element participant" schema="schema/GroupElementParticipant.exsd"/>
-   <extension-point id="Attr2ElemParticipant" name="Attribute into element transformation participant" schema="schema/Attr2ElemRefactoringParticipant.exsd"/>
+   <extension-point id="Attr2ElemParticipant" name="Attribute into element transformation participant" schema="schema/Attr2ElemParticipant.exsd"/>
    <extension-point id="RenameParticipant" name="Rename participant" schema="schema/RenameParticipant.exsd"/>
    <extension-point id="UngroupElementParticipant" name="Ungroup element participant" schema="schema/UngroupElementParticipant.exsd"/>
+   <extension-point id="Elem2AttrParticipant" name="Element into Attribute transformation Participant" schema="schema/Elem2AttrParticipant.exsd"/>
+   <extension-point id="Elem2RefParticipant" name="Element into Reference Participant" schema="schema/Elem2RefParticipant.exsd"/>
+   <extension-point id="Ref2ElemParticipant" name="Reference into Element Participant" schema="schema/Ref2ElemParticipant.exsd"/>
+   <extension-point id="MoveElementParticipant" name="Move Element Participant" schema="schema/MoveElementParticipant.exsd"/>
    <extension
          id="XMLRefactoringMenu"
          name="XML Refactoring Menu"
@@ -37,6 +41,36 @@
                class="xmlrefactoring.plugin.ui.ungroupElements.UngroupElementsAction"
                id="XMLRefactoring.UngroupElements"
                label="Ungroup elements"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.elem2attr.Elem2AttrAction"
+               id="XMLRefactoring.Elem2Attr"
+               label="Element to Attribute"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.attr2elem.Attr2ElemAction"
+               id="XMLRefactoring.Attr2Elem"
+               label="Attribute to Element"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.ref2elem.Ref2ElemAction"
+               id="XMLRefactoring.Ref2Elem"
+               label="Reference to Element"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.elem2ref.Elem2RefAction"
+               id="XMLRefactoring.Elem2Ref"
+               label="Element to Reference"
+               menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.moveElement.MoveElementAction"
+               id="XMLRefactoring.MoveElement"
+               label="Move Element"
                menubarPath="XMLRefactoring.RefactoringMenu/group1">
          </action>
       </viewerContribution>
@@ -87,17 +121,6 @@
       </Participant>
    </extension>
    <extension
-         point="XMLRefactoring.Attr2ElemParticipant">
-      <Participant
-            class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
-            id="XSDAttr2ElemParticipant"
-            name="Attribute transformation into element refactoring schema participant">
-         <enablement>
-            enablement body text
-         </enablement>
-      </Participant>
-   </extension>
-   <extension
          point="XMLRefactoring.RenameParticipant">
       <Participant
             class="xmlrefactoring.plugin.logic.rename.XSDRenameParticipant"
@@ -135,5 +158,99 @@
          </enablement>
       </Participant>
    </extension>
-
+   <extension
+         point="XMLRefactoring.Attr2ElemParticipant">
+   		<Participant
+         		class="xmlrefactoring.plugin.logic.attr2elem.XSDAttr2ElemParticipant"
+         		id="XSDAttr2ElemParticipant"
+         		name="Attribute to Element XSD refactoring">
+        	<enablement>
+        		enablement body text
+        	</enablement>
+        </Participant>
+     <Participant
+           class="xmlrefactoring.plugin.logic.attr2elem.XSLTAttr2ElemParticipant"
+           id="XSLTAttr2ElemParticipant"
+           name="Attribute to Element XSLT refactoring">
+        <enablement>
+           enablement body text
+        </enablement>
+     </Participant>        	
+   </extension>
+   <extension
+         point="XMLRefactoring.Elem2AttrParticipant">
+   		<Participant
+         		class="xmlrefactoring.plugin.logic.elem2attr.XSDElem2AttrParticipant"
+         		id="XSDElem2AttrParticipant"
+         		name="Element to Attribute XSD refactoring">
+        	<enablement>
+        		enablement body text
+        	</enablement>
+        </Participant>
+     <Participant
+           class="xmlrefactoring.plugin.logic.elem2attr.XSLTElem2AttrParticipant"
+           id="XSLTElem2AttrParticipant"
+           name="Element to Attribute XSLT refactoring">
+        <enablement>
+           enablement body text
+        </enablement>
+     </Participant>        	
+   </extension>
+   <extension
+         point="XMLRefactoring.Elem2RefParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.elem2ref.XSDElem2RefParticipant"
+            id="XSDElem2RefParticipant"
+            name="Element to Reference XSD refactoring">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.elem2ref.XSLTElem2RefParticipant"
+            id="XSLTElem2RefParticipant"
+            name="Element to Reference XSLT refactoring">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.Ref2ElemParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.ref2elem.XSDRef2ElemParticipant"
+            id="XSDRef2ElementParticipant"
+            name="Reference into Element XSD Participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.ref2elem.XSLTRef2ElemParticipant"
+            id="XSLTRef2ElemParticipant"
+            name="Reference into Element XSLT Participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.MoveElementParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.moveElement.XSDMoveElementParticipant"
+            id="XSDMoveElementParticipant"
+            name="Move Element XSD Participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.moveElement.XSLTMoveElementParticipant"
+            id="XSLTMoveElementParticpant"
+            name="Move Element XSLT Participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
 </plugin>

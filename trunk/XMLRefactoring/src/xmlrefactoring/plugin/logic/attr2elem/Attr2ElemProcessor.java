@@ -12,9 +12,8 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.xsd.XSDNamedComponent;
 
 import xmlrefactoring.XMLRefactoringMessages;
-import xmlrefactoring.plugin.PluginNamingConstants;
-import xmlrefactoring.plugin.logic.BaseParticipant;
 import xmlrefactoring.plugin.logic.BaseProcessor;
+import xmlrefactoring.plugin.logic.attr2elem.external.Attr2ElemRefactoringArguments;
 
 public class Attr2ElemProcessor extends BaseProcessor{	
 
@@ -22,8 +21,8 @@ public class Attr2ElemProcessor extends BaseProcessor{
 	
 	public Attr2ElemProcessor(XSDNamedComponent component){		
 		List<XSDNamedComponent> components = new ArrayList<XSDNamedComponent>();
-		arguments = new Attr2ElemRefactoringArguments(components);
 		components.add(component);
+		arguments = new Attr2ElemRefactoringArguments(components);
 	}
 	
 	@Override
@@ -77,6 +76,10 @@ public class Attr2ElemProcessor extends BaseProcessor{
 	@Override
 	protected String getParticipantExtensionPoint() {
 		return XMLRefactoringMessages.getString("Attr2ElemParticipant.ExtensionPointID");
+	}
+
+	public void setElemName(String text) {
+		arguments.setElementName(text);		
 	}
 
 }

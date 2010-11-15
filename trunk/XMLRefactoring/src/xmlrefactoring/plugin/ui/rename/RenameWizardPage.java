@@ -1,5 +1,8 @@
 package xmlrefactoring.plugin.ui.rename;
 
+import java.awt.Checkbox;
+
+import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -29,17 +32,16 @@ public class RenameWizardPage  extends BaseUserInputWizardPage{
 		GridLayout grid = new GridLayout();
 		composite.setLayout(grid);
 		grid.numColumns = 2;
-		new Label(composite, SWT.NONE).setText("Enter with the new component name:");
+		new Label(composite, SWT.NONE).setText("Enter with the new component name " +
+				"(Leave it blank to use the same name):");
+		
 		newName =  new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		newName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
 		newName.addModifyListener(new ModifyListener() {
-
 			public void modifyText(ModifyEvent event) {
 				handleInputChanged();
 			}
 		});
-		
 	}
 	
 	private void handleInputChanged(){

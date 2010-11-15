@@ -144,7 +144,7 @@ public abstract class BaseXSDParticipant extends BaseParticipant{
 		TextChangeCompatibility.addTextEdit(schemaFileChange, XMLRefactoringMessages.getString("BaseXSDParticipant.SchemaVersionAddition"), edit);
 		
 		//New type
-		Element extendedType = XMLUtil.createComplexType(root, newTypeName);
+		Element extendedType = XSDUtil.createComplexType(root, newTypeName);
 
 		String contentQName;
 		if(elementType.getSimpleType() == null)
