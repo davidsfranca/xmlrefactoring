@@ -29,6 +29,7 @@ import org.w3c.dom.Node;
 import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseXSDParticipant;
+import xmlrefactoring.plugin.logic.attr2elem.external.Attr2ElemRefactoringArguments;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
 
@@ -40,7 +41,11 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 	@Override
 	public RefactoringStatus checkConditions(IProgressMonitor pm,
 			CheckConditionsContext context) throws OperationCanceledException {
-		// TODO Auto-generated method stub
+		RefactoringStatus status = super.checkConditions(pm, context);
+		
+		if(arguments.isElement())
+			status.addFatalError(XMLRefactoringMessages.getString("XSDAttr2ElemParticipant.AttributeIsExpected"));
+
 		return new RefactoringStatus();
 	}
 
@@ -48,17 +53,15 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
 		
+		TextChangeManager manager = new TextChangeManager();
+		transformDeclaration(manager);
+		
 		if(XSDUtil.isGlobal(attribute)){
-			
-			TextChangeManager manager = new TextChangeManager();
-			
-			transformDeclaration(manager);
 			transformReferences(manager);			
-			
-			return new CompositeChange(XMLRefactoringMessages.getString("XSDAttr2ElemParticipant.Name"), 
-					manager.getAllChanges());
 		}
-		return null;
+		
+		return new CompositeChange(XMLRefactoringMessages.getString("XSDAttr2ElemParticipant.Name"), 
+				manager.getAllChanges());
 	}
 	
 	private void transformDeclaration(TextChangeManager manager){
@@ -75,7 +78,7 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 	}
 
 	private void transformReferences(TextChangeManager manager) throws CoreException {
-		for(SearchMatch match : SearchUtil.searchReferences((IDOMElement) attribute)){
+		for(SearchMatch match : SearchUtil.searchReferences((IDOMElement) attribute)){			
 			TextChange change = manager.get(match.getFile());
 			if(match.getObject() instanceof Node){
 				Node node = (Node)match.getObject();
@@ -137,8 +140,5 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 	@Override
 	public void initialize(RefactoringArguments arguments) {
 		this.arguments = (Attr2ElemRefactoringArguments) arguments;		
-	}
-
-	
-	
+	}	
 }

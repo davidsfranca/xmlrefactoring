@@ -15,7 +15,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
-import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -82,7 +81,7 @@ public abstract class XMLUtil {
 			StringWriter os = new StringWriter();
 			StreamResult streamResult = new StreamResult(os);
 			trans.transform(source, streamResult);
-			String result = os.getBuffer().toString() + "\n";
+			String result = os.getBuffer().toString();
 			return result;
 		} catch (TransformerException e) {
 			Status status = new Status(Status.ERROR, 
@@ -90,15 +89,6 @@ public abstract class XMLUtil {
 					XMLRefactoringMessages.getString("XMLUtil.XML2StringError"), e);
 			throw new CoreException(status);
 		}	
-	}
-	
-	public static Element createComplexType(Element root, String name) {
-		String qName = XMLUtil.createQName(root.getPrefix(), XSDUtil.COMPLEX_TYPE);
-		Element complexType = root.getOwnerDocument().createElement(qName);
-		Attr nameAttr = complexType.getOwnerDocument().createAttribute("name");
-		nameAttr.setValue(name);
-		complexType.setAttributeNode(nameAttr);
-		return complexType;
 	}
 	
 	public static String quoteString(String value){
@@ -109,5 +99,4 @@ public abstract class XMLUtil {
 		sb.append("\"");		
 		return sb.toString();
 	}
-
 }

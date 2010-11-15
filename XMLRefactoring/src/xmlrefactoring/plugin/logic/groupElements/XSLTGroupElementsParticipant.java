@@ -82,7 +82,4 @@ public class XSLTGroupElementsParticipant extends BaseXSLParticipant {
 		super.initialize(arguments);
 		this.arguments = (GroupElementsRefactoringArguments) arguments;
 	}
-	
-	
-
 }

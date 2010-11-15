@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.ltk.core.refactoring.Refactoring;
+import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.xsd.XSDNamedComponent;
 
 import xmlrefactoring.XMLRefactoringMessages;
@@ -49,5 +53,12 @@ public class UngroupElementsProcessor extends BaseProcessor{
 	public boolean isApplicable() throws CoreException {
 		// TODO Auto-generated method stub
 		return false;
-	}	
+	}
+	
+	@Override
+	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
+			throws CoreException, OperationCanceledException {
+		
+		return super.checkInitialConditions(pm);
+	}
 }

@@ -2,7 +2,6 @@ package xmlrefactoring.plugin.ui.attr2elem;
 
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.ltk.core.refactoring.participants.ProcessorBasedRefactoring;
 
 import xmlrefactoring.plugin.logic.attr2elem.Attr2ElemProcessor;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
@@ -13,9 +12,8 @@ public class Attr2ElemAction extends SingleInputAction{
 
 	@Override
 	protected BaseRefactoringWizard<Attr2ElemProcessor> getWizard() {
-		Attr2ElemProcessor processor = new Attr2ElemProcessor(getSelectedComponent());
-		
-		return new Attr2ElemWizard(processor, getSelectedComponent());
+		Attr2ElemProcessor processor = new Attr2ElemProcessor(getSelectedComponent());		
+		return new Attr2ElemWizard(processor);
 	}
 	
 	@Override
@@ -26,7 +24,5 @@ public class Attr2ElemAction extends SingleInputAction{
 				action.setEnabled(false);
 		}		
 	}
-	
-	
 
 }

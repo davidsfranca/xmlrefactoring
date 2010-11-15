@@ -11,7 +11,6 @@ import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.xsd.XSDNamedComponent;
 
 import xmlrefactoring.XMLRefactoringMessages;
-import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseProcessor;
 import xmlrefactoring.plugin.logic.BaseRefactoringArguments;
 import xmlrefactoring.plugin.logic.rename.external.RenameRefactoringArguments;
