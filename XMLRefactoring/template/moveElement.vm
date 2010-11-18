@@ -15,7 +15,7 @@
 
 #foreach( $path in $paths )
 	<xsl:template match="/#foreach( $elem in $path )/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end">
-		<xsl:copy-of select="@*[not(.=$removingElement)]"/>
+		<xsl:copy-of select="@*|node()[not((namespace-uri()='$removingElement.getNamespaceURI()') and (local-name() ='$removingElement.getLocalPart()'))]"/>
 		<xsl:apply-templates/>
 </xsl:template>
 #end
