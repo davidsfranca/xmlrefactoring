@@ -34,7 +34,7 @@ public class UngroupElementsRefactoring extends XMLRefactoring{
 
 	@Override
 	public void createReverseRefactoring() {
-		QName groupName = getPaths().get(0).get(getPaths().get(0).size()-1);
+		QName groupName = getInGroup().get(0);
 		List<List<QName>> newPaths =  new ArrayList();
 		for(int i= 0; i<getPaths().size();i++){
 			List<QName> path = new ArrayList<QName>();

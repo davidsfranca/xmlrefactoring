@@ -40,7 +40,7 @@ import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
 
 public class XSDRef2ElemParticipant extends BaseXSDParticipant {
-	Ref2ElemRefactoringArguments arguments;
+	private Ref2ElemRefactoringArguments arguments;
 	private XSDNamedComponent component;
 	private Element transformingElement;
 	
@@ -99,7 +99,7 @@ public class XSDRef2ElemParticipant extends BaseXSDParticipant {
 	{
 		List<TextEdit> ref2ElemTransformation = new ArrayList<TextEdit>();
 		IDOMElement root = (IDOMElement) arguments.getSchemaDocument().getDocumentElement();
-		Element e = XSDUtil.createElementBasedUpon(root, element, arguments.getElementName());
+		Element e = XSDUtil.createElementBasedUpon(root, element, element.getAttribute("name"));
 		
 		DeleteEdit deleteElement = new DeleteEdit(offset, length);
 		InsertEdit insertElement = new InsertEdit(offset, XMLUtil.toString(e));

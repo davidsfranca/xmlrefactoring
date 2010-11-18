@@ -13,7 +13,7 @@ public class MoveElementAction extends SingleInputAction {
 	@Override
 	protected BaseRefactoringWizard<MoveElementProcessor> getWizard() {
 		MoveElementProcessor processor = new MoveElementProcessor(getSelectedComponent());
-		return new MoveElementWizard(processor);
+		return new MoveElementWizard(processor, getSelectedComponent());
 	}
 	
 	@Override

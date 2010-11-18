@@ -15,6 +15,6 @@
 #foreach( $path in $paths )
 	<xsl:template match="/#foreach( $elem in $path )/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end">
 	<xsl:copy-of select="*"/>
-</xsl:template>
+	</xsl:template>
 #end
 </xsl:stylesheet>

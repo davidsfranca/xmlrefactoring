@@ -78,8 +78,4 @@ public class Attr2ElemProcessor extends BaseProcessor{
 		return XMLRefactoringMessages.getString("Attr2ElemParticipant.ExtensionPointID");
 	}
 
-	public void setElemName(String text) {
-		arguments.setElementName(text);		
-	}
-
 }

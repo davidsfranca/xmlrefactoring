@@ -50,7 +50,7 @@ public class XSDElem2AttrParticipant extends BaseXSDParticipant {
 		if(arguments.isElement()){
 			EList<XSDAttributeDeclaration> componentDeclarations = arguments.getSchema().getAttributeDeclarations();
 			for(int i = 0; i < componentDeclarations.size(); i++){
-				if(arguments.getAttributeName().equals(componentDeclarations.get(i).getName()))
+				if(transformingElement.getAttribute("name").equals(componentDeclarations.get(i).getName()))
 					status.addFatalError(XMLRefactoringMessages.getString("XSDElem2AttrParticipant.ElementNameAlreadyUsed"));
 			}
 			
@@ -126,11 +126,14 @@ public class XSDElem2AttrParticipant extends BaseXSDParticipant {
 		int offset = idomElement.getStartOffset();
 		int length = idomElement.getEndOffset() - idomElement.getStartOffset();
 		
+		DeleteEdit deleteElement = new DeleteEdit(offset, length);
+		elem2attrTransformation.add(deleteElement);
+		
 		Element attr = null;
 		
 		if(isRef)
 		{
-			attr = XSDUtil.createRefAttribute(root, idomElement.getAttribute("ref"));
+			attr = XSDUtil.createRefAttribute(root, idomElement.getAttribute("ref"), arguments.getSchema());
 		}
 		else
 		{		
@@ -144,14 +147,18 @@ public class XSDElem2AttrParticipant extends BaseXSDParticipant {
 					occurence = "required";
 			}			
 			
-			attr = XSDUtil.createAttribute(root, arguments.getAttributeName(),
+			attr = XSDUtil.createAttribute(root, idomElement.getAttribute("name"),
 					idomElement.getAttribute("type"), occurence);
 		}
 		
-		DeleteEdit deleteElement = new DeleteEdit(offset, length);
-		InsertEdit insertElement = new InsertEdit(offset, XMLUtil.toString(attr));
+		Node parentNode = idomElement.getParentNode();
+		Element parent = (Element) parentNode;
 		
-		elem2attrTransformation.add(deleteElement);
+		idomElement = (IDOMElement) parent;
+		
+		offset = idomElement.getEndOffset() + 1;
+		
+		InsertEdit insertElement = new InsertEdit(offset, XMLUtil.toString(attr));		
 		elem2attrTransformation.add(insertElement);
 		
 		return elem2attrTransformation.toArray(new TextEdit[0]);

@@ -50,8 +50,4 @@ public class Ref2ElemProcessor extends BaseProcessor {
 		return false;
 	}
 
-	public void setElemName(String name) {
-		arguments.setElementName(name);		
-	}
-
 }

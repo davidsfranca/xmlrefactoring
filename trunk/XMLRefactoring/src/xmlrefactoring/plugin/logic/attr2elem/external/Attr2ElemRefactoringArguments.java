@@ -41,12 +41,4 @@ public class Attr2ElemRefactoringArguments extends BaseRefactoringArguments{
 	public List<ReferenceWithCompositor> getReferencesWithCompositor() {
 		return referencesWithCompositor;
 	}
-
-	public void setElementName(String text) {
-		if(!text.equals("")) this.elementName = text;		
-	}
-	
-	public String getElementName() {
-		return this.elementName;
-	}
 }
