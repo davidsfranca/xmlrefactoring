@@ -12,6 +12,7 @@ import org.eclipse.xsd.XSDSchema;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XSDUtil {
@@ -48,7 +49,10 @@ public class XSDUtil {
 	}
 
 	public static boolean isComplexType(Element element){		
-		boolean result = COMPLEX_TYPE.equals(element.getLocalName());
+		boolean result = false;
+		
+		if(element != null && element.getLocalName() != null)
+			result = result || COMPLEX_TYPE.equals(element.getLocalName());
 		
 		if(element.getFirstChild() != null)
 			if(element.getFirstChild().getNextSibling() != null)
@@ -62,7 +66,10 @@ public class XSDUtil {
 	}
 
 	public static boolean isGlobal(Element element) {
-		return SCHEMA.equals(element.getParentNode().getLocalName());
+		if(element.getParentNode() != null)
+			return SCHEMA.equals(element.getParentNode().getLocalName());
+		
+		return true;
 	}
 
 	public static boolean isAnonymous(Element element) {
@@ -93,6 +100,14 @@ public class XSDUtil {
 
 	public static boolean isSimpleContent(Element derivedContent) {
 		return derivedContent.getLocalName().equals(SIMPLE_CONTENT);
+	}
+	
+	public static boolean isSimpleElement(Element element) {
+		return !element.hasChildNodes();
+	}
+	
+	public static boolean isComplexElement(Element element) {
+		return element.hasChildNodes();
 	}
 
 	/**
@@ -163,12 +178,14 @@ public class XSDUtil {
 		
 		Attr nameAttr = attrType.getOwnerDocument().createAttribute("name");
 		nameAttr.setValue(name);
-		
-		Attr typeAttr = attrType.getOwnerDocument().createAttribute("type");
-		typeAttr.setValue(type);
-		
 		attrType.setAttributeNode(nameAttr);
-		attrType.setAttributeNode(typeAttr);
+		
+		if(!type.equals(""))
+		{
+			Attr typeAttr = attrType.getOwnerDocument().createAttribute("type");
+			typeAttr.setValue(type);
+			attrType.setAttributeNode(typeAttr);
+		}
 		
 		if(!occurence.equals(""))
 		{
@@ -180,12 +197,15 @@ public class XSDUtil {
 		return attrType;
 	}
 
-	public static Element createRefAttribute(IDOMElement root, String ref) {
+	public static Element createRefAttribute(IDOMElement root, String ref, XSDSchema schema) {
 		String qName = XMLUtil.createQName(root.getPrefix(), ATTRIBUTE);
 		Element refAttrType = root.getOwnerDocument().createElement(qName);
 		
+		String targetNamespace = searchTargetNamespacePrefix(schema);
+		
 		Attr refAttr = refAttrType.getOwnerDocument().createAttribute("ref");
-		refAttr.setValue(ref);
+		String qRef = XMLUtil.createQName(targetNamespace, ref);
+		refAttr.setValue(qRef);
 		
 		refAttrType.setAttributeNode(refAttr);
 		
@@ -256,5 +276,90 @@ public class XSDUtil {
 			e.appendChild(nodeList.item(i).cloneNode(true));
 		
 		return e;
+	}
+
+	public static Element createElement(IDOMElement root, NamedNodeMap nodeMap, NodeList nodeList,
+			boolean isGlobal) {
+		String qName = XMLUtil.createQName(root.getPrefix(), ELEMENT);
+		Element e = root.getOwnerDocument().createElement(qName);
+		
+		int i;
+		for(i = 0; i < nodeMap.getLength(); i++)
+		{
+			if(!isGlobal)
+			{
+				Attr attr = e.getOwnerDocument().createAttribute(nodeMap.item(i).getNodeName());
+					attr.setValue(nodeMap.item(i).getNodeValue());
+					
+				e.setAttributeNode(attr);
+			}
+			else if(!nodeMap.item(i).getNodeName().equals("maxOccurs") &&
+					!nodeMap.item(i).getNodeName().equals("minOccurs"))
+			{
+				Attr attr = e.getOwnerDocument().createAttribute(nodeMap.item(i).getNodeName());
+				attr.setValue(nodeMap.item(i).getNodeValue());
+				
+				e.setAttributeNode(attr);
+			}
+		}
+		
+		for(i = 0; i < nodeList.getLength(); i++)
+			if(!nodeList.item(i).getNodeName().equals("#text"))
+				e.appendChild(nodeList.item(i).cloneNode(true));
+		
+		return e;
+	}
+
+	public static Element createElementBasedUponType(IDOMElement root,
+			Element type, String name) {
+		
+		String qName = XMLUtil.createQName(root.getPrefix(), ELEMENT);
+		Element e = root.getOwnerDocument().createElementNS(root.getNamespaceURI(), qName);
+		
+		Attr nameAttr = e.getOwnerDocument().createAttribute("name");
+		nameAttr.setValue(name);
+		
+		e.setAttributeNode(nameAttr);		
+		e.appendChild(copyNode(type));
+		
+		return e;
+	}
+	
+	private static Node copyNode(Node toCopy)
+	{
+		Node m;
+		m = toCopy.cloneNode(false);
+		
+		Node child;
+		child = toCopy.getFirstChild();
+		
+		while(child != null)
+		{
+			if(!child.getNodeName().equals("#text"))			
+				m.appendChild(copyNode(child));
+				
+			child = child.getNextSibling();
+		}
+				
+		return m;
+	}
+
+	public static Element createSimpleElement(IDOMElement root,
+			String name, String type) {
+		String qName = XMLUtil.createQName(root.getPrefix(), ELEMENT);
+		Element attrType = root.getOwnerDocument().createElement(qName);
+		
+		Attr nameAttr = attrType.getOwnerDocument().createAttribute("name");
+		nameAttr.setValue(name);
+		attrType.setAttributeNode(nameAttr);
+		
+		if(!type.equals(""))
+		{
+			Attr typeAttr = attrType.getOwnerDocument().createAttribute("type");
+			typeAttr.setValue(type);
+			attrType.setAttributeNode(typeAttr);
+		}
+		
+		return attrType;
 	}
 }

@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.XSDNamedComponent;
+import org.w3c.dom.Element;
 
 import xmlrefactoring.XMLRefactoringMessages;
 import xmlrefactoring.plugin.logic.BaseProcessor;
@@ -12,7 +15,7 @@ import xmlrefactoring.plugin.logic.BaseRefactoringArguments;
 import xmlrefactoring.plugin.logic.moveElement.external.MoveElementRefactoringArguments;
 
 public class MoveElementProcessor extends BaseProcessor {
-	MoveElementRefactoringArguments arguments;
+	private MoveElementRefactoringArguments arguments;
 	
 	public MoveElementProcessor(XSDNamedComponent component)
 	{
@@ -52,4 +55,7 @@ public class MoveElementProcessor extends BaseProcessor {
 		return false;
 	}
 
+	public void setReceivingElement(XSDElementDeclaration ed) {
+		arguments.setReceivingElement(ed.getElement());
+	}
 }

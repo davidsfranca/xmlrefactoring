@@ -12,8 +12,17 @@ public class MoveElementRefactoringArguments extends BaseRefactoringArguments {
 	
 	public MoveElementRefactoringArguments(List<XSDNamedComponent> components) {
 		super(components);
-		Element movingElement = getElements().get(0);
-		
+		Element movingElement = getElements().get(0);	
+	}
+	
+	public void setReceivingElement(Element receivingElement)
+	{
+		this.receivingElement = receivingElement;
+	}
+	
+	public Element getReceivingElement()
+	{
+		return receivingElement;
 	}
 
 }

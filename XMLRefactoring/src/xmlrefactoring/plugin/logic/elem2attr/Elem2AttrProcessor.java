@@ -69,8 +69,4 @@ public class Elem2AttrProcessor extends BaseProcessor {
 	public boolean isApplicable() throws CoreException {
 		return false;
 	}
-
-	public void setAttrName(String name) {		
-		arguments.setAttributeName(name);		
-	}
 }

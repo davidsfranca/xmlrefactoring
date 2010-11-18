@@ -15,6 +15,8 @@ import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextChange;
 import org.eclipse.ltk.core.refactoring.participants.CheckConditionsContext;
 import org.eclipse.ltk.core.refactoring.participants.RefactoringArguments;
+import org.eclipse.text.edits.DeleteEdit;
+import org.eclipse.text.edits.InsertEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.wst.common.core.search.SearchMatch;
@@ -31,6 +33,7 @@ import xmlrefactoring.plugin.PluginNamingConstants;
 import xmlrefactoring.plugin.logic.BaseXSDParticipant;
 import xmlrefactoring.plugin.logic.attr2elem.external.Attr2ElemRefactoringArguments;
 import xmlrefactoring.plugin.logic.util.SearchUtil;
+import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
 
 public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
@@ -64,7 +67,7 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 				manager.getAllChanges());
 	}
 	
-	private void transformDeclaration(TextChangeManager manager){
+	private void transformDeclaration(TextChangeManager manager) throws CoreException {
 		IDOMElement idomElement = (IDOMElement) attribute;
 		String fileStr = idomElement.getModel().getBaseLocation();
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
@@ -92,18 +95,40 @@ public class XSDAttr2ElemParticipant extends BaseXSDParticipant {
 		}		
 	}
 
-	private TextEdit[] attr2elem(Element attribute) {
-		List<TextEdit> attr2elemTransformation = new ArrayList<TextEdit>();
+	private TextEdit[] attr2elem(Element attribute) throws CoreException {
+		List<TextEdit> elem2attrTransformation = new ArrayList<TextEdit>();
 		IDOMElement idomElement = (IDOMElement) attribute;
+		IDOMElement root = (IDOMElement) arguments.getSchemaDocument().getDocumentElement();
 		
-		int offset = idomElement.getStartOffset() + "<".length();
-		attr2elemTransformation.add(replaceAttributeWithElement(idomElement, offset));
+		int offset = idomElement.getStartOffset();
+		int length = idomElement.getEndOffset() - idomElement.getStartOffset();
 		
-		if(idomElement.getEndStructuredDocumentRegion() != null){
-			int endTagOffset = idomElement.getEndStructuredDocumentRegion().getStartOffset() + "</".length();
-			attr2elemTransformation.add(replaceAttributeWithElement(idomElement, endTagOffset));
+		DeleteEdit deleteElement = new DeleteEdit(offset, length);
+		elem2attrTransformation.add(deleteElement);
+		
+		Element attr = null;
+		
+		if(attribute.hasAttribute("ref"))
+		{
+			attr = XSDUtil.createRefElement(root, idomElement, arguments.getSchema());
 		}
-		return attr2elemTransformation.toArray(new TextEdit[0]);
+		else
+		{		
+			attr = XSDUtil.createSimpleElement(root, idomElement.getAttribute("name"),
+					idomElement.getAttribute("type"));
+		}
+		
+		Node attachNode = idomElement.getParentNode().getFirstChild();
+		while(attachNode.getNodeName().equals("#text"))
+			attachNode = attachNode.getNextSibling();
+		
+		Element attach = (Element) attachNode;
+		offset = ((IDOMElement) attach).getEndStartOffset() - 1;
+		
+		InsertEdit insertElement = new InsertEdit(offset, XMLUtil.toString(attr));		
+		elem2attrTransformation.add(insertElement);
+		
+		return elem2attrTransformation.toArray(new TextEdit[0]);
 	}
 
 	/**

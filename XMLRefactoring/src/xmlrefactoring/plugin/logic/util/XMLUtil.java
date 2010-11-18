@@ -81,7 +81,7 @@ public abstract class XMLUtil {
 			StringWriter os = new StringWriter();
 			StreamResult streamResult = new StreamResult(os);
 			trans.transform(source, streamResult);
-			String result = os.getBuffer().toString();
+			String result = os.getBuffer().toString() + "\n";
 			return result;
 		} catch (TransformerException e) {
 			Status status = new Status(Status.ERROR, 

@@ -11,7 +11,6 @@ import xmlrefactoring.plugin.logic.util.XSDUtil;
 public class Elem2RefRefactoringArguments extends BaseRefactoringArguments {
 	private boolean element;
 	private boolean reference;
-	private String refName;
 	
 	public Elem2RefRefactoringArguments(List<XSDNamedComponent> components) {
 		super(components);
@@ -19,8 +18,6 @@ public class Elem2RefRefactoringArguments extends BaseRefactoringArguments {
 		
 		this.element = XSDUtil.isElement(transformingElement);
 		this.reference = XSDUtil.isReference(transformingElement);
-		
-		this.refName = transformingElement.getAttribute("name");
 	}
 	
 	public boolean isElement() {
@@ -31,11 +28,4 @@ public class Elem2RefRefactoringArguments extends BaseRefactoringArguments {
 		return this.reference;
 	}
 	
-	public void setRefName(String elemName) {
-		if(!elemName.equals("")) this.refName = elemName;
-	}
-	
-	public String getRefName() {
-		return this.refName;
-	}
 }

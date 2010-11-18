@@ -29,10 +29,10 @@ public class SearchUtil {
 		String componentNamespace = XSDUtil.getTargetNamespace(element);
 		QualifiedName elementQName = new QualifiedName(componentNamespace, componentName);
 		QualifiedName typeQName = new QualifiedName(element.getNamespaceURI(), element.getLocalName());
-		
+
 		String fileStr = element.getModel().getBaseLocation();
 		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileStr));
-
+		
 		SearchScope scope = new WorkspaceSearchScope();
 		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
 		SearchPattern pattern = new XMLComponentReferencePattern(file, elementQName, typeQName);
@@ -55,8 +55,12 @@ public class SearchUtil {
 		if(XSDUtil.isElement(element)){
 
 			String typeName = XMLUtil.getLocalName(XSDUtil.getType(element));
-			String componentNamespace = element.getOwnerDocument().getDocumentElement().getAttribute("targetNamespace");
+			String componentNamespace = XSDUtil.getTargetNamespace(element);
 			QualifiedName elementQName = new QualifiedName(componentNamespace, typeName);
+			
+			if(typeName.contains("Extended"))
+				typeName.replace("Extended", "");
+			
 			QualifiedName typeQName;
 			if(simpleType)
 				typeQName = new QualifiedName(element.getNamespaceURI(), XSDUtil.SIMPLE_TYPE);

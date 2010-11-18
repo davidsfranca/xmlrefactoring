@@ -51,8 +51,4 @@ public class Elem2RefProcessor extends BaseProcessor {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	public void setRefName(String name) {		
-		arguments.setRefName(name);	
-	}
 }

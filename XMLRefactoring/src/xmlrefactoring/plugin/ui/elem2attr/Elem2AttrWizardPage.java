@@ -26,23 +26,6 @@ public class Elem2AttrWizardPage extends BaseUserInputWizardPage {
 		GridLayout grid = new GridLayout();
 		composite.setLayout(grid);
 		grid.numColumns = 2;
-		new Label(composite, SWT.NONE).setText("Enter with the new attribute name:");
-		attrName = new Text(composite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		attrName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		
-		attrName.addModifyListener(new ModifyListener() {
-			
-			public void modifyText(ModifyEvent e) {
-				handleInputChanged();
-			}
-		});
-	}
-	
-	public void handleInputChanged()
-	{
-		String text = attrName.getText();
-		if(attrName.getText().isEmpty()) text = "";
-		
-		wizard.getProcessor().setAttrName(text);
+		new Label(composite, SWT.NONE).setText("Change element into attribute?");
 	}
 }
