@@ -19,7 +19,8 @@ import xmlrefactoring.plugin.logic.elem2attr.external.Elem2AttrRefactoringArgume
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
-import xmlrefactoring.plugin.refactoring.TransformRefactoring;
+import xmlrefactoring.plugin.refactoring.Attr2ElemRefactoring;
+import xmlrefactoring.plugin.refactoring.Elem2AttrRefactoring;
 import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 
 public class XSLTElem2AttrParticipant extends BaseXSLParticipant {
@@ -31,11 +32,11 @@ public class XSLTElem2AttrParticipant extends BaseXSLParticipant {
 	protected XMLRefactoring getXMLRefactoring() throws CoreException {
 		
 		List<List<QName>> paths = null;
-		if(!XSDUtil.isAttribute(element)){
+		if(!XSDUtil.isElement(element)){
 			paths = XPathCreator.createElementPaths(element);
 		}
 		QName elementQName = XMLUtil.createQName(element);
-		XMLRefactoring refactoring = new TransformRefactoring(paths, elementQName);
+		XMLRefactoring refactoring = new Elem2AttrRefactoring(paths, elementQName);
 		return refactoring;
 	}
 

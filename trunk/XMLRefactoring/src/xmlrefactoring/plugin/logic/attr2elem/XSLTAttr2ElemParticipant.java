@@ -18,7 +18,7 @@ import xmlrefactoring.plugin.logic.attr2elem.external.Attr2ElemRefactoringArgume
 import xmlrefactoring.plugin.logic.util.XMLUtil;
 import xmlrefactoring.plugin.logic.util.XPathCreator;
 import xmlrefactoring.plugin.logic.util.XSDUtil;
-import xmlrefactoring.plugin.refactoring.TransformRefactoring;
+import xmlrefactoring.plugin.refactoring.Attr2ElemRefactoring;
 import xmlrefactoring.plugin.refactoring.XMLRefactoring;
 
 public class XSLTAttr2ElemParticipant extends BaseXSLParticipant{
@@ -34,7 +34,7 @@ public class XSLTAttr2ElemParticipant extends BaseXSLParticipant{
 			paths = XPathCreator.createAttributePaths(element);
 		}
 		QName elementQName = XMLUtil.createQName(element);
-		XMLRefactoring refactoring = new TransformRefactoring(paths, elementQName);
+		XMLRefactoring refactoring = new Attr2ElemRefactoring(paths, elementQName);
 		return refactoring;
 	}
 
