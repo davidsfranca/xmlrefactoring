@@ -1,23 +1,32 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-
-<xsl:stylesheet 
+<xsl:stylesheet
 		xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-		version="2.0">
-<xsl:output indent="yes"/>
+		version="2.0">		
+
+<xsl:output method="xml" indent="yes"/>
 
 <xsl:strip-space elements="*"/>
 <xsl:template match="*">
-    <xsl:copy>
-        <xsl:copy-of select="@*"/>
-        <xsl:apply-templates />
-    </xsl:copy>
+	<xsl:copy>
+		<xsl:copy-of select="@*"/>
+		<xsl:apply-templates />
+	</xsl:copy>
 </xsl:template>
 
 #foreach( $path in $paths )
 	<xsl:template match="/#foreach( $elem in $path )/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end">
-		<xsl:copy-of select="@*|node()[not((namespace-uri()='$removingElement.getNamespaceURI()') and (local-name() ='$removingElement.getLocalPart()'))]"/>
-		<xsl:apply-templates/>
-</xsl:template>
+		<xsl:if test="local-name() = '$from'">
+			<xsl:copy>
+				<xsl:copy-of select="@*|node()[not(local-name() = '$moving')]"/>
+			</xsl:copy>
+		</xsl:if>
+		<xsl:if test="local-name() = '$to">
+			<xsl:copy>
+				<xsl:copy-of select="@*|node()"/>
+				<xsl:copy-of select="../$from/$moving"/>
+			</xsl:copy>
+		</xsl:if>
+	</xsl:template>
 #end
 
-</xls:stylesheet>
+</xsl:stylesheet>

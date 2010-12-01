@@ -1,6 +1,5 @@
 package xmlrefactoring.plugin.refactoring;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -10,19 +9,21 @@ import org.apache.velocity.VelocityContext;
 public class MoveElementRefactoring extends XMLRefactoring {
 	
 	private String movingElement;
-	private List<QName> changers;
+	private String from;
+	private String to;
 	private static String MOVEELEMENTTEMPLATE = "/template/moveElement.vm";
 	
-	public MoveElementRefactoring(List<List<QName>> paths, String movingElement, List<QName> changers)
+	public MoveElementRefactoring(List<List<QName>> paths, String movingElement, String from, String to)
 	{
-		this(paths, movingElement, changers, true);
+		this(paths, movingElement, from, to, true);
 	}
 	
 	protected MoveElementRefactoring(List<List<QName>> paths, String movingElement, 
-			List<QName> changers, boolean isRootRef) {
+			String from, String to, boolean isRootRef) {
 		super(paths);
 		setMovingElement(movingElement);
-		setChangers(changers);
+		setFrom(from);
+		setTo(to);
 		if(isRootRef)
 			createReverseRefactoring();
 		setRootRef(isRootRef);
@@ -35,8 +36,9 @@ public class MoveElementRefactoring extends XMLRefactoring {
 	@Override
 	public void fillContext(VelocityContext context) {
 		context.put("paths", getPaths());
-		context.put("movingElement", getMovingElement());
-		context.put("changers", getChangers());
+		context.put("moving", getMovingElement());
+		context.put("from", getFrom());
+		context.put("to", getTo());
 	}
 	
 	private String getMovingElement()
@@ -51,26 +53,30 @@ public class MoveElementRefactoring extends XMLRefactoring {
 
 	@Override
 	public void createReverseRefactoring() {
-		List<QName> newChangers = new ArrayList<QName>();
-		if(getChangers().size() > 0)
-		{
-			newChangers.add(getChangers().get(1));
-			newChangers.add(getChangers().get(0));
-			
-			setReverseRefactoring(new MoveElementRefactoring(getPaths(), movingElement, newChangers, false));
-		}
+		if(getPaths().size() > 0)			
+			setReverseRefactoring(new MoveElementRefactoring(getPaths(), movingElement, getTo(), getFrom(), false));
 		else
-			setReverseRefactoring(new MoveElementRefactoring(null, "", null, false));
+			setReverseRefactoring(new MoveElementRefactoring(null, "", null, null, false));
 	}
 	
-	private void setChangers(List<QName> changers)
+	private void setFrom(String from)
 	{
-		this.changers = changers;
+		this.from = from;
 	}
 	
-	private List<QName> getChangers()
+	private String getFrom()
 	{
-		return changers;
+		return from;
+	}
+	
+	private void setTo(String to)
+	{
+		this.to = to;
+	}
+	
+	private String getTo()
+	{
+		return to;
 	}
 
 }
