@@ -31,16 +31,14 @@ public class XSLTMoveElementParticipant extends BaseXSLParticipant {
 	protected XMLRefactoring getXMLRefactoring() throws CoreException {
 		XMLRefactoring refactoring = null;
 		List<List<QName>> paths;
-		List<QName> changers = new ArrayList<QName>();
 		
 		paths = XPathCreator.createElementPaths(source);
-		
-		changers.add(XMLUtil.createQName(source));
-		changers.add(XMLUtil.createQName(receiver));
+		paths = XPathCreator.createElementPaths(receiver);
 		
 		if(!paths.isEmpty())
 			refactoring = new MoveElementRefactoring(paths, 
-					arguments.getElements().get(0).getLocalName(), changers);
+					arguments.getElements().get(0).getLocalName(), 
+					source.getLocalName(), receiver.getLocalName());
 			
 		return refactoring;
 	}
