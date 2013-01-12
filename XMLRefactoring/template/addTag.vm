@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<xsl:stylesheet 
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+        version="2.0">
+
+<xsl:template match="*">
+    <xsl:copy>
+        <xsl:copy-of select="@*"/>
+        <xsl:apply-templates />
+    </xsl:copy>
+</xsl:template>
+
+<!-- adiciona um novo element caso nao seja opcional-->
+#if( $minOccurs == "1" )
+#foreach( $path in $paths )
+<xsl:template match="/#foreach( $elem in $path )/element()[(namespace-uri(.)='$elem.getNamespaceURI()')and(local-name(.)='$elem.getLocalPart()')]#end">
+    <xsl:copy>
+        <xsl:apply-templates />
+    </xsl:copy>
+    <xsl:element name="{if (prefix-from-QName(node-name(.))) then concat(prefix-from-QName(node-name(.)), ':') else ''}$name" namespace="{namespace-uri(.)}">
+        <xsl:value-of select="$defaultValue"/>
+    </xsl:element>
+</xsl:template>
+#end
+#end
+</xsl:stylesheet>
+

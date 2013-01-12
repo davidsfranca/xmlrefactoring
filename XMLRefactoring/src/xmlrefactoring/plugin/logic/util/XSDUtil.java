@@ -255,6 +255,27 @@ public class XSDUtil {
 		return e;
 	}
 
+	public static Element createElementBasedUponNameAndType(IDOMElement root, String name, String type, boolean isOptional) {
+		String qName = XMLUtil.createQName(root.getPrefix(), ELEMENT);
+		Element e = root.getOwnerDocument().createElement(qName);
+		
+		Attr nameAttr = e.getOwnerDocument().createAttribute("name");
+		nameAttr.setValue(name);
+		e.setAttributeNode(nameAttr);
+		
+		Attr typeAttr = e.getOwnerDocument().createAttribute("type");
+		typeAttr.setValue(type);
+		e.setAttributeNode(typeAttr);
+		
+		if(isOptional) {
+			Attr minOccurAttr = e.getOwnerDocument().createAttribute("minOccurs");
+			minOccurAttr.setValue("0");
+			e.setAttributeNode(minOccurAttr);
+		}
+		
+		return e;
+	}
+
 	public static Element copyElement(IDOMElement root, Element transformingElement) {
 		String qName = XMLUtil.createQName(root.getPrefix(), ELEMENT);
 		Element e = root.getOwnerDocument().createElement(qName);
