@@ -9,6 +9,8 @@
    <extension-point id="Elem2RefParticipant" name="Element into Reference Participant" schema="schema/Elem2RefParticipant.exsd"/>
    <extension-point id="Ref2ElemParticipant" name="Reference into Element Participant" schema="schema/Ref2ElemParticipant.exsd"/>
    <extension-point id="MoveElementParticipant" name="Move Element Participant" schema="schema/MoveElementParticipant.exsd"/>
+   <extension-point id="AddElementParticipant" name="Add Element participant" schema="schema/AddElementParticipant.exsd"/>
+   <extension-point id="RemoveElementParticipant" name="Remove Element participant" schema="schema/RemoveElementParticipant.exsd"/>
    <extension
          id="XMLRefactoringMenu"
          name="XML Refactoring Menu"
@@ -72,6 +74,27 @@
                id="XMLRefactoring.MoveElement"
                label="Move Element"
                menubarPath="XMLRefactoring.RefactoringMenu/group1">
+         </action>
+         <menu
+               id="XMLRefactoring.ModificationMenu"
+               label="XML Modification"
+               path="refactoring-slot">
+            <groupMarker
+                  name="XMLRefactoring.group2">
+            </groupMarker>
+         </menu>
+         <action
+               class="xmlrefactoring.plugin.ui.addElement.AddElementAction"
+               enablesFor="1"
+               id="XMLRefactoring.AddElementAction"
+               label="Add Element"
+               menubarPath="XMLRefactoring.ModificationMenu/group2">
+         </action>
+         <action
+               class="xmlrefactoring.plugin.ui.removeElement.RemoveElementAction"
+               id="XMLRefactoring.RemoveElementElementAction"
+               label="Remove Element"
+               menubarPath="XMLRefactoring.ModificationMenu/group2">
          </action>
       </viewerContribution>
       <objectContribution
@@ -248,6 +271,44 @@
             class="xmlrefactoring.plugin.logic.moveElement.XSLTMoveElementParticipant"
             id="XSLTMoveElementParticpant"
             name="Move Element XSLT Participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.AddElementParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.addelement.XSDAddElementParticipant"
+            id="XSDAddElementParticipant"
+            name="XSD add element participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.addelement.XSLTAddElementParticipant"
+            id="XSLTAddElementParticipant"
+            name="XSLT add element participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+   </extension>
+   <extension
+         point="XMLRefactoring.RemoveElementParticipant">
+      <Participant
+            class="xmlrefactoring.plugin.logic.removeElement.XSDRemoveElementParticipant"
+            id="XSDRemoveElementParticipant"
+            name="XSD remove element participant">
+         <enablement>
+            enablement body text
+         </enablement>
+      </Participant>
+      <Participant
+            class="xmlrefactoring.plugin.logic.removeElement.XSLTRemoveElementParticipant"
+            id="XSLTRemoveElementParticipant"
+            name="XSLT remove element participant">
          <enablement>
             enablement body text
          </enablement>

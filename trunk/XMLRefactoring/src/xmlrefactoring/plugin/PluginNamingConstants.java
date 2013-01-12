@@ -44,4 +44,6 @@ public class PluginNamingConstants {
 
 	public static final String RENAME_PARTICIPANT_RENAME_REFERENCE = "Rename reference";
 	
+	public static final String REMOVE_ELEMENT_PARTICIPANT_REMOVE_REFERENCE = "Remove reference";
+	
 }
